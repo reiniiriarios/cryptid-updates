@@ -1,0 +1,8 @@
+{
+    "sketch": "cryptid-updates.ino",
+    "board": "adafruit:samd:adafruit_matrixportal_m4",
+    "configuration": "cache=on,speed=120,opt=small,maxqspi=50,usbstack=arduino,debug=off",
+    "programmer": "adafruit:adafruit_jlink",
+    "output": "build",
+    "port": "COM3"
+}
