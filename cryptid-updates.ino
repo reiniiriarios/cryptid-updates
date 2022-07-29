@@ -77,14 +77,15 @@ float gradient_width = 32.0f;   // in pixels, size of the gradient within the sh
 float shape_width = 16.0f;      // in pixels, size of the shapes
 float gradient_start = 250.0f;  // in degrees, 0-360
 float gradient_end = 350.0f;    // in degrees, 0-360
-// scale the above values to the value needed by Protomatter for hue
-float gradient_start_scaled = gradient_start / 360 * 65535.0f;
-float gradient_end_scaled = gradient_end / 360 * 65535.0f;
 uint8_t animation_speed = 10;    // how fast the gradient animates
                                  // 1 = very slow, 10 = steady, 40 = uncomfortably fast
                                  // set this high at your own risk (seizures, etc)
 
 // GENERATE IMAGES ---------------------------------------------------------------------------------
+
+// scale the above values to a useful value to computer hue for Protomatter (0-65535)
+float gradient_start_scaled = gradient_start / 360.0f * 65535.0f;
+float gradient_end_scaled = gradient_end / 360.0f * 65535.0f;
 
 /**
  * @brief Generate pretty colors to the pixels[] array
