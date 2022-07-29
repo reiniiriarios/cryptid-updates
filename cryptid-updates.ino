@@ -73,13 +73,13 @@ uint32_t prevTime = 0; // Used for frames-per-second throttle
 // ---- Colors & Pixels settings ----
 
 uint16_t pixels[HEIGHT][WIDTH] = {};
-float gradient_width = 32.0f;   // in pixels, size of the gradient within the shapes
-float shape_width = 16.0f;      // in pixels, size of the shapes
-float gradient_start = 250.0f;  // in degrees, 0-360
-float gradient_end = 350.0f;    // in degrees, 0-360
 uint8_t animation_speed = 10;    // how fast the gradient animates
                                  // 1 = very slow, 10 = steady, 40 = uncomfortably fast
                                  // set this high at your own risk (seizures, etc)
+uint8_t gradient_width = 16;     // size of gradient within shapes, no direct correlation to pixels
+uint8_t shape_width = 8;         // size of the shapes, no direct correlation to pixels
+uint16_t gradient_start = 0;     // in degrees, 0-360
+uint16_t gradient_end = 360;     // in degrees, 0-360
 boolean gradient_invert = false; // clockwise or counter; if end < start, this is reversed
 
 // GENERATE IMAGES ---------------------------------------------------------------------------------
