@@ -1,1 +1,6 @@
+# build
 build
+
+# vscode
+# including arduino.json and c_cpp_properties.json b/c they have useful data
+.vscode/settings.json
