@@ -80,6 +80,7 @@ float gradient_end = 350.0f;    // in degrees, 0-360
 uint8_t animation_speed = 10;    // how fast the gradient animates
                                  // 1 = very slow, 10 = steady, 40 = uncomfortably fast
                                  // set this high at your own risk (seizures, etc)
+boolean gradient_invert = false; // clockwise or counter; if end < start, this is reversed
 
 // GENERATE IMAGES ---------------------------------------------------------------------------------
 
@@ -109,6 +110,8 @@ void generateColors(void) {
       // if the gradient is less than 360deg total, then
       // we must stop at the end and loop back and forth
       if (gradient_start > 0 || gradient_end < 360) {
+
+        // find how far across the gradient we are
         float distance_across_gradient;
         if (interval < 0.5f * gradient_width) {
           // for the first half of the gradient, move twice as fast
@@ -116,16 +119,28 @@ void generateColors(void) {
         }
         else {
           // for the second half, move backwards, still twice as fast
-          distance_across_gradient = (gradient_width - interval) * 2;
+          distance_across_gradient = (gradient_width - interval) * 2.0f;
         }
         // between 0 and 1
         float percent_across_gradient = distance_across_gradient / gradient_width;
-        // how much to scale the percent_across by
-        float scaling_factor = gradient_end_scaled - gradient_start_scaled;
-        // percent_across_gradient * scaling_factor = degrees across after the start
-        hue = round(gradient_start_scaled + percent_across_gradient * scaling_factor);
+
+        // counterclockwise
+        if (gradient_invert) {
+          // how much to scale the percent_across by, rotating counterclockwise
+          float scaling_factor = 360 - gradient_end_scaled - gradient_start_scaled;
+          // percent_across_gradient * scaling_factor = degrees backwards from start
+          hue = round(gradient_start_scaled - percent_across_gradient * scaling_factor);
+        }
+        // clockwise
+        else {
+          // how much to scale the percent_across by
+          float scaling_factor = gradient_end_scaled - gradient_start_scaled;
+          // percent_across_gradient * scaling_factor = degrees across after the start
+          hue = round(gradient_start_scaled + percent_across_gradient * scaling_factor);
+        }
       }
       else {
+        // 0 <= interval / gradient_width <= 1
         hue = round((interval / gradient_width) * 65535.0f);
       }
 
