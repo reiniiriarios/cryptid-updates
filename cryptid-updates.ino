@@ -1,8 +1,8 @@
-/* --------------------------------------------------------------------------
-CRYPTID UPDATES - LED Matrix Display
------------------------------------------------------------------------------ */
+//
+// CRYPTID UPDATES - LED Matrix Display
+//
 
-// INCLUDES --------------------------------------------------------------------
+// INCLUDES ----------------------------------------------------------------------------------------
 
 // Filesystem
 // #include <Adafruit_FlashCache.h>
@@ -30,9 +30,9 @@ CRYPTID UPDATES - LED Matrix Display
 // Pixel Dust Simulator
 // #include <Adafruit_PixelDust.h>
 
-// CONFIG ----------------------------------------------------------------------
+// CONFIG ------------------------------------------------------------------------------------------
 
-// MatrixPortal M4 ------
+// ---- MatrixPortal M4 pin configuration -----
 
 #define UP_BUTTON 2
 #define DOWN_BUTTON 3
@@ -45,11 +45,13 @@ uint8_t clockPin   = 14;
 uint8_t latchPin   = 15;
 uint8_t oePin      = 16;
 
-// RGB LED Matrix ------
+// ---- RGB LED Matrix configuration and setup ----
 
 #define HEIGHT  32 // Matrix height (pixels) - SET TO 64 FOR 64x64 MATRIX!
 #define WIDTH   64 // Matrix width (pixels)
-#define MAX_FPS 45 // Maximum redraw rate, frames/second
+#define MAX_FPS 60 // Maximum redraw rate, frames/second
+                   // 14 for animation, 24 or 30 for video, 60 is smooth
+
 float centerX = 0.5f * WIDTH;
 float centerY = 0.5f * HEIGHT;
 
@@ -63,30 +65,67 @@ Adafruit_Protomatter matrix(
 
 uint32_t prevTime = 0; // Used for frames-per-second throttle
 
-// LIS3DH Triple-Axis Accelerometer ------
+// ---- LIS3DH Triple-Axis Accelerometer ----
 
 // #define ACCEL_PIN 0x19
 // Adafruit_LIS3DH accel = Adafruit_LIS3DH();
 
-// Colors & Pixels ------
+// ---- Colors & Pixels settings ----
 
 uint16_t pixels[HEIGHT][WIDTH] = {};
-float gradient_width = 32.0f;
-float shape_width = 16.0f;
+float gradient_width = 32.0f;   // in pixels, size of the gradient within the shapes
+float shape_width = 16.0f;      // in pixels, size of the shapes
+float gradient_start = 250.0f;  // in degrees, 0-360
+float gradient_end = 350.0f;    // in degrees, 0-360
+float animation_speed = 100;    // how fast the gradient animates
 
-// IMAGES ----------------------------------------------------------------------
+// scale the above values to the value needed by Protomatter for hue
+float gradient_start_scaled = gradient_start / 360 * 65535.0f;
+float gradient_end_scaled = gradient_end / 360 * 65535.0f;
 
+// GENERATE IMAGES ---------------------------------------------------------------------------------
+
+/**
+ * @brief Generate pretty colors to the pixels[] array
+ * 
+ * @todo This should be refactored to accept a mask
+ * 
+ */
 void generateColors(void) {
   for(int y=0; y<HEIGHT; y++) {
     for(int x=0; x<WIDTH; x++) {
-      float tick = 100 + (millis() * 0.001);
+      float tick = animation_speed + (millis() * 0.001f);
       float v = (
           cos(((float)x - centerX) / (0.5f * shape_width))
           + sin(((float)y - centerY) / (0.5f * shape_width)) + tick
         ) * shape_width;
 
+      // interval is a number between 0 and gradient_width
       float interval = fmod(v, gradient_width);
-      uint16_t hue = round((interval / gradient_width) * 65535.0f);
+      uint16_t hue;
+
+      // if the gradient is less than 360deg total, then
+      // we must stop at the end and loop back and forth
+      if (gradient_start > 0 || gradient_end < 360) {
+        float distance_across_gradient;
+        if (interval < 0.5f * gradient_width) {
+          // for the first half of the gradient, move twice as fast
+          distance_across_gradient = interval * 2;
+        }
+        else {
+          // for the second half, move backwards, still twice as fast
+          distance_across_gradient = (gradient_width - interval) * 2;
+        }
+        // between 0 and 1
+        float percent_across_gradient = distance_across_gradient / gradient_width;
+        // how much to scale the percent_across by
+        float scaling_factor = gradient_end_scaled - gradient_start_scaled;
+        // percent_across_gradient * scaling_factor = degrees across after the start
+        hue = round(gradient_start_scaled + percent_across_gradient * scaling_factor);
+      }
+      else {
+        hue = round((interval / gradient_width) * 65535.0f);
+      }
 
       // (*p)[x][y] = 0;
       pixels[y][x] = hue;
@@ -94,6 +133,10 @@ void generateColors(void) {
   }
 }
 
+/**
+ * @brief Write the pixels[] data to the Protomatter matrix
+ * 
+ */
 void drawPixels(void) {
   for(int y=0; y<HEIGHT; y++) {
     for(int x=0; x<WIDTH; x++) {
@@ -103,19 +146,40 @@ void drawPixels(void) {
   }
 }
 
-// SETUP -----------------------------------------------------------------------
+// ERROR HANDLING ----------------------------------------------------------------------------------
 
-void err(int x) {
+/**
+ * @brief Blink onboard LED every <milliseconds> and print message over serial
+ * 
+ * @param milliseconds 
+ * @param message 
+ */
+void err(int milliseconds, String message = "") {
+  Serial.write("ERROR ");
+  Serial.write(milliseconds);
+  Serial.write("\n");
+  if (message.length() > 0) {
+    Serial.println(message);
+  }
+
   uint8_t i;
   pinMode(LED_BUILTIN, OUTPUT);       // Using onboard LED
   for(i=1;;i++) {                     // Loop forever...
     digitalWrite(LED_BUILTIN, i & 1); // LED on/off blink to alert user
-    delay(x);
+    delay(milliseconds);
   }
 }
 
+// SETUP -------------------------------------------------------------------------------------------
+
+/**
+ * @brief Run once on start
+ * 
+ */
 void setup(void) {
   Serial.begin(9600);
+  // if serial is important, include this so we don't miss messages
+  // if code not commented out, the display will not function until serial port opens
   while (!Serial) delay(10);
 
   // uint16_t pixels[HEIGHT][WIDTH] = {};
@@ -124,11 +188,18 @@ void setup(void) {
 
   ProtomatterStatus status = matrix.begin();
   Serial.printf("Protomatter begin() status: %d\n", status);
+  if (status != 0) {
+    err(200, "protomatter failed to start");
+  }
 }
 
-// LOOP ------------------------------------------------------------------------
+// LOOP --------------------------------------------------------------------------------------------
 
-void loop() {
+/**
+ * @brief Main loop
+ * 
+ */
+void loop(void) {
   // Limit the animation frame rate to MAX_FPS.  Because the subsequent sand
   // calculations are non-deterministic (don't always take the same amount
   // of time, depending on their current states), this helps ensure that

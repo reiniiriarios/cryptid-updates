@@ -1,5 +1,9 @@
 # cryptid-updates
 
+## Notes
+
+If display doesn't turn on, enable serial in VSCode --- currently required!
+
 ## Dependencies
 
 Board | Details
