@@ -129,6 +129,10 @@ void generateColors(void) {
         hue = round((interval / gradient_width) * 65535.0f);
       }
 
+      // normalize within bounds
+      while (hue < 0) hue += 65535;
+      while (hue > 65535) hue -= 65535;
+
       // (*p)[x][y] = 0;
       pixels[y][x] = hue;
     }
@@ -183,6 +187,12 @@ void setup(void) {
   // if serial is important, include this so we don't miss messages
   // if code not commented out, the display will not function until serial port opens
   while (!Serial) delay(10);
+
+  // normalize hues
+  while (gradient_start < 0) gradient_start += 360;
+  while (gradient_start > 360) gradient_start -= 360;
+  while (gradient_end < 0) gradient_end += 360;
+  while (gradient_end > 360) gradient_end -= 360;
 
   // uint16_t pixels[HEIGHT][WIDTH] = {};
   // uint16_t (*p_pixels)[HEIGHT][WIDTH]= &pixels;
