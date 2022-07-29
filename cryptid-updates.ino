@@ -76,10 +76,10 @@ uint16_t pixels[HEIGHT][WIDTH] = {};
 uint8_t animation_speed = 10;    // how fast the gradient animates
                                  // 1 = very slow, 10 = steady, 40 = uncomfortably fast
                                  // set this high at your own risk (seizures, etc)
-uint8_t gradient_width = 16;     // size of gradient within shapes, no direct correlation to pixels
-uint8_t shape_width = 8;         // size of the shapes, no direct correlation to pixels
-uint16_t gradient_start = 0;     // in degrees, 0-360
-uint16_t gradient_end = 360;     // in degrees, 0-360
+uint8_t gradient_width = 32;     // size of gradient within shapes, no direct correlation to pixels
+uint8_t shape_width = 16;        // size of the shapes, no direct correlation to pixels
+uint16_t gradient_start = 260;   // in degrees, 0-360
+uint16_t gradient_end = 350;     // in degrees, 0-360
 boolean gradient_invert = false; // clockwise or counter; if end < start, this is reversed
 
 // GENERATE IMAGES ---------------------------------------------------------------------------------
