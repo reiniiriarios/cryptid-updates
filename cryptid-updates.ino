@@ -77,11 +77,12 @@ float gradient_width = 32.0f;   // in pixels, size of the gradient within the sh
 float shape_width = 16.0f;      // in pixels, size of the shapes
 float gradient_start = 250.0f;  // in degrees, 0-360
 float gradient_end = 350.0f;    // in degrees, 0-360
-float animation_speed = 100;    // how fast the gradient animates
-
 // scale the above values to the value needed by Protomatter for hue
 float gradient_start_scaled = gradient_start / 360 * 65535.0f;
 float gradient_end_scaled = gradient_end / 360 * 65535.0f;
+uint8_t animation_speed = 10;    // how fast the gradient animates
+                                 // 1 = very slow, 10 = steady, 40 = uncomfortably fast
+                                 // set this high at your own risk (seizures, etc)
 
 // GENERATE IMAGES ---------------------------------------------------------------------------------
 
@@ -94,7 +95,7 @@ float gradient_end_scaled = gradient_end / 360 * 65535.0f;
 void generateColors(void) {
   for(int y=0; y<HEIGHT; y++) {
     for(int x=0; x<WIDTH; x++) {
-      float tick = animation_speed + (millis() * 0.001f);
+      float tick = millis() * 0.0001f * animation_speed;
       float v = (
           cos(((float)x - centerX) / (0.5f * shape_width))
           + sin(((float)y - centerY) / (0.5f * shape_width)) + tick
