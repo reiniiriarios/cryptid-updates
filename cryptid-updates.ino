@@ -73,14 +73,14 @@ uint32_t prevTime = 0; // Used for frames-per-second throttle
 // ---- Colors & Pixels settings ----
 
 uint16_t pixels[HEIGHT][WIDTH] = {};
-uint8_t animation_speed = 10;    // how fast the gradient animates
-                                 // 1 = very slow, 10 = steady, 40 = uncomfortably fast
-                                 // set this high at your own risk (seizures, etc)
-uint8_t gradient_width = 32;     // size of gradient within shapes, no direct correlation to pixels
-uint8_t shape_width = 16;        // size of the shapes, no direct correlation to pixels
-uint16_t gradient_start = 260;   // in degrees, 0-360
-uint16_t gradient_end = 350;     // in degrees, 0-360
-boolean gradient_invert = false; // clockwise or counter; if end < start, this is reversed
+uint8_t  animation_speed  = 10;    // how fast the gradient animates
+                                   // 1 = very slow, 10 = steady, 40 = uncomfortably fast
+                                   // set this high at your own risk (seizures, etc)
+uint8_t  gradient_width   = 32;    // size of gradient within shapes, no direct correlation to pixels
+uint8_t  shape_width      = 16;    // size of the shapes, no direct correlation to pixels
+uint16_t gradient_start   = 260;   // in degrees, 0-360
+uint16_t gradient_end     = 350;   // in degrees, 0-360
+boolean  gradient_reverse = false; // clockwise or counter
 
 // GENERATE IMAGES ---------------------------------------------------------------------------------
 
@@ -125,7 +125,7 @@ void generateColors(void) {
         float percent_across_gradient = distance_across_gradient / gradient_width;
 
         // counterclockwise
-        if (gradient_invert) {
+        if (gradient_reverse) {
           // how much to scale the percent_across by, rotating counterclockwise
           float scaling_factor = 360 - gradient_end_scaled - gradient_start_scaled;
           // percent_across_gradient * scaling_factor = degrees backwards from start
@@ -208,6 +208,9 @@ void setup(void) {
   while (gradient_start > 360) gradient_start -= 360;
   while (gradient_end < 0) gradient_end += 360;
   while (gradient_end > 360) gradient_end -= 360;
+
+  // if the start and end are reversed, gradient_reverse is backwards
+  if (gradient_start > gradient_end) gradient_reverse = !gradient_reverse;
 
   // uint16_t pixels[HEIGHT][WIDTH] = {};
   // uint16_t (*p_pixels)[HEIGHT][WIDTH]= &pixels;
