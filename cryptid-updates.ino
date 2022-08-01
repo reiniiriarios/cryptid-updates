@@ -70,16 +70,6 @@ uint32_t prevTime = 0; // Used for frames-per-second throttle
 // #define ACCEL_PIN 0x19
 // Adafruit_LIS3DH accel = Adafruit_LIS3DH();
 
-// ---- Colors & Pixels settings ----
-uint8_t  animation_speed  = 10;    // how fast the gradient animates
-                                   // 1 = very slow, 10 = steady, 40 = uncomfortably fast
-                                   // set this high at your own risk (seizures, etc)
-uint8_t  gradient_width   = 32;    // size of gradient within shapes, no direct correlation to pixels
-uint8_t  shape_width      = 16;    // size of the shapes, no direct correlation to pixels
-uint16_t gradient_start   = 260;   // in degrees, 0-360
-uint16_t gradient_end     = 350;   // in degrees, 0-360
-boolean  gradient_reverse = false; // clockwise or counter
-
 // GENERATE IMAGES ---------------------------------------------------------------------------------
 
 // Images and masks
@@ -97,17 +87,40 @@ typedef struct pixel_mask_t {
 // representation of the pixel grid
 pixel_t pixels[MATRIX_HEIGHT][MATRIX_WIDTH] = {};
 
-// scale the above start/end values to a useful value to compute hue for Protomatter (0-65535)
-float gradient_start_scaled = gradient_start / 360.0f * 65535.0f;
-float gradient_end_scaled = gradient_end / 360.0f * 65535.0f;
+/**
+ * @brief Use this struct to build a config for generating a gradient.
+ * 
+ */
+typedef struct gradient_config_t {
+  uint8_t  animation_speed  = 10;    // how fast the gradient animates
+                                     // 1 = very slow, 10 = steady, 40 = uncomfortably fast
+                                     // set this high at your own risk (seizures, etc)
+  uint8_t  gradient_width   = 32;    // size of gradient within shapes
+                                     // no direct correlation to pixels
+  uint8_t  shape_width      = 16;    // size of the shapes, no direct correlation to pixels
+  uint16_t gradient_start   = 260;   // in degrees, 0-360
+  uint16_t gradient_end     = 350;   // in degrees, 0-360
+  boolean  gradient_reverse = false; // clockwise or counter
+} gradient_config_t;
 
 /**
  * @brief Generate pretty colors to the pixels[] array
  * 
- * @todo This should be refactored to accept a mask
- * 
  */
-void buildCircularGradientFromMask(pixel_mask_t mask, uint8_t xStart, uint8_t yStart) {  
+void buildCircularGradientFromMask(pixel_mask_t mask, uint8_t xStart, uint8_t yStart, gradient_config_t cfg) {  
+  // scale the start/end values to a useful value to compute hue for Protomatter (0-65535)
+  float gradient_start_scaled = cfg.gradient_start / 360.0f * 65535.0f;
+  float gradient_end_scaled = cfg.gradient_end / 360.0f * 65535.0f;
+
+  // normalize hues
+  while (cfg.gradient_start < 0) cfg.gradient_start += 360;
+  while (cfg.gradient_start > 360) cfg.gradient_start -= 360;
+  while (cfg.gradient_end < 0) cfg.gradient_end += 360;
+  while (cfg.gradient_end > 360) cfg.gradient_end -= 360;
+
+  // if the start and end are reversed, gradient_reverse is backwards
+  if (cfg.gradient_start > cfg.gradient_end) cfg.gradient_reverse = !cfg.gradient_reverse;
+
   // loop through the mask
   uint8_t *pixel = mask.mask;
   for(int y = 0; y < mask.height && y < MATRIX_HEIGHT; y++) {
@@ -124,35 +137,35 @@ void buildCircularGradientFromMask(pixel_mask_t mask, uint8_t xStart, uint8_t yS
       uint8_t xDraw = xStart + x;
       if (xDraw > MATRIX_WIDTH) continue;
 
-      float tick = millis() * 0.0001f * animation_speed;
+      float tick = millis() * 0.0001f * cfg.animation_speed;
       float v = (
-          cos(((float)x - centerX) / (0.5f * shape_width))
-          + sin(((float)y - centerY) / (0.5f * shape_width)) + tick
-        ) * shape_width;
+          cos(((float)x - centerX) / (0.5f * cfg.shape_width))
+          + sin(((float)y - centerY) / (0.5f * cfg.shape_width)) + tick
+        ) * cfg.shape_width;
 
       // interval is a number between 0 and gradient_width
-      float interval = fmod(v, gradient_width);
+      float interval = fmod(v, cfg.gradient_width);
       uint16_t hue;
 
       // if the gradient is less than 360deg total, then
       // we must stop at the end and loop back and forth
-      if (gradient_start > 0 || gradient_end < 360) {
+      if (cfg.gradient_start > 0 || cfg.gradient_end < 360) {
 
         // find how far across the gradient we are
         float distance_across_gradient;
-        if (interval < 0.5f * gradient_width) {
+        if (interval < 0.5f * cfg.gradient_width) {
           // for the first half of the gradient, move twice as fast
           distance_across_gradient = interval * 2;
         }
         else {
           // for the second half, move backwards, still twice as fast
-          distance_across_gradient = (gradient_width - interval) * 2.0f;
+          distance_across_gradient = (cfg.gradient_width - interval) * 2.0f;
         }
         // between 0 and 1
-        float percent_across_gradient = distance_across_gradient / gradient_width;
+        float percent_across_gradient = distance_across_gradient / cfg.gradient_width;
 
         // counterclockwise
-        if (gradient_reverse) {
+        if (cfg.gradient_reverse) {
           // how much to scale the percent_across by, rotating counterclockwise
           float scaling_factor = 360 - gradient_end_scaled - gradient_start_scaled;
           // percent_across_gradient * scaling_factor = degrees backwards from start
@@ -168,7 +181,7 @@ void buildCircularGradientFromMask(pixel_mask_t mask, uint8_t xStart, uint8_t yS
       }
       else {
         // 0 <= interval / gradient_width <= 1
-        hue = round((interval / gradient_width) * 65535.0f);
+        hue = round((interval / cfg.gradient_width) * 65535.0f);
       }
 
       // normalize within bounds
@@ -232,19 +245,6 @@ void setup(void) {
   // if code not commented out, the display will not function until serial port opens
   while (!Serial) delay(10);
 
-  // normalize hues
-  while (gradient_start < 0) gradient_start += 360;
-  while (gradient_start > 360) gradient_start -= 360;
-  while (gradient_end < 0) gradient_end += 360;
-  while (gradient_end > 360) gradient_end -= 360;
-
-  // if the start and end are reversed, gradient_reverse is backwards
-  if (gradient_start > gradient_end) gradient_reverse = !gradient_reverse;
-
-  // uint16_t pixels[HEIGHT][WIDTH] = {};
-  // uint16_t (*p_pixels)[HEIGHT][WIDTH]= &pixels;
-  // generateColors(p_pixels);
-
   ProtomatterStatus status = matrix.begin();
   Serial.printf("Protomatter begin() status: %d\n", status);
   if (status != 0) {
@@ -298,5 +298,12 @@ void drawHeart(uint8_t xStart, uint8_t yStart) {
   };
   heart_mask.mask = mask;
 
-  buildCircularGradientFromMask(heart_mask, xStart, yStart);
+  gradient_config_t heart_config;
+  heart_config.animation_speed  = 10;
+  heart_config.gradient_width   = 32;
+  heart_config.shape_width      = 16;
+  heart_config.gradient_start   = 260;
+  heart_config.gradient_end     = 350;
+
+  buildCircularGradientFromMask(heart_mask, xStart, yStart, heart_config);
 }
