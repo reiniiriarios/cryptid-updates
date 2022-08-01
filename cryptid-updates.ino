@@ -30,7 +30,7 @@
 // Pixel Dust Simulator
 // #include <Adafruit_PixelDust.h>
 
-// CONFIG ------------------------------------------------------------------------------------------
+// HARDWARE CONFIG ---------------------------------------------------------------------------------
 
 // ---- MatrixPortal M4 pin configuration -----
 
@@ -55,41 +55,35 @@ uint8_t oePin      = 16;
 float centerX = 0.5f * MATRIX_WIDTH;
 float centerY = 0.5f * MATRIX_HEIGHT;
 
-Adafruit_Protomatter matrix(
-  MATRIX_WIDTH,               // Width of matrix (or matrix chain) in pixels
-  4,                          // Bit depth, 1-6, only green uses 6, avoid
-  1, rgbPins,                 // # of matrix chains, array of 6 RGB pins for each
-  sizeof(addrPins), addrPins, // # of address pins (height is inferred), array of pins
-  clockPin, latchPin, oePin,  // Other matrix control pins
-  false);                     // Double-buffering
-
-uint32_t prevTime = 0; // Used for frames-per-second throttle
-
 // ---- LIS3DH Triple-Axis Accelerometer ----
 
 // #define ACCEL_PIN 0x19
 // Adafruit_LIS3DH accel = Adafruit_LIS3DH();
 
-// GENERATE IMAGES ---------------------------------------------------------------------------------
+// TYPES -------------------------------------------------------------------------------------------
 
-// Images and masks
+/*!
+ * A representation of one pixel.
+ */
 typedef struct pixel_t {
-  bool on = false;
-  uint16_t hue;
+  bool on = false;        /*!< Whether to draw the pixel at all. */
+  uint8_t opacity = 100;  /*!< Opacity, [0-100] */
+  uint16_t hue;           /*!< Hue in degrees, [0-360] */
 } pixel;
 
+/*!
+ * A mask representing where to draw pixels.
+ *
+ * *mask must point to the first element of a 1d array of values, the size matching width * height.
+ */
 typedef struct pixel_mask_t {
-  uint8_t *mask;
-  uint8_t width;
-  uint8_t height;
+  uint8_t *mask;   /*!< A pointer to the first element in a mask array. */
+  uint8_t width;   /*!< Width of the mask. */
+  uint8_t height;  /*!< Height of the mask. */
 } pixel_mask_t;
 
-// representation of the pixel grid
-pixel_t pixels[MATRIX_HEIGHT][MATRIX_WIDTH] = {};
-
-/**
- * @brief Use this struct to build a config for generating a gradient.
- * 
+/*!
+ * Use this struct to build a config for generating a gradient.
  */
 typedef struct gradient_config_t {
   uint8_t  animation_speed  = 10;    // how fast the gradient animates
@@ -103,11 +97,117 @@ typedef struct gradient_config_t {
   boolean  gradient_reverse = false; // clockwise or counter
 } gradient_config_t;
 
-/**
- * @brief Generate pretty colors to the pixels[] array
- * 
+// THE SCREEN --------------------------------------------------------------------------------------
+
+/*!
+ * The LED Matrix.
  */
-void buildCircularGradientFromMask(pixel_mask_t mask, uint8_t xStart, uint8_t yStart, gradient_config_t cfg) {  
+Adafruit_Protomatter matrix(
+  MATRIX_WIDTH,               // Width of matrix (or matrix chain) in pixels
+  4,                          // Bit depth, 1-6, only green uses 6, avoid
+  1, rgbPins,                 // # of matrix chains, array of 6 RGB pins for each
+  sizeof(addrPins), addrPins, // # of address pins (height is inferred), array of pins
+  clockPin, latchPin, oePin,  // Other matrix control pins
+  false);                     // Double-buffering
+
+/*!
+ * A representation of the pixel grid, abstracted away from Protomatter.
+ */
+pixel_t pixels[MATRIX_HEIGHT][MATRIX_WIDTH] = {};
+
+// ERROR HANDLING ----------------------------------------------------------------------------------
+
+/**
+ * Blink onboard LED and print message over serial.
+ * 
+ * @param milliseconds How fast to blink the LED.
+ * @param message      Error message.
+ */
+void err(int milliseconds, String message = "") {
+  Serial.write("ERROR ");
+  Serial.write(milliseconds);
+  Serial.write("\n");
+  if (message.length() > 0) {
+    Serial.println(message);
+  }
+
+  uint8_t i;
+  pinMode(LED_BUILTIN, OUTPUT);       // Using onboard LED
+  for(i=1;;i++) {                     // Loop forever...
+    digitalWrite(LED_BUILTIN, i & 1); // LED on/off blink to alert user
+    delay(milliseconds);
+  }
+}
+
+// SETUP -------------------------------------------------------------------------------------------
+
+/**
+ * Run once on start.
+ */
+void setup(void) {
+  Serial.begin(9600);
+  // if serial is important, include this so we don't miss messages
+  // if code not commented out, the display will not function until serial port opens
+  while (!Serial) delay(10);
+
+  ProtomatterStatus status = matrix.begin();
+  Serial.printf("Protomatter begin() status: %d\n", status);
+  if (status != 0) {
+    err(200, "protomatter failed to start");
+  }
+}
+
+// LOOP --------------------------------------------------------------------------------------------
+
+uint32_t prevTime = 0; // Used for frames-per-second throttle
+
+/**
+ * Main loop.
+ */
+void loop(void) {
+  // --- Limit FPS ---
+  // Limit the animation frame rate to MAX_FPS.  Because the subsequent sand
+  // calculations are non-deterministic (don't always take the same amount
+  // of time, depending on their current states), this helps ensure that
+  // things like gravity appear constant in the simulation.
+  uint32_t t;
+  while(((t = micros()) - prevTime) < (1000000L / MAX_FPS));
+  prevTime = t;
+
+  // --- Update pixel data ---
+  drawHeart(10, 4);
+
+  // --- Done ---
+  drawPixels();  // Move pixels[] to matrix
+  matrix.show(); // Copy data to matrix buffers
+}
+
+// DRAW IMAGES -------------------------------------------------------------------------------------
+
+/**
+ * Write the pixels[] data to the Protomatter matrix.
+ */
+void drawPixels(void) {
+  for(int y = 0; y < MATRIX_HEIGHT; y++) {
+    for(int x = 0; x < MATRIX_WIDTH; x++) {
+      if (pixels[y][x].on == true) {
+        uint16_t color = matrix.colorHSV(pixels[y][x].hue);
+        matrix.drawPixel(x, y, color);
+      }
+    }
+  }
+}
+
+/*!
+ * Generate pretty colors to the pixels[] array.
+ */
+void buildCircularGradientFromMask(
+  pixel_mask_t      mask,    /*!< The mask to draw within. */
+  uint8_t           xStart,  /*!< Where to start drawing on the pixels[] grid. */
+  uint8_t           yStart,  /*!< Where to start drawing on the pixels[] grid. */
+  gradient_config_t cfg      /*!< Config for this gradient. */
+) {
+
   // scale the start/end values to a useful value to compute hue for Protomatter (0-65535)
   float gradient_start_scaled = cfg.gradient_start / 360.0f * 65535.0f;
   float gradient_end_scaled = cfg.gradient_end / 360.0f * 65535.0f;
@@ -195,89 +295,11 @@ void buildCircularGradientFromMask(pixel_mask_t mask, uint8_t xStart, uint8_t yS
 }
 
 /**
- * @brief Write the pixels[] data to the Protomatter matrix
+ * Draw a heart.
  * 
+ * @param xStart x-coord of pixels[] grid.
+ * @param yStart y-coord of pixels[] grid.
  */
-void drawPixels(void) {
-  for(int y = 0; y < MATRIX_HEIGHT; y++) {
-    for(int x = 0; x < MATRIX_WIDTH; x++) {
-      if (pixels[y][x].on == true) {
-        uint16_t color = matrix.colorHSV(pixels[y][x].hue);
-        matrix.drawPixel(x, y, color);
-      }
-    }
-  }
-}
-
-// ERROR HANDLING ----------------------------------------------------------------------------------
-
-/**
- * @brief Blink onboard LED every <milliseconds> and print message over serial
- * 
- * @param milliseconds 
- * @param message 
- */
-void err(int milliseconds, String message = "") {
-  Serial.write("ERROR ");
-  Serial.write(milliseconds);
-  Serial.write("\n");
-  if (message.length() > 0) {
-    Serial.println(message);
-  }
-
-  uint8_t i;
-  pinMode(LED_BUILTIN, OUTPUT);       // Using onboard LED
-  for(i=1;;i++) {                     // Loop forever...
-    digitalWrite(LED_BUILTIN, i & 1); // LED on/off blink to alert user
-    delay(milliseconds);
-  }
-}
-
-// SETUP -------------------------------------------------------------------------------------------
-
-/**
- * @brief Run once on start
- * 
- */
-void setup(void) {
-  Serial.begin(9600);
-  // if serial is important, include this so we don't miss messages
-  // if code not commented out, the display will not function until serial port opens
-  while (!Serial) delay(10);
-
-  ProtomatterStatus status = matrix.begin();
-  Serial.printf("Protomatter begin() status: %d\n", status);
-  if (status != 0) {
-    err(200, "protomatter failed to start");
-  }
-}
-
-// LOOP --------------------------------------------------------------------------------------------
-
-/**
- * @brief Main loop
- * 
- */
-void loop(void) {
-  // Limit the animation frame rate to MAX_FPS.  Because the subsequent sand
-  // calculations are non-deterministic (don't always take the same amount
-  // of time, depending on their current states), this helps ensure that
-  // things like gravity appear constant in the simulation.
-  uint32_t t;
-  while(((t = micros()) - prevTime) < (1000000L / MAX_FPS));
-  prevTime = t;
-
-  // Update pixel data
-  drawHeart(10, 4);
-
-  // move pixels[] to matrix
-  drawPixels();
-  // Copy data to matrix buffers
-  matrix.show();
-}
-
-// IMAGES ------------------------------------------------------------------------------------------
-
 void drawHeart(uint8_t xStart, uint8_t yStart) {
   pixel_mask_t heart_mask;
   heart_mask.width = 11;
