@@ -70,6 +70,7 @@ typedef struct pixel_t {
   uint8_t opacity = 100;  /*!< Opacity, [0-100] */
   uint16_t hue;           /*!< Hue in degrees, [0-360] */
 } pixel;
+} pixel_t;
 
 /*!
  * A mask representing where to draw pixels.
