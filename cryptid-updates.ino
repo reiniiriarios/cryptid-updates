@@ -66,10 +66,9 @@ float centerY = 0.5f * MATRIX_HEIGHT;
  * A representation of one pixel.
  */
 typedef struct pixel_t {
-  bool on = false;        /*!< Whether to draw the pixel at all. */
-  uint8_t opacity = 100;  /*!< Opacity, [0-100] */
-  uint16_t hue;           /*!< Hue in degrees, [0-360] */
-} pixel;
+  bool     on      = false; /*!< Whether to draw the pixel at all. */
+  uint8_t  opacity = 100;   /*!< Opacity, [0-100] */
+  uint16_t hue;             /*!< Hue in degrees, [0-360] */
 } pixel_t;
 
 /*!
@@ -162,7 +161,7 @@ void setup(void) {
 
 uint32_t prevTime = 0; // Used for frames-per-second throttle
 
-/**
+/*!
  * Main loop.
  */
 void loop(void) {
@@ -185,7 +184,7 @@ void loop(void) {
 
 // DRAW IMAGES -------------------------------------------------------------------------------------
 
-/**
+/*!
  * Write the pixels[] data to the Protomatter matrix.
  */
 void drawPixels(void) {
@@ -295,7 +294,7 @@ void buildCircularGradientFromMask(
   }
 }
 
-/**
+/*!
  * Draw a heart.
  * 
  * @param xStart x-coord of pixels[] grid.
