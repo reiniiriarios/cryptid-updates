@@ -47,21 +47,21 @@ uint8_t oePin      = 16;
 
 // ---- RGB LED Matrix configuration and setup ----
 
-#define HEIGHT  32 // Matrix height (pixels) - SET TO 64 FOR 64x64 MATRIX!
-#define WIDTH   64 // Matrix width (pixels)
-#define MAX_FPS 60 // Maximum redraw rate, frames/second
-                   // 14 for animation, 24 or 30 for video, 60 is smooth
+#define MATRIX_HEIGHT 32 // Matrix height (pixels) - SET TO 64 FOR 64x64 MATRIX!
+#define MATRIX_WIDTH  64 // Matrix width (pixels)
+#define MAX_FPS       60 // Maximum redraw rate, frames/second
+                         // 14 for animation, 24 or 30 for video, 60 is smooth
 
-float centerX = 0.5f * WIDTH;
-float centerY = 0.5f * HEIGHT;
+float centerX = 0.5f * MATRIX_WIDTH;
+float centerY = 0.5f * MATRIX_HEIGHT;
 
 Adafruit_Protomatter matrix(
-  WIDTH,       // Width of matrix (or matrix chain) in pixels
-  4,           // Bit depth, 1-6, only green uses 6, avoid
-  1, rgbPins,  // # of matrix chains, array of 6 RGB pins for each
+  MATRIX_WIDTH,               // Width of matrix (or matrix chain) in pixels
+  4,                          // Bit depth, 1-6, only green uses 6, avoid
+  1, rgbPins,                 // # of matrix chains, array of 6 RGB pins for each
   sizeof(addrPins), addrPins, // # of address pins (height is inferred), array of pins
   clockPin, latchPin, oePin,  // Other matrix control pins
-  false);       // Double-buffering
+  false);                     // Double-buffering
 
 uint32_t prevTime = 0; // Used for frames-per-second throttle
 
@@ -71,8 +71,6 @@ uint32_t prevTime = 0; // Used for frames-per-second throttle
 // Adafruit_LIS3DH accel = Adafruit_LIS3DH();
 
 // ---- Colors & Pixels settings ----
-
-uint16_t pixels[HEIGHT][WIDTH] = {};
 uint8_t  animation_speed  = 10;    // how fast the gradient animates
                                    // 1 = very slow, 10 = steady, 40 = uncomfortably fast
                                    // set this high at your own risk (seizures, etc)
@@ -84,7 +82,22 @@ boolean  gradient_reverse = false; // clockwise or counter
 
 // GENERATE IMAGES ---------------------------------------------------------------------------------
 
-// scale the above values to a useful value to computer hue for Protomatter (0-65535)
+// Images and masks
+typedef struct pixel_t {
+  bool on = false;
+  uint16_t hue;
+} pixel;
+
+typedef struct pixel_mask_t {
+  uint8_t *mask;
+  uint8_t width;
+  uint8_t height;
+} pixel_mask_t;
+
+// representation of the pixel grid
+pixel_t pixels[MATRIX_HEIGHT][MATRIX_WIDTH] = {};
+
+// scale the above start/end values to a useful value to compute hue for Protomatter (0-65535)
 float gradient_start_scaled = gradient_start / 360.0f * 65535.0f;
 float gradient_end_scaled = gradient_end / 360.0f * 65535.0f;
 
@@ -94,9 +107,23 @@ float gradient_end_scaled = gradient_end / 360.0f * 65535.0f;
  * @todo This should be refactored to accept a mask
  * 
  */
-void generateColors(void) {
-  for(int y=0; y<HEIGHT; y++) {
-    for(int x=0; x<WIDTH; x++) {
+void buildCircularGradientFromMask(pixel_mask_t mask, uint8_t xStart, uint8_t yStart) {  
+  // loop through the mask
+  uint8_t *pixel = mask.mask;
+  for(int y = 0; y < mask.height && y < MATRIX_HEIGHT; y++) {
+
+    // get y on pixels[] grid
+    uint8_t yDraw = yStart + y;
+    if (yDraw > MATRIX_HEIGHT) continue;
+
+    for(int x = 0; x < mask.width && x < MATRIX_WIDTH; x++, pixel++) {
+      // if mask is empty here, we're not drawing anything
+      if (*pixel == 0) continue;
+
+      // get x on pixels[] grid
+      uint8_t xDraw = xStart + x;
+      if (xDraw > MATRIX_WIDTH) continue;
+
       float tick = millis() * 0.0001f * animation_speed;
       float v = (
           cos(((float)x - centerX) / (0.5f * shape_width))
@@ -148,8 +175,8 @@ void generateColors(void) {
       while (hue < 0) hue += 65535;
       while (hue > 65535) hue -= 65535;
 
-      // (*p)[x][y] = 0;
-      pixels[y][x] = hue;
+      pixels[yDraw][xDraw].on = true;
+      pixels[yDraw][xDraw].hue = hue;
     }
   }
 }
@@ -159,10 +186,12 @@ void generateColors(void) {
  * 
  */
 void drawPixels(void) {
-  for(int y=0; y<HEIGHT; y++) {
-    for(int x=0; x<WIDTH; x++) {
-      uint16_t color = matrix.colorHSV(pixels[y][x]);
-      matrix.drawPixel(x, y, color);
+  for(int y = 0; y < MATRIX_HEIGHT; y++) {
+    for(int x = 0; x < MATRIX_WIDTH; x++) {
+      if (pixels[y][x].on == true) {
+        uint16_t color = matrix.colorHSV(pixels[y][x].hue);
+        matrix.drawPixel(x, y, color);
+      }
     }
   }
 }
@@ -239,8 +268,35 @@ void loop(void) {
   prevTime = t;
 
   // Update pixel data
-  generateColors();
-  drawPixels();
+  drawHeart(10, 4);
 
-  matrix.show(); // Copy data to matrix buffers
+  // move pixels[] to matrix
+  drawPixels();
+  // Copy data to matrix buffers
+  matrix.show();
+}
+
+// IMAGES ------------------------------------------------------------------------------------------
+
+void drawHeart(uint8_t xStart, uint8_t yStart) {
+  pixel_mask_t heart_mask;
+  heart_mask.width = 11;
+  heart_mask.height = 11;
+
+  uint8_t mask[] = {
+    0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0,
+    0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+    0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0,
+    0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0,
+    0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+  };
+  heart_mask.mask = mask;
+
+  buildCircularGradientFromMask(heart_mask, xStart, yStart);
 }
