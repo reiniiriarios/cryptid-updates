@@ -86,15 +86,28 @@ typedef struct pixel_mask_t {
  * Use this struct to build a config for generating a gradient.
  */
 typedef struct gradient_config_t {
-  uint8_t  animation_speed  = 10;    // how fast the gradient animates
-                                     // 1 = very slow, 10 = steady, 40 = uncomfortably fast
-                                     // set this high at your own risk (seizures, etc)
-  uint8_t  gradient_width   = 32;    // size of gradient within shapes
-                                     // no direct correlation to pixels
-  uint8_t  shape_width      = 16;    // size of the shapes, no direct correlation to pixels
-  uint16_t gradient_start   = 260;   // in degrees, 0-360
-  uint16_t gradient_end     = 350;   // in degrees, 0-360
-  boolean  gradient_reverse = false; // clockwise or counter
+  /*!
+   * How fast the gradient animates.
+   * 1 = very slow, 10 = steady, 40 = uncomfortably fast
+   * Set this high at your own risk (seizures, etc).
+   */
+  uint8_t  animation_speed  = 10;
+
+  /*! Size of gradient within shapes. No direct correlation to pixels. */
+  uint8_t  gradient_width   = 32;
+
+  /*! Size of the shapes, no direct correlation to pixels */
+  uint8_t  shape_width      = 16;
+
+  /*! Starting color of the gradient, in degrees, 0-360 */
+  uint16_t gradient_start   = 260;
+
+  /*! End color of the gradient, in degrees, 0-360 */
+  uint16_t gradient_end     = 350;
+
+  /*! Whether to draw the gradient clockwise or counterclockwise */
+  boolean  gradient_reverse = false;
+
 } gradient_config_t;
 
 // THE SCREEN --------------------------------------------------------------------------------------
