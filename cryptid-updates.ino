@@ -174,17 +174,25 @@ void setup(void) {
     err(200, "protomatter failed to start");
   }
 
-  // if (!sht4.begin()) {
-  //   err(400, "SHT4x failed to start");
-  // }
-  // Serial.print("SHT4x Serial 0x");
-  // Serial.println(sht4.readSerial(), HEX);
+  if (!sht4.begin()) {
+    err(400, "SHT4x failed to start");
+  }
+  Serial.print("SHT4x Serial 0x");
+  Serial.println(sht4.readSerial(), HEX); // 0xF5D9FCC
 
   // SHT4X_HIGH_PRECISION
   // SHT4X_LOW_PRECISION
-  // sht4.setPrecision(SHT4X_MED_PRECISION);
+  sht4.setPrecision(SHT4X_MED_PRECISION);
 
-  // sht4.getEvent(&humidity, &temp);
+  sht4.getEvent(&humidity, &temp);
+
+  Serial.print("Humidity: ");
+  Serial.print(humidity.relative_humidity);
+  Serial.println("% rH");
+
+  Serial.print("Temperature: ");
+  Serial.print(temp.temperature);
+  Serial.println("°C");
 }
 
 // LOOP --------------------------------------------------------------------------------------------
