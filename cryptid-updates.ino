@@ -60,6 +60,11 @@ float centerY = 0.5f * MATRIX_HEIGHT;
 #define ACCEL_PIN 0x19
 Adafruit_LIS3DH accel = Adafruit_LIS3DH();
 
+// ---- SHT4X Temperature and Humidity Sensor ----
+
+Adafruit_SHT4x sht4 = Adafruit_SHT4x();
+sensors_event_t humidity, temp; // % rH, °C
+
 // TYPES -------------------------------------------------------------------------------------------
 
 /*!
@@ -168,6 +173,18 @@ void setup(void) {
   if (status != 0) {
     err(200, "protomatter failed to start");
   }
+
+  // if (!sht4.begin()) {
+  //   err(400, "SHT4x failed to start");
+  // }
+  // Serial.print("SHT4x Serial 0x");
+  // Serial.println(sht4.readSerial(), HEX);
+
+  // SHT4X_HIGH_PRECISION
+  // SHT4X_LOW_PRECISION
+  // sht4.setPrecision(SHT4X_MED_PRECISION);
+
+  // sht4.getEvent(&humidity, &temp);
 }
 
 // LOOP --------------------------------------------------------------------------------------------
