@@ -19,7 +19,7 @@
 #include <Adafruit_NeoPixel.h>
 
 // Accelerometer
-// #include <Adafruit_LIS3DH.h>
+#include <Adafruit_LIS3DH.h>
 
 // Temperature & Humidity Sensor
 #include <Adafruit_SHT4x.h>
@@ -57,8 +57,8 @@ float centerY = 0.5f * MATRIX_HEIGHT;
 
 // ---- LIS3DH Triple-Axis Accelerometer ----
 
-// #define ACCEL_PIN 0x19
-// Adafruit_LIS3DH accel = Adafruit_LIS3DH();
+#define ACCEL_PIN 0x19
+Adafruit_LIS3DH accel = Adafruit_LIS3DH();
 
 // TYPES -------------------------------------------------------------------------------------------
 
