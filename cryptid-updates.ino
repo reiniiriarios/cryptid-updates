@@ -67,8 +67,8 @@ sensors_event_t humidity, temp; // % rH, °C
 
 // TYPES -------------------------------------------------------------------------------------------
 
-/*!
- * A representation of one pixel.
+/**
+ * @brief A representation of one pixel.
  */
 typedef struct pixel_t {
   bool     on      = false; /*!< Whether to draw the pixel at all. */
@@ -76,8 +76,8 @@ typedef struct pixel_t {
   uint16_t hue;             /*!< Hue in degrees, [0-360] */
 } pixel_t;
 
-/*!
- * A mask representing where to draw pixels.
+/**
+ * @brief A mask representing where to draw pixels.
  *
  * *mask must point to the first element of a 1d array of values, the size matching width * height.
  */
@@ -87,8 +87,8 @@ typedef struct pixel_mask_t {
   uint8_t height;  /*!< Height of the mask. */
 } pixel_mask_t;
 
-/*!
- * Use this struct to build a config for generating a gradient.
+/**
+ * @brief Use this struct to build a config for generating a gradient.
  */
 typedef struct gradient_config_t {
   /*!
@@ -117,8 +117,8 @@ typedef struct gradient_config_t {
 
 // THE SCREEN --------------------------------------------------------------------------------------
 
-/*!
- * The LED Matrix.
+/**
+ * @brief The LED Matrix.
  */
 Adafruit_Protomatter matrix(
   MATRIX_WIDTH,               // Width of matrix (or matrix chain) in pixels
@@ -128,8 +128,8 @@ Adafruit_Protomatter matrix(
   clockPin, latchPin, oePin,  // Other matrix control pins
   false);                     // Double-buffering
 
-/*!
- * A representation of the pixel grid, abstracted away from Protomatter.
+/**
+ * @brief A representation of the pixel grid, abstracted away from Protomatter.
  */
 pixel_t pixels[MATRIX_HEIGHT][MATRIX_WIDTH] = {};
 
@@ -191,8 +191,8 @@ void setup(void) {
 
 uint32_t prevTime = 0; // Used for frames-per-second throttle
 
-/*!
- * Main loop.
+/**
+ * @brief Main loop.
  */
 void loop(void) {
   // --- Limit FPS ---
@@ -214,8 +214,8 @@ void loop(void) {
 
 // DRAW IMAGES -------------------------------------------------------------------------------------
 
-/*!
- * Write the pixels[] data to the Protomatter matrix.
+/**
+ * @brief Write the pixels[] data to the Protomatter matrix.
  */
 void drawPixels(void) {
   for(int y = 0; y < MATRIX_HEIGHT; y++) {
@@ -228,8 +228,8 @@ void drawPixels(void) {
   }
 }
 
-/*!
- * Generate pretty colors to the pixels[] array.
+/**
+ * @brief Generate pretty colors to the pixels[] array.
  */
 void buildCircularGradientFromMask(
   pixel_mask_t      mask,    /*!< The mask to draw within. */
@@ -324,8 +324,8 @@ void buildCircularGradientFromMask(
   }
 }
 
-/*!
- * Draw a heart.
+/**
+ * @brief Draw a heart.
  * 
  * @param xStart x-coord of pixels[] grid.
  * @param yStart y-coord of pixels[] grid.
