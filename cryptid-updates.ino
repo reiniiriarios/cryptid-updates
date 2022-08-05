@@ -367,3 +367,15 @@ void drawHeart(uint8_t xStart, uint8_t yStart) {
 
   buildCircularGradientFromMask(heart_mask, xStart, yStart, heart_config);
 }
+
+// UTILITY -----------------------------------------------------------------------------------------
+
+/**
+ * @brief Convert celcius to fahrenheit.
+ * 
+ * @param celsius degrees
+ * @return float fahrenheit
+ */
+float celsius2fahrenheit(float celsius) {
+  return ((celsius * 9)/5) + 32;
+}
