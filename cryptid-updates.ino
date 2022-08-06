@@ -32,6 +32,37 @@
 // Pixel Dust Simulator
 // #include <Adafruit_PixelDust.h>
 
+// Font
+#include <Fonts/FreeSans9pt7b.h>
+
+// Font --------------------------------------------------------------------------------------------
+
+const GFXfont *gfxFont = &FreeSans9pt7b;
+
+inline GFXglyph *pgm_read_glyph_ptr(const GFXfont *gfxFont, uint8_t c) {
+#ifdef __AVR__
+  return &(((GFXglyph *)pgm_read_pointer(&gfxFont->glyph))[c]);
+#else
+  // expression in __AVR__ section may generate "dereferencing type-punned
+  // pointer will break strict-aliasing rules" warning In fact, on other
+  // platforms (such as STM32) there is no need to do this pointer magic as
+  // program memory may be read in a usual way So expression may be simplified
+  return gfxFont->glyph + c;
+#endif //__AVR__
+}
+
+inline uint8_t *pgm_read_bitmap_ptr(const GFXfont *gfxFont) {
+#ifdef __AVR__
+  return (uint8_t *)pgm_read_pointer(&gfxFont->bitmap);
+#else
+  // expression in __AVR__ section generates "dereferencing type-punned pointer
+  // will break strict-aliasing rules" warning In fact, on other platforms (such
+  // as STM32) there is no need to do this pointer magic as program memory may
+  // be read in a usual way So expression may be simplified
+  return gfxFont->bitmap;
+#endif //__AVR__
+}
+
 // HARDWARE CONFIG ---------------------------------------------------------------------------------
 
 // ---- MatrixPortal M4 pin configuration -----
@@ -153,7 +184,10 @@ void loop(void) {
   prevTime = t;
 
   // --- Update pixel data ---
-  drawHeart(10, 4);
+  drawHeart(40, 4);
+  sht4.getEvent(&humidity, &temp);
+  float temp_f = celsius2fahrenheit(temp.temperature);
+  drawTemperature(temp_f, 4, 4);
 
   // --- Done ---
   drawPixels();  // Move pixels[] to matrix
@@ -293,6 +327,68 @@ void drawHeart(uint8_t xStart, uint8_t yStart) {
   heart_config.gradient_end     = 350;
 
   buildCircularGradientFromMask(heart_mask, xStart, yStart, heart_config);
+}
+
+pixel_mask_t buildMaskFromChar(unsigned char c) {
+  c -= (uint8_t)pgm_read_byte(&gfxFont->first);
+  GFXglyph *glyph = pgm_read_glyph_ptr(gfxFont, c);
+  uint8_t *bitmap = pgm_read_bitmap_ptr(gfxFont);
+
+  uint16_t bo = pgm_read_word(&glyph->bitmapOffset);
+  uint8_t w = pgm_read_byte(&glyph->width), h = pgm_read_byte(&glyph->height);
+  int8_t xo = pgm_read_byte(&glyph->xOffset),
+         yo = pgm_read_byte(&glyph->yOffset);
+  uint8_t xx, yy, bits = 0, bit = 0;
+  int16_t xo16 = 0, yo16 = 0;
+
+  uint8_t *mask = new uint8_t[w * h];
+
+  uint8_t i = 0;
+  for (yy = 0; yy < h; yy++) {
+    for (xx = 0; xx < w; xx++) {
+      if (!(bit++ & 7)) {
+        bits = pgm_read_byte(&bitmap[bo++]);
+      }
+      if (bits & 0x80) {
+        mask[i] = 1;
+      }
+      bits <<= 1;
+      i++;
+    }
+  }
+
+  pixel_mask_t char_mask;
+  char_mask.width = w;
+  char_mask.height = h;
+  char_mask.mask = mask;
+
+  return char_mask;
+}
+
+void drawTemperature(float temp, uint8_t x, uint8_t y) {
+  gradient_config_t gradient_config;
+  gradient_config.animation_speed  = 10;
+  gradient_config.gradient_width   = 32;
+  gradient_config.shape_width      = 16;
+  //@todo: change hue based on temperature
+  gradient_config.gradient_start   = 150;
+  gradient_config.gradient_end     = 250;
+
+  drawNumber(temp, x, y, gradient_config);
+}
+
+void drawNumber(float number, uint8_t x, uint8_t y, gradient_config_t gradient_config) {
+  drawNumber((uint8_t)round(number), x, y, gradient_config);
+}
+
+void drawNumber(uint8_t number, uint8_t x, uint8_t y, gradient_config_t gradient_config) {
+  String number_chars = String(number);
+  uint8_t drawX = x;
+  for (uint8_t i = 0; i < number_chars.length(); i++) {
+    pixel_mask_t number_mask = buildMaskFromChar(number_chars[i]);
+    buildCircularGradientFromMask(number_mask, drawX, y, gradient_config);
+    drawX += number_mask.width + 1;
+  }
 }
 
 // UTILITY -----------------------------------------------------------------------------------------

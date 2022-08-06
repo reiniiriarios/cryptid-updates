@@ -93,6 +93,45 @@ void buildCircularGradientFromMask(
 void drawHeart(uint8_t xStart, uint8_t yStart);
 
 /**
+ * @brief Build a pixel_mask from a single character.
+ * 
+ * Adapted from Adafruit_GFX::drawChar()
+ * 
+ * @param c The character to create a mask from.
+ * @return pixel_mask_t 
+ */
+pixel_mask_t buildMaskFromChar(unsigned char c);
+
+/**
+ * @brief Draw the temperature.
+ * 
+ * @param temp Temperature to display.
+ * @param x    x-coord to draw at on pixels[] grid.
+ * @param y    y-coord to draw at on pixels[] grid.
+ */
+void drawTemperature(float temp, uint8_t x, uint8_t y);
+
+/**
+ * @brief Draw a number based on gradient_config. Number will be rounded.
+ * 
+ * @param number           The number to draw.
+ * @param x                x-coord to draw at on pixels[] grid.
+ * @param y                y-coord to draw at on pixels[] grid.
+ * @param gradient_config  Config for gradient.
+ */
+void drawNumber(float number, uint8_t x, uint8_t y, gradient_config_t gradient_config);
+
+/**
+ * @brief Draw a number based on gradient_config.
+ * 
+ * @param number           The number to draw.
+ * @param x                x-coord to draw at on pixels[] grid.
+ * @param y                y-coord to draw at on pixels[] grid.
+ * @param gradient_config  Config for gradient.
+ */
+void drawNumber(uint8_t number, uint8_t x, uint8_t y, gradient_config_t gradient_config);
+
+/**
  * @brief Convert celcius to fahrenheit.
  * 
  * @param celsius degrees
