@@ -54,17 +54,17 @@ uint8_t oePin      = 16;
 #define MAX_FPS       60 // Maximum redraw rate, frames/second
                          // 14 for animation, 24 or 30 for video, 60 is smooth
 
-float centerX = 0.5f * MATRIX_WIDTH;
-float centerY = 0.5f * MATRIX_HEIGHT;
+float centerX = 0.5f * MATRIX_WIDTH;  // The center x-coord on the LED matrix.
+float centerY = 0.5f * MATRIX_HEIGHT; // The center y-coord on the LED matrix.
 
 // ---- LIS3DH Triple-Axis Accelerometer ----
 
 #define ACCEL_PIN 0x19
-Adafruit_LIS3DH accel = Adafruit_LIS3DH();
+Adafruit_LIS3DH accel = Adafruit_LIS3DH(); // The accelerometer.
 
 // ---- SHT4X Temperature and Humidity Sensor ----
 
-Adafruit_SHT4x sht4 = Adafruit_SHT4x();
+Adafruit_SHT4x sht4 = Adafruit_SHT4x(); // The temperature and humidity sensor.
 sensors_event_t humidity, temp; // % rH, °C
 
 // THE SCREEN --------------------------------------------------------------------------------------
