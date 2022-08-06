@@ -71,9 +71,9 @@ sensors_event_t humidity, temp; // % rH, °C
  * @brief A representation of one pixel.
  */
 typedef struct pixel_t {
-  bool     on      = false; /*!< Whether to draw the pixel at all. */
-  uint8_t  opacity = 100;   /*!< Opacity, [0-100] */
-  uint16_t hue;             /*!< Hue in degrees, [0-360] */
+  bool     on      = false; /**< Whether to draw the pixel at all. */
+  uint8_t  opacity = 100;   /**< Opacity, [0-100] */
+  uint16_t hue;             /**< Hue in degrees, [0-360] */
 } pixel_t;
 
 /**
@@ -82,35 +82,35 @@ typedef struct pixel_t {
  * *mask must point to the first element of a 1d array of values, the size matching width * height.
  */
 typedef struct pixel_mask_t {
-  uint8_t *mask;   /*!< A pointer to the first element in a mask array. */
-  uint8_t width;   /*!< Width of the mask. */
-  uint8_t height;  /*!< Height of the mask. */
+  uint8_t *mask;   /**< A pointer to the first element in a mask array. */
+  uint8_t width;   /**< Width of the mask. */
+  uint8_t height;  /**< Height of the mask. */
 } pixel_mask_t;
 
 /**
  * @brief Use this struct to build a config for generating a gradient.
  */
 typedef struct gradient_config_t {
-  /*!
+  /**
    * How fast the gradient animates.
    * 1 = very slow, 10 = steady, 40 = uncomfortably fast
    * Set this high at your own risk (seizures, etc).
    */
   uint8_t  animation_speed  = 10;
 
-  /*! Size of gradient within shapes. No direct correlation to pixels. */
+  /** Size of gradient within shapes. No direct correlation to pixels. */
   uint8_t  gradient_width   = 32;
 
-  /*! Size of the shapes, no direct correlation to pixels */
+  /** Size of the shapes, no direct correlation to pixels */
   uint8_t  shape_width      = 16;
 
-  /*! Starting color of the gradient, in degrees, 0-360 */
+  /** Starting color of the gradient, in degrees, 0-360 */
   uint16_t gradient_start   = 260;
 
-  /*! End color of the gradient, in degrees, 0-360 */
+  /** End color of the gradient, in degrees, 0-360 */
   uint16_t gradient_end     = 350;
 
-  /*! Whether to draw the gradient clockwise or counterclockwise */
+  /** Whether to draw the gradient clockwise or counterclockwise */
   boolean  gradient_reverse = false;
 
 } gradient_config_t;
@@ -240,10 +240,10 @@ void drawPixels(void) {
  * @brief Generate pretty colors to the pixels[] array.
  */
 void buildCircularGradientFromMask(
-  pixel_mask_t      mask,    /*!< The mask to draw within. */
-  uint8_t           xStart,  /*!< Where to start drawing on the pixels[] grid. */
-  uint8_t           yStart,  /*!< Where to start drawing on the pixels[] grid. */
-  gradient_config_t cfg      /*!< Config for this gradient. */
+  pixel_mask_t      mask,    /**< The mask to draw within. */
+  uint8_t           xStart,  /**< Where to start drawing on the pixels[] grid. */
+  uint8_t           yStart,  /**< Where to start drawing on the pixels[] grid. */
+  gradient_config_t cfg      /**< Config for this gradient. */
 ) {
 
   // scale the start/end values to a useful value to compute hue for Protomatter (0-65535)
