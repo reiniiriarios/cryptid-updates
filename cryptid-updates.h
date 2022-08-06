@@ -47,7 +47,7 @@ typedef struct gradient_config_t {
 } gradient_config_t;
 
 /**
- * Blink onboard LED and print message over serial.
+ * @brief Blink onboard LED and print message over serial.
  * 
  * @param milliseconds How fast to blink the LED.
  * @param message      Error message.
@@ -55,7 +55,7 @@ typedef struct gradient_config_t {
 void err(int milliseconds, String message);
 
 /**
- * Run once on start.
+ * @brief Run once on start.
  */
 void setup(void);
 
@@ -75,13 +75,13 @@ void drawPixels(void);
  * @param mask   The mask to draw within.
  * @param xStart Where to start drawing on the pixels[] grid.
  * @param yStart Where to start drawing on the pixels[] grid.
- * @param cfg    Config for this gradient.
+ * @param cfg    Pointer to config for gradient.
  */
 void buildCircularGradientFromMask(
-  pixel_mask_t      mask,
-  uint8_t           xStart,
-  uint8_t           yStart,
-  gradient_config_t cfg
+  pixel_mask_t*      mask,
+  uint8_t            xStart,
+  uint8_t            yStart,
+  gradient_config_t* cfg
 );
 
 /**
@@ -117,9 +117,9 @@ void drawTemperature(float temp, uint8_t x, uint8_t y);
  * @param number           The number to draw.
  * @param x                x-coord to draw at on pixels[] grid.
  * @param y                y-coord to draw at on pixels[] grid.
- * @param gradient_config  Config for gradient.
+ * @param gradient_config  Pointer to config for gradient.
  */
-void drawNumber(float number, uint8_t x, uint8_t y, gradient_config_t gradient_config);
+void drawNumber(float number, uint8_t x, uint8_t y, gradient_config_t* gradient_config);
 
 /**
  * @brief Draw a number based on gradient_config.
@@ -127,9 +127,9 @@ void drawNumber(float number, uint8_t x, uint8_t y, gradient_config_t gradient_c
  * @param number           The number to draw.
  * @param x                x-coord to draw at on pixels[] grid.
  * @param y                y-coord to draw at on pixels[] grid.
- * @param gradient_config  Config for gradient.
+ * @param gradient_config  Pointer to config for gradient.
  */
-void drawNumber(uint8_t number, uint8_t x, uint8_t y, gradient_config_t gradient_config);
+void drawNumber(uint8_t number, uint8_t x, uint8_t y, gradient_config_t* gradient_config);
 
 /**
  * @brief Convert celcius to fahrenheit.

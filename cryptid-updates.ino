@@ -136,6 +136,9 @@ void err(int milliseconds, String message = "") {
 
 // SETUP -------------------------------------------------------------------------------------------
 
+
+gradient_config_t temperature_gradient_config;
+
 void setup(void) {
   Serial.begin(9600);
   // if serial is important, include this so we don't miss messages
@@ -167,11 +170,19 @@ void setup(void) {
   Serial.print("Temperature: ");
   Serial.print(temp.temperature);
   Serial.println("°C");
+  temperature_gradient_config.animation_speed  = 10;
+  temperature_gradient_config.gradient_width   = 32;
+  temperature_gradient_config.shape_width      = 16;
+  //@todo: change hue based on temperature
+  temperature_gradient_config.gradient_start   = 150;
+  temperature_gradient_config.gradient_end     = 250;
 }
 
 // LOOP --------------------------------------------------------------------------------------------
 
 uint32_t prevTime = 0; // Used for frames-per-second throttle
+
+float temp_f = 0; // Temperature in degrees fahrenheit.
 
 void loop(void) {
   // --- Limit FPS ---
@@ -208,33 +219,33 @@ void drawPixels(void) {
 }
 
 void buildCircularGradientFromMask(
-  pixel_mask_t      mask,
-  uint8_t           xStart,
-  uint8_t           yStart,
-  gradient_config_t cfg
+  pixel_mask_t*      mask,
+  uint8_t            xStart,
+  uint8_t            yStart,
+  gradient_config_t* cfg
 ) {
   // scale the start/end values to a useful value to compute hue for Protomatter (0-65535)
-  float gradient_start_scaled = cfg.gradient_start / 360.0f * 65535.0f;
-  float gradient_end_scaled = cfg.gradient_end / 360.0f * 65535.0f;
+  float gradient_start_scaled = (*cfg).gradient_start / 360.0f * 65535.0f;
+  float gradient_end_scaled = (*cfg).gradient_end / 360.0f * 65535.0f;
 
   // normalize hues
-  while (cfg.gradient_start < 0) cfg.gradient_start += 360;
-  while (cfg.gradient_start > 360) cfg.gradient_start -= 360;
-  while (cfg.gradient_end < 0) cfg.gradient_end += 360;
-  while (cfg.gradient_end > 360) cfg.gradient_end -= 360;
+  while ((*cfg).gradient_start < 0) (*cfg).gradient_start += 360;
+  while ((*cfg).gradient_start > 360) (*cfg).gradient_start -= 360;
+  while ((*cfg).gradient_end < 0) (*cfg).gradient_end += 360;
+  while ((*cfg).gradient_end > 360) (*cfg).gradient_end -= 360;
 
   // if the start and end are reversed, gradient_reverse is backwards
-  if (cfg.gradient_start > cfg.gradient_end) cfg.gradient_reverse = !cfg.gradient_reverse;
+  if ((*cfg).gradient_start > (*cfg).gradient_end) (*cfg).gradient_reverse = !(*cfg).gradient_reverse;
 
   // loop through the mask
-  uint8_t *pixel = mask.mask;
-  for(int y = 0; y < mask.height && y < MATRIX_HEIGHT; y++) {
+  uint8_t *pixel = (*mask).mask;
+  for(int y = 0; y < (*mask).height && y < MATRIX_HEIGHT; y++) {
 
     // get y on pixels[] grid
     uint8_t yDraw = yStart + y;
     if (yDraw > MATRIX_HEIGHT) continue;
 
-    for(int x = 0; x < mask.width && x < MATRIX_WIDTH; x++, pixel++) {
+    for(int x = 0; x < (*mask).width && x < MATRIX_WIDTH; x++, pixel++) {
       // if mask is empty here, we're not drawing anything
       if (*pixel == 0) continue;
 
@@ -242,35 +253,35 @@ void buildCircularGradientFromMask(
       uint8_t xDraw = xStart + x;
       if (xDraw > MATRIX_WIDTH) continue;
 
-      float tick = millis() * 0.0001f * cfg.animation_speed;
+      float tick = millis() * 0.0001f * (*cfg).animation_speed;
       float v = (
-          cos(((float)x - centerX) / (0.5f * cfg.shape_width))
-          + sin(((float)y - centerY) / (0.5f * cfg.shape_width)) + tick
-        ) * cfg.shape_width;
+          cos(((float)x - centerX) / (0.5f * (*cfg).shape_width))
+          + sin(((float)y - centerY) / (0.5f * (*cfg).shape_width)) + tick
+        ) * (*cfg).shape_width;
 
       // interval is a number between 0 and gradient_width
-      float interval = fmod(v, cfg.gradient_width);
+      float interval = fmod(v, (*cfg).gradient_width);
       uint16_t hue;
 
       // if the gradient is less than 360deg total, then
       // we must stop at the end and loop back and forth
-      if (cfg.gradient_start > 0 || cfg.gradient_end < 360) {
+      if ((*cfg).gradient_start > 0 || (*cfg).gradient_end < 360) {
 
         // find how far across the gradient we are
         float distance_across_gradient;
-        if (interval < 0.5f * cfg.gradient_width) {
+        if (interval < 0.5f * (*cfg).gradient_width) {
           // for the first half of the gradient, move twice as fast
           distance_across_gradient = interval * 2;
         }
         else {
           // for the second half, move backwards, still twice as fast
-          distance_across_gradient = (cfg.gradient_width - interval) * 2.0f;
+          distance_across_gradient = ((*cfg).gradient_width - interval) * 2.0f;
         }
         // between 0 and 1
-        float percent_across_gradient = distance_across_gradient / cfg.gradient_width;
+        float percent_across_gradient = distance_across_gradient / (*cfg).gradient_width;
 
         // counterclockwise
-        if (cfg.gradient_reverse) {
+        if ((*cfg).gradient_reverse) {
           // how much to scale the percent_across by, rotating counterclockwise
           float scaling_factor = 360 - gradient_end_scaled - gradient_start_scaled;
           // percent_across_gradient * scaling_factor = degrees backwards from start
@@ -286,7 +297,7 @@ void buildCircularGradientFromMask(
       }
       else {
         // 0 <= interval / gradient_width <= 1
-        hue = round((interval / cfg.gradient_width) * 65535.0f);
+        hue = round((interval / (*cfg).gradient_width) * 65535.0f);
       }
 
       // normalize within bounds
@@ -326,7 +337,7 @@ void drawHeart(uint8_t xStart, uint8_t yStart) {
   heart_config.gradient_start   = 260;
   heart_config.gradient_end     = 350;
 
-  buildCircularGradientFromMask(heart_mask, xStart, yStart, heart_config);
+  buildCircularGradientFromMask(&heart_mask, xStart, yStart, &heart_config);
 }
 
 pixel_mask_t buildMaskFromChar(unsigned char c) {
@@ -341,7 +352,7 @@ pixel_mask_t buildMaskFromChar(unsigned char c) {
   uint8_t xx, yy, bits = 0, bit = 0;
   int16_t xo16 = 0, yo16 = 0;
 
-  uint8_t *mask = new uint8_t[w * h];
+  uint8_t* mask = new uint8_t[w * h]();
 
   uint8_t i = 0;
   for (yy = 0; yy < h; yy++) {
@@ -366,15 +377,11 @@ pixel_mask_t buildMaskFromChar(unsigned char c) {
 }
 
 void drawTemperature(float temp, uint8_t x, uint8_t y) {
-  gradient_config_t gradient_config;
-  gradient_config.animation_speed  = 10;
-  gradient_config.gradient_width   = 32;
-  gradient_config.shape_width      = 16;
   //@todo: change hue based on temperature
-  gradient_config.gradient_start   = 150;
-  gradient_config.gradient_end     = 250;
+  temperature_gradient_config.gradient_start   = 150;
+  temperature_gradient_config.gradient_end     = 250;
 
-  drawNumber(temp, x, y, gradient_config);
+  drawNumber(temp, x, y, &temperature_gradient_config);
 }
 
 void drawNumber(float number, uint8_t x, uint8_t y, gradient_config_t gradient_config) {
