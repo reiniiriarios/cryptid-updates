@@ -98,7 +98,7 @@ void drawHeart(uint8_t xStart, uint8_t yStart);
  * Adapted from Adafruit_GFX::drawChar()
  * 
  * @param c The character to create a mask from.
- * @return pixel_mask_t 
+ * @return Pixel mask.
  */
 pixel_mask_t buildMaskFromChar(unsigned char c);
 
@@ -135,6 +135,6 @@ void drawNumber(uint8_t number, uint8_t x, uint8_t y, gradient_config_t gradient
  * @brief Convert celcius to fahrenheit.
  * 
  * @param celsius degrees
- * @return float fahrenheit
+ * @return Degrees fahrenheit.
  */
 float celsius2fahrenheit(float celsius);
