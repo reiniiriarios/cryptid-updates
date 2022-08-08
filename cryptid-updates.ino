@@ -203,8 +203,8 @@ void buildCircularGradientFromMask(
   gradient_config_t* cfg
 ) {
   // scale the start/end values to a useful value to compute hue for Protomatter (0-65535)
-  float gradient_start_scaled = (*cfg).gradient_start / 360.0f * 65535.0f;
-  float gradient_end_scaled = (*cfg).gradient_end / 360.0f * 65535.0f;
+  (*cfg).gradient_start_scaled = (*cfg).gradient_start / 360.0f * 65535.0f;
+  (*cfg).gradient_end_scaled = (*cfg).gradient_end / 360.0f * 65535.0f;
 
   // normalize hues
   while ((*cfg).gradient_start < 0) (*cfg).gradient_start += 360;
@@ -213,7 +213,9 @@ void buildCircularGradientFromMask(
   while ((*cfg).gradient_end > 360) (*cfg).gradient_end -= 360;
 
   // if the start and end are reversed, gradient_reverse is backwards
-  if ((*cfg).gradient_start > (*cfg).gradient_end) (*cfg).gradient_reverse = !(*cfg).gradient_reverse;
+  if ((*cfg).gradient_start > (*cfg).gradient_end) {
+    (*cfg).gradient_reverse = !(*cfg).gradient_reverse;
+  }
 
   // loop through the mask
   uint8_t *pixel = (*mask).mask;
@@ -231,61 +233,67 @@ void buildCircularGradientFromMask(
       uint8_t xDraw = xStart + x;
       if (xDraw > MATRIX_WIDTH) continue;
 
-      float tick = millis() * 0.0001f * (*cfg).animation_speed;
-      float v = (
-          cos(((float)x - centerX) / (0.5f * (*cfg).shape_width))
-          + sin(((float)y - centerY) / (0.5f * (*cfg).shape_width)) + tick
-        ) * (*cfg).shape_width;
-
-      // interval is a number between 0 and gradient_width
-      float interval = fmod(v, (*cfg).gradient_width);
-      uint16_t hue;
-
-      // if the gradient is less than 360deg total, then
-      // we must stop at the end and loop back and forth
-      if ((*cfg).gradient_start > 0 || (*cfg).gradient_end < 360) {
-
-        // find how far across the gradient we are
-        float distance_across_gradient;
-        if (interval < 0.5f * (*cfg).gradient_width) {
-          // for the first half of the gradient, move twice as fast
-          distance_across_gradient = interval * 2;
-        }
-        else {
-          // for the second half, move backwards, still twice as fast
-          distance_across_gradient = ((*cfg).gradient_width - interval) * 2.0f;
-        }
-        // between 0 and 1
-        float percent_across_gradient = distance_across_gradient / (*cfg).gradient_width;
-
-        // counterclockwise
-        if ((*cfg).gradient_reverse) {
-          // how much to scale the percent_across by, rotating counterclockwise
-          float scaling_factor = 360 - gradient_end_scaled - gradient_start_scaled;
-          // percent_across_gradient * scaling_factor = degrees backwards from start
-          hue = round(gradient_start_scaled - percent_across_gradient * scaling_factor);
-        }
-        // clockwise
-        else {
-          // how much to scale the percent_across by
-          float scaling_factor = gradient_end_scaled - gradient_start_scaled;
-          // percent_across_gradient * scaling_factor = degrees across after the start
-          hue = round(gradient_start_scaled + percent_across_gradient * scaling_factor);
-        }
-      }
-      else {
-        // 0 <= interval / gradient_width <= 1
-        hue = round((interval / (*cfg).gradient_width) * 65535.0f);
-      }
-
-      // normalize within bounds
-      while (hue < 0) hue += 65535;
-      while (hue > 65535) hue -= 65535;
-
-      pixels[yDraw][xDraw].on = true;
-      pixels[yDraw][xDraw].hue = hue;
+      // add this pixel
+      buildCircularGradientPixel(xDraw, yDraw, cfg);
     }
   }
+}
+
+
+void buildCircularGradientPixel(uint8_t x, uint8_t y, gradient_config_t* cfg) {
+  float tick = millis() * 0.0001f * (*cfg).animation_speed;
+  float v = (
+      cos(((float)x - CENTER_X) / (0.5f * (*cfg).shape_width))
+      + sin(((float)y - CENTER_Y) / (0.5f * (*cfg).shape_width)) + tick
+    ) * (*cfg).shape_width;
+
+  // interval is a number between 0 and gradient_width
+  float interval = fmod(v, (*cfg).gradient_width);
+  uint16_t hue;
+
+  // if the gradient is less than 360deg total, then
+  // we must stop at the end and loop back and forth
+  if ((*cfg).gradient_start > 0 || (*cfg).gradient_end < 360) {
+
+    // find how far across the gradient we are
+    float distance_across_gradient;
+    if (interval < 0.5f * (*cfg).gradient_width) {
+      // for the first half of the gradient, move twice as fast
+      distance_across_gradient = interval * 2;
+    }
+    else {
+      // for the second half, move backwards, still twice as fast
+      distance_across_gradient = ((*cfg).gradient_width - interval) * 2.0f;
+    }
+    // between 0 and 1
+    float percent_across_gradient = distance_across_gradient / (*cfg).gradient_width;
+
+    // counterclockwise
+    if ((*cfg).gradient_reverse) {
+      // how much to scale the percent_across by, rotating counterclockwise
+      float scaling_factor = 360 - (*cfg).gradient_end_scaled - (*cfg).gradient_start_scaled;
+      // percent_across_gradient * scaling_factor = degrees backwards from start
+      hue = round((*cfg).gradient_start_scaled - percent_across_gradient * scaling_factor);
+    }
+    // clockwise
+    else {
+      // how much to scale the percent_across by
+      float scaling_factor = (*cfg).gradient_end_scaled - (*cfg).gradient_start_scaled;
+      // percent_across_gradient * scaling_factor = degrees across after the start
+      hue = round((*cfg).gradient_start_scaled + percent_across_gradient * scaling_factor);
+    }
+  }
+  else {
+    // 0 <= interval / gradient_width <= 1
+    hue = round((interval / (*cfg).gradient_width) * 65535.0f);
+  }
+
+  // normalize within bounds
+  while (hue < 0) hue += 65535;
+  while (hue > 65535) hue -= 65535;
+
+  pixels[y][x].on = true;
+  pixels[y][x].hue = hue;
 }
 
 void drawHeart(uint8_t xStart, uint8_t yStart) {

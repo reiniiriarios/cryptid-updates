@@ -70,6 +70,10 @@ typedef struct gradient_config_t {
   /** Whether to draw the gradient clockwise or counterclockwise */
   boolean  gradient_reverse = false;
 
+  /** Hue, 0-65535. Set within functions. */
+  float gradient_start_scaled = 47330.8333;
+  float gradient_end_scaled = 63714.5833;
+
 } gradient_config_t;
 
 // -------------------------- PROTOTYPES --------------------------
