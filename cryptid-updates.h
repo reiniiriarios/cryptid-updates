@@ -76,6 +76,16 @@ typedef struct gradient_config_t {
 
 } gradient_config_t;
 
+/**
+ * @brief A pixel_mask_t and gradient_config_t as a single entity with placement on screen.
+ */
+typedef struct gradient_image_t {
+  pixel_mask_t mask;
+  gradient_config_t config;
+  uint8_t x;
+  uint8_t y;
+} gradient_mask_t;
+
 // -------------------------- PROTOTYPES --------------------------
 
 /**
@@ -95,73 +105,6 @@ void setup(void);
  * @brief Main loop.
  */
 void loop(void);
-
-/**
- * @brief Write the pixels[] data to the Protomatter matrix.
- */
-void drawPixels(void);
-
-/**
- * @brief Generate pretty colors to the pixels[] array.
- * 
- * @param mask   The mask to draw within.
- * @param xStart Where to start drawing on the pixels[] grid.
- * @param yStart Where to start drawing on the pixels[] grid.
- * @param cfg    Pointer to config for gradient.
- */
-void buildCircularGradientFromMask(
-  pixel_mask_t*      mask,
-  uint8_t            xStart,
-  uint8_t            yStart,
-  gradient_config_t* cfg
-);
-
-/**
- * @brief Draw a heart.
- * 
- * @param xStart x-coord of pixels[] grid.
- * @param yStart y-coord of pixels[] grid.
- */
-void drawHeart(uint8_t xStart, uint8_t yStart);
-
-/**
- * @brief Build a pixel_mask from a single character.
- * 
- * Adapted from Adafruit_GFX::drawChar()
- * 
- * @param c The character to create a mask from.
- * @return Pixel mask.
- */
-pixel_mask_t buildMaskFromChar(unsigned char c);
-
-/**
- * @brief Draw the temperature.
- * 
- * @param temp Temperature to display.
- * @param x    x-coord to draw at on pixels[] grid.
- * @param y    y-coord to draw at on pixels[] grid.
- */
-void drawTemperature(float temp, uint8_t x, uint8_t y);
-
-/**
- * @brief Draw a number based on gradient_config. Number will be rounded.
- * 
- * @param number           The number to draw.
- * @param x                x-coord to draw at on pixels[] grid.
- * @param y                y-coord to draw at on pixels[] grid.
- * @param gradient_config  Pointer to config for gradient.
- */
-void drawNumber(float number, uint8_t x, uint8_t y, gradient_config_t* gradient_config);
-
-/**
- * @brief Draw a number based on gradient_config.
- * 
- * @param number           The number to draw.
- * @param x                x-coord to draw at on pixels[] grid.
- * @param y                y-coord to draw at on pixels[] grid.
- * @param gradient_config  Pointer to config for gradient.
- */
-void drawNumber(uint8_t number, uint8_t x, uint8_t y, gradient_config_t* gradient_config);
 
 /**
  * @brief Convert celcius to fahrenheit.
