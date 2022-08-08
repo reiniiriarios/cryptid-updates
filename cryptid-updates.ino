@@ -79,8 +79,8 @@ Adafruit_LIS3DH accel = Adafruit_LIS3DH(); // The accelerometer.
 
 // ---- SHT4X Temperature and Humidity Sensor ----
 
-Adafruit_SHT4x sht4 = Adafruit_SHT4x(); // The temperature and humidity sensor.
-sensors_event_t humidity, temp; // % rH, °C
+// Adafruit_SHT4x sht4 = Adafruit_SHT4x(); // The temperature and humidity sensor.
+// sensors_event_t humidity, temp; // % rH, °C
 
 // THE SCREEN --------------------------------------------------------------------------------------
 
@@ -135,31 +135,25 @@ void setup(void) {
     err(200, "protomatter failed to start");
   }
 
-  if (!sht4.begin()) {
-    err(400, "SHT4x failed to start");
-  }
-  Serial.print("SHT4x Serial 0x");
-  Serial.println(sht4.readSerial(), HEX); // 0xF5D9FCC
+  // if (!sht4.begin()) {
+  //   err(400, "SHT4x failed to start");
+  // }
+  // Serial.print("SHT4x Serial 0x");
+  // Serial.println(sht4.readSerial(), HEX); // 0xF5D9FCC
 
   // SHT4X_HIGH_PRECISION
   // SHT4X_LOW_PRECISION
-  sht4.setPrecision(SHT4X_MED_PRECISION);
+  // sht4.setPrecision(SHT4X_MED_PRECISION);
 
-  sht4.getEvent(&humidity, &temp);
+  // sht4.getEvent(&humidity, &temp);
 
-  Serial.print("Humidity: ");
-  Serial.print(humidity.relative_humidity);
-  Serial.println("% rH");
+  // Serial.print("Humidity: ");
+  // Serial.print(humidity.relative_humidity);
+  // Serial.println("% rH");
 
-  Serial.print("Temperature: ");
-  Serial.print(temp.temperature);
-  Serial.println("°C");
-  temperature_gradient_config.animation_speed  = 10;
-  temperature_gradient_config.gradient_width   = 32;
-  temperature_gradient_config.shape_width      = 16;
-  //@todo: change hue based on temperature
-  temperature_gradient_config.gradient_start   = 150;
-  temperature_gradient_config.gradient_end     = 250;
+  // Serial.print("Temperature: ");
+  // Serial.print(temp.temperature);
+  // Serial.println("°C");
 }
 
 // LOOP --------------------------------------------------------------------------------------------
@@ -180,9 +174,9 @@ void loop(void) {
 
   // --- Update pixel data ---
   drawHeart(40, 4);
-  sht4.getEvent(&humidity, &temp);
-  float temp_f = celsius2fahrenheit(temp.temperature);
-  drawTemperature(temp_f, 4, 4);
+  // sht4.getEvent(&humidity, &temp);
+  // temp_f = celsius2fahrenheit(temp.temperature);
+  // drawTemperature(temp_f, 4, 10);
 
   // --- Done ---
   drawPixels();  // Move pixels[] to matrix
