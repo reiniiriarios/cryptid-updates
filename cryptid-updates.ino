@@ -67,30 +67,14 @@ inline uint8_t *pgm_read_bitmap_ptr(const GFXfont *gfxFont) {
 
 // ---- MatrixPortal M4 pin configuration -----
 
-#define UP_BUTTON 2
-#define DOWN_BUTTON 3
-#define STATUS_LED 4
-#define D13_LED 13
-
 uint8_t rgbPins[]  = {7, 8, 9, 10, 11, 12};
 uint8_t addrPins[] = {17, 18, 19, 20}; // add 21 if 64-pixel tall
 uint8_t clockPin   = 14;
 uint8_t latchPin   = 15;
 uint8_t oePin      = 16;
 
-// ---- RGB LED Matrix configuration and setup ----
-
-#define MATRIX_HEIGHT 32 // Matrix height (pixels) - SET TO 64 FOR 64x64 MATRIX!
-#define MATRIX_WIDTH  64 // Matrix width (pixels)
-#define MAX_FPS       60 // Maximum redraw rate, frames/second
-                         // 14 for animation, 24 or 30 for video, 60 is smooth
-
-float centerX = 0.5f * MATRIX_WIDTH;  // The center x-coord on the LED matrix.
-float centerY = 0.5f * MATRIX_HEIGHT; // The center y-coord on the LED matrix.
-
 // ---- LIS3DH Triple-Axis Accelerometer ----
 
-#define ACCEL_PIN 0x19
 Adafruit_LIS3DH accel = Adafruit_LIS3DH(); // The accelerometer.
 
 // ---- SHT4X Temperature and Humidity Sensor ----
