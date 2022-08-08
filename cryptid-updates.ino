@@ -5,8 +5,10 @@
 // INCLUDES ----------------------------------------------------------------------------------------
 
 #include "cryptid-updates.h"
+#include "cryptid-types.h"
+#include "cryptid-config.h"
 
-#include "gfx.cpp"
+#include "cryptid-gfx.cpp"
 
 // Filesystem
 // #include <Adafruit_FlashCache.h>
@@ -66,8 +68,9 @@ Adafruit_Protomatter matrix(
   clockPin, latchPin, oePin,  // Other matrix control pins
   false);                     // Double-buffering
 
-// GFX ---------------------------------------------------------------------------------------------
-
+/**
+ * @brief The graphics object responsible for all drawing operations.
+ */
 Gfx gfx(&matrix);
 
 // ERROR HANDLING ----------------------------------------------------------------------------------

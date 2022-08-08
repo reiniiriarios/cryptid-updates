@@ -5,7 +5,8 @@
 // Font
 #include <Fonts/FreeSans9pt7b.h>
 
-#include "cryptid-updates.h"
+#include "cryptid-config.h"
+#include "cryptid-types.h"
 
 const GFXfont *gfxFont = &FreeSans9pt7b;
 
