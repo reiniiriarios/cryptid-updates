@@ -1,4 +1,3 @@
-
 #include "cryptid-gfx.h"
 #include "cryptid-heart.h"
 
