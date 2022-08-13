@@ -17,9 +17,9 @@
    * the size matching width * height.
    */
   typedef struct pixel_mask_t {
-    uint8_t *mask;   /**< A pointer to the first element in a mask array. */
-    uint8_t width;   /**< Width of the mask. */
-    uint8_t height;  /**< Height of the mask. */
+    uint8_t *mask;   /** A pointer to the first element in a mask array. */
+    uint8_t width;   /** Width of the mask. */
+    uint8_t height;  /** Height of the mask. */
   } pixel_mask_t;
 
   /**
@@ -58,10 +58,10 @@
    * @brief A pixel_mask_t and gradient_config_t as a single entity with placement on screen.
    */
   typedef struct gradient_image_t {
-    pixel_mask_t mask;
-    gradient_config_t config;
-    uint8_t x;
-    uint8_t y;
+    pixel_mask_t mask;         /** A pixel mask struct. */
+    gradient_config_t config;  /** A gradient config struct. */
+    uint8_t x;                 /** The x-coord on pixels[]. */
+    uint8_t y;                 /** The y-coord on pixels[]. */
   } gradient_mask_t;
 
 #endif
