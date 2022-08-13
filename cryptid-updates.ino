@@ -8,6 +8,7 @@
 #include "cryptid-types.h"
 #include "cryptid-config.h"
 #include "cryptid-gfx.h"
+#include "cryptid-heart.h"
 
 // Filesystem
 // #include <Adafruit_FlashCache.h>
@@ -72,6 +73,11 @@ Adafruit_Protomatter matrix(
  */
 Gfx gfx(&matrix);
 
+/**
+ * @brief A heart <3.
+ */
+Heart heart(&gfx);
+
 // ERROR HANDLING ----------------------------------------------------------------------------------
 
 void err(int milliseconds, String message = "") {
@@ -92,8 +98,6 @@ void err(int milliseconds, String message = "") {
 
 // SETUP -------------------------------------------------------------------------------------------
 
-gradient_image_t heart;
-
 void setup(void) {
   Serial.begin(9600);
   // if serial is important, include this so we don't miss messages
@@ -105,32 +109,6 @@ void setup(void) {
   if (status != 0) {
     err(200, "protomatter failed to start");
   }
-
-  // --- Heart ---
-
-  heart.x = 10;
-  heart.y = 4;
-  heart.mask.width = 11;
-  heart.mask.height = 11;
-  uint8_t mask[] = {
-    0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0,
-    0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-    0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0,
-    0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0,
-    0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
-  };
-  heart.mask.mask = mask;
-  heart.config.animation_speed  = 10;
-  heart.config.gradient_width   = 32;
-  heart.config.shape_width      = 16;
-  heart.config.gradient_start   = 260;
-  heart.config.gradient_end     = 350;
 
   // --- Temperature & Humidity ---
 
@@ -172,7 +150,7 @@ void loop(void) {
   prevTime = t;
 
   // --- Update pixel data ---
-  gfx.buildCircularGradient(&heart);
+  heart.update();
   // sht4.getEvent(&humidity, &temp);
   // temp_f = celsius2fahrenheit(temp.temperature);
   // drawTemperature(temp_f, 4, 10);
