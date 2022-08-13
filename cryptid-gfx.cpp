@@ -1,12 +1,12 @@
 
 // RGB Matrix
 #include <Adafruit_Protomatter.h>
-
 // Font
 #include <Fonts/FreeSans9pt7b.h>
 
-#include "cryptid-config.h"
 #include "cryptid-types.h"
+#include "cryptid-config.h"
+#include "cryptid-gfx.h"
 
 const GFXfont *gfxFont = &FreeSans9pt7b;
 
@@ -160,22 +160,22 @@ class Gfx {
       String number_chars = String(number);
       uint8_t drawX = x;
       for (uint8_t i = 0; i < number_chars.length(); i++) {
-        gradient_image_t* numberImage = drawChar(number_chars[i], drawX, y, gradient_config);
-        drawX += numberImage->mask.width + 1;
+        uint8_t width = drawChar(number_chars[i], drawX, y, gradient_config);
+        drawX += width + 1;
       }
     }
 
-    gradient_image_t* drawChar(char c, uint8_t x, uint8_t y, gradient_config_t* gradient_config) {
+    uint8_t drawChar(char c, uint8_t x, uint8_t y, gradient_config_t* gradient_config) {
       gradient_image_t charImage;
       charImage.mask = buildMaskFromChar(c);
       charImage.config = *gradient_config;
       charImage.x = x;
       charImage.y = y;
       buildCircularGradient(&charImage);
-      return &charImage;
+      return charImage.mask.width;
     }
 
-    static pixel_mask_t buildMaskFromChar(unsigned char c) {
+    pixel_mask_t buildMaskFromChar(unsigned char c) {
       c -= (uint8_t)pgm_read_byte(&gfxFont->first);
       GFXglyph *glyph = pgm_read_glyph_ptr(gfxFont, c);
       uint8_t *bitmap = pgm_read_bitmap_ptr(gfxFont);
@@ -211,7 +211,7 @@ class Gfx {
       return char_mask;
     }
 
-    static uint8_t fillMaskFromChar(unsigned char c, pixel_mask_t* pixel_mask) {
+    uint8_t fillMaskFromChar(unsigned char c, pixel_mask_t* pixel_mask) {
       c -= (uint8_t)pgm_read_byte(&gfxFont->first);
       GFXglyph *glyph = pgm_read_glyph_ptr(gfxFont, c);
       uint8_t *bitmap = pgm_read_bitmap_ptr(gfxFont);
