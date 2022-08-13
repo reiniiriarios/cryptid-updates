@@ -7,7 +7,6 @@
 #include "cryptid-updates.h"
 #include "cryptid-types.h"
 #include "cryptid-config.h"
-
 #include "cryptid-gfx.cpp"
 
 // Filesystem

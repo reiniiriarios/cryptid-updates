@@ -1,25 +1,30 @@
-/**
- * @brief Blink onboard LED and print message over serial.
- * 
- * @param milliseconds How fast to blink the LED.
- * @param message      Error message.
- */
-void err(int milliseconds, String message);
+#ifndef CRYPTID_UPDATES
+#define CRYPTID_UPDATES
 
-/**
- * @brief Run once on start.
- */
-void setup(void);
+  /**
+   * @brief Blink onboard LED and print message over serial.
+   * 
+   * @param milliseconds How fast to blink the LED.
+   * @param message      Error message.
+   */
+  void err(int milliseconds, String message);
 
-/**
- * @brief Main loop.
- */
-void loop(void);
+  /**
+   * @brief Run once on start.
+   */
+  void setup(void);
 
-/**
- * @brief Convert celcius to fahrenheit.
- * 
- * @param celsius degrees
- * @return Degrees fahrenheit.
- */
-float celsius2fahrenheit(float celsius);
+  /**
+   * @brief Main loop.
+   */
+  void loop(void);
+
+  /**
+   * @brief Convert celcius to fahrenheit.
+   * 
+   * @param celsius degrees
+   * @return Degrees fahrenheit.
+   */
+  float celsius2fahrenheit(float celsius);
+
+#endif
