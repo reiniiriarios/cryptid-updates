@@ -7,7 +7,7 @@
 #include "cryptid-updates.h"
 #include "cryptid-types.h"
 #include "cryptid-config.h"
-#include "cryptid-gfx.cpp"
+#include "cryptid-gfx.h"
 
 // Filesystem
 // #include <Adafruit_FlashCache.h>
