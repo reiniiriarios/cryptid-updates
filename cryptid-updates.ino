@@ -4,23 +4,6 @@
 
 // INCLUDES ----------------------------------------------------------------------------------------
 
-#include "cryptid-updates.h"
-#include "cryptid-types.h"
-#include "cryptid-config.h"
-#include "cryptid-gfx.h"
-#include "cryptid-heart.h"
-
-// Filesystem
-// #include <Adafruit_FlashCache.h>
-// #include <Adafruit_FlashTransport.h>
-// #include <Adafruit_SPIFlash.h>
-// #include <Adafruit_SPIFlashBase.h>
-// #include <flash_devices.h>
-
-// Read bitmaps from SD
-// #include <Adafruit_ImageReader_EPD.h>
-// #include <Adafruit_ImageReader.h>
-
 // Status LED
 #include <Adafruit_NeoPixel.h>
 
@@ -35,6 +18,24 @@
 
 // Pixel Dust Simulator
 // #include <Adafruit_PixelDust.h>
+
+// Filesystem
+// #include <Adafruit_FlashCache.h>
+// #include <Adafruit_FlashTransport.h>
+// #include <Adafruit_SPIFlash.h>
+// #include <Adafruit_SPIFlashBase.h>
+// #include <flash_devices.h>
+
+// Read bitmaps from SD
+// #include <Adafruit_ImageReader_EPD.h>
+// #include <Adafruit_ImageReader.h>
+
+// Cryptid Updates
+#include "cryptid-updates.h"
+#include "cryptid-types.h"
+#include "cryptid-config.h"
+#include "cryptid-gfx.h"
+#include "cryptid-heart.h"
 
 // HARDWARE CONFIG ---------------------------------------------------------------------------------
 
@@ -55,7 +56,7 @@ Adafruit_LIS3DH accel = Adafruit_LIS3DH(); // The accelerometer.
 // Adafruit_SHT4x sht4 = Adafruit_SHT4x(); // The temperature and humidity sensor.
 // sensors_event_t humidity, temp; // % rH, °C
 
-// THE SCREEN --------------------------------------------------------------------------------------
+// THE SCREEN & GRAPHICS OBJECTS -------------------------------------------------------------------
 
 /**
  * @brief The LED Matrix.
@@ -137,7 +138,7 @@ void setup(void) {
 
 uint32_t prevTime = 0; // Used for frames-per-second throttle
 
-float temp_f = 0; // Temperature in degrees fahrenheit.
+// float temp_f = 0; // Temperature in degrees fahrenheit.
 
 void loop(void) {
   // --- Limit FPS ---
