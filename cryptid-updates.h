@@ -27,4 +27,11 @@
    */
   float celsius2fahrenheit(float celsius);
 
+  /**
+   * @brief Calculate free SRAM.
+   * 
+   * @return int 
+   */
+  int freeMemory();
+
 #endif
