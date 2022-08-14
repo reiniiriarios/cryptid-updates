@@ -136,7 +136,8 @@ void setup(void) {
 
 // LOOP --------------------------------------------------------------------------------------------
 
-uint32_t prevTime = 0; // Used for frames-per-second throttle
+uint32_t prevTime = 0;     // Used for frames-per-second throttle
+uint16_t frameCounter = 0; // Counts up every frame based on MAX_FPS.
 
 // float temp_f = 0; // Temperature in degrees fahrenheit.
 
@@ -149,6 +150,19 @@ void loop(void) {
   uint32_t t;
   while(((t = micros()) - prevTime) < (1000000L / MAX_FPS));
   prevTime = t;
+
+  // Do something every second.
+  if (frameCounter % MAX_FPS == 0) {
+    
+  }
+  // Do something every five seconds.
+  if (frameCounter % (MAX_FPS * 5) == 0) {
+    Serial.print("Free Memory: ");
+    Serial.println(freeMemory());
+    // Start counter over.
+    frameCounter = 0;
+  }
+  frameCounter++;
 
   // --- Update pixel data ---
   heart.update();
@@ -165,4 +179,24 @@ void loop(void) {
 
 float celsius2fahrenheit(float celsius) {
   return ((celsius * 9)/5) + 32;
+}
+
+// Calculate SRAM Free
+// https://learn.adafruit.com/memories-of-an-arduino/measuring-free-memory
+#ifdef __arm__
+// should use uinstd.h to define sbrk but Due causes a conflict
+extern "C" char* sbrk(int incr);
+#else  // __ARM__
+extern char *__brkval;
+#endif  // __arm__
+
+int freeMemory() {
+  char top;
+#ifdef __arm__
+  return &top - reinterpret_cast<char*>(sbrk(0));
+#elif defined(CORE_TEENSY) || (ARDUINO > 103 && ARDUINO != 151)
+  return &top - __brkval;
+#else  // __arm__
+  return __brkval ? &top - __brkval : &top - __malloc_heap_start;
+#endif  // __arm__
 }
