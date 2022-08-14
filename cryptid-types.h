@@ -5,9 +5,9 @@
    * @brief A representation of one pixel.
    */
   typedef struct pixel_t {
-    bool     on      = false; /**< Whether to draw the pixel at all. */
-    uint8_t  opacity = 100;   /**< Opacity, [0-100] */
-    uint16_t hue;             /**< Hue in degrees, [0-360] */
+    bool     on      = false; /** Whether to draw the pixel at all. */
+    uint8_t  opacity = 100;   /** Opacity, [0-100] */
+    uint16_t hue;             /** Hue in degrees, [0-360] */
   } pixel_t;
 
   /**

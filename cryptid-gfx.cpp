@@ -1,4 +1,3 @@
-
 // RGB Matrix
 #include <Adafruit_Protomatter.h>
 // Font
