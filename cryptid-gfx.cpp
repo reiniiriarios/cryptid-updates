@@ -217,13 +217,13 @@ uint8_t Gfx::fillMaskFromChar(unsigned char c, pixel_mask_t *pixel_mask) {
   uint8_t* mask = new uint8_t[w * h]();
 
   uint8_t i = 0;
-  for (yy = 0; yy < h && yy < (*pixel_mask).height; yy++) {
-    for (xx = 0; xx < w && xx < (*pixel_mask).width; xx++) {
+  for (yy = 0; yy < h && yy < pixel_mask->height; yy++) {
+    for (xx = 0; xx < w && xx < pixel_mask->width; xx++) {
       if (!(bit++ & 7)) {
         bits = pgm_read_byte(&bitmap[bo++]);
       }
       if (bits & 0x80) {
-        (*pixel_mask).mask[i] = 1;
+        pixel_mask->mask[i] = 1;
       }
       bits <<= 1;
       i++;
