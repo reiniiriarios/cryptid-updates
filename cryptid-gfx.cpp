@@ -34,7 +34,7 @@ inline uint8_t *pgm_read_bitmap_ptr(const GFXfont *gfxFont) {
 }
 
 
-Gfx::Gfx(Adafruit_Protomatter* matrix_p) {
+Gfx::Gfx(Adafruit_Protomatter *matrix_p) {
   matrix = matrix_p;
 }
 
@@ -49,7 +49,7 @@ void Gfx::drawPixels(void) {
   }
 }
 
-void Gfx::buildCircularGradient(gradient_image_t* image) {
+void Gfx::buildCircularGradient(gradient_image_t *image) {
   // scale the start/end values to a useful value to compute hue for Protomatter (0-65535)
   image->config.gradient_start_scaled = image->config.gradient_start / 360.0f * 65535.0f;
   image->config.gradient_end_scaled = image->config.gradient_end / 360.0f * 65535.0f;
@@ -87,7 +87,7 @@ void Gfx::buildCircularGradient(gradient_image_t* image) {
   }
 }
 
-void Gfx::buildCircularGradientPixel(uint8_t x, uint8_t y, gradient_config_t* cfg) {
+void Gfx::buildCircularGradientPixel(uint8_t x, uint8_t y, gradient_config_t *cfg) {
   float tick = millis() * 0.0001f * cfg->animation_speed;
   float v = (
       cos(((float)x - CENTER_X) / (0.5f * cfg->shape_width))
@@ -143,11 +143,11 @@ void Gfx::buildCircularGradientPixel(uint8_t x, uint8_t y, gradient_config_t* cf
   pixels[y][x].hue = hue;
 }
 
-void Gfx::drawNumber(float number, uint8_t x, uint8_t y, gradient_config_t* gradient_config) {
+void Gfx::drawNumber(float number, uint8_t x, uint8_t y, gradient_config_t *gradient_config) {
   drawNumber((uint8_t)round(number), x, y, gradient_config);
 }
 
-void Gfx::drawNumber(uint8_t number, uint8_t x, uint8_t y, gradient_config_t* gradient_config) {
+void Gfx::drawNumber(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *gradient_config) {
   String number_chars = String(number);
   uint8_t drawX = x;
   for (uint8_t i = 0; i < number_chars.length(); i++) {
@@ -156,7 +156,7 @@ void Gfx::drawNumber(uint8_t number, uint8_t x, uint8_t y, gradient_config_t* gr
   }
 }
 
-uint8_t Gfx::drawChar(char c, uint8_t x, uint8_t y, gradient_config_t* gradient_config) {
+uint8_t Gfx::drawChar(char c, uint8_t x, uint8_t y, gradient_config_t *gradient_config) {
   gradient_image_t charImage;
   charImage.mask = buildMaskFromChar(c);
   charImage.config = *gradient_config;
@@ -202,7 +202,7 @@ pixel_mask_t Gfx::buildMaskFromChar(unsigned char c) {
   return char_mask;
 }
 
-uint8_t Gfx::fillMaskFromChar(unsigned char c, pixel_mask_t* pixel_mask) {
+uint8_t Gfx::fillMaskFromChar(unsigned char c, pixel_mask_t *pixel_mask) {
   c -= (uint8_t)pgm_read_byte(&gfxFont->first);
   GFXglyph *glyph = pgm_read_glyph_ptr(gfxFont, c);
   uint8_t *bitmap = pgm_read_bitmap_ptr(gfxFont);

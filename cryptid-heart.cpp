@@ -1,7 +1,7 @@
 #include "cryptid-gfx.h"
 #include "cryptid-heart.h"
 
-Heart::Heart(Gfx* gfx_p) {
+Heart::Heart(Gfx *gfx_p) {
   gfx = gfx_p;
 
   pixel_mask.width = 11;

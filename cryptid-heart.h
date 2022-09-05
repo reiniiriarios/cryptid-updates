@@ -11,7 +11,7 @@
        * 
        * @param gfx_p A pointer to the graphics object.
        */
-      Heart(Gfx* gfx_p);
+      Heart(Gfx *gfx_p);
 
       /**
        * @brief Update the heart gradient image (run each frame).
@@ -22,7 +22,7 @@
       /**
        * @brief A pointer to the graphics object.
        */
-      Gfx* gfx;
+      Gfx *gfx;
 
       /**
        * @brief The mask struct.
