@@ -73,7 +73,7 @@ class Gfx {
      * @param y                The y-coord on pixels[].
      * @param gradient_config  The gradient config.
      */
-    uint8_t drawChar(char c, uint8_t x, uint8_t y, gradient_config_t *gradient_config);
+    uint8_t drawChar(unsigned char c, uint8_t x, uint8_t y, gradient_config_t *gradient_config);
 
     /**
      * @brief Build a mask from a single character.

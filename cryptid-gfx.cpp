@@ -156,7 +156,7 @@ void Gfx::drawNumber(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *gr
   }
 }
 
-uint8_t Gfx::drawChar(char c, uint8_t x, uint8_t y, gradient_config_t *gradient_config) {
+uint8_t Gfx::drawChar(unsigned char c, uint8_t x, uint8_t y, gradient_config_t *gradient_config) {
   gradient_image_t charImage;
   charImage.mask = buildMaskFromChar(c);
   charImage.config = *gradient_config;
