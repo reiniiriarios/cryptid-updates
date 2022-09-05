@@ -67,7 +67,7 @@ Adafruit_Protomatter matrix(
   1, rgbPins,                 // # of matrix chains, array of 6 RGB pins for each
   sizeof(addrPins), addrPins, // # of address pins (height is inferred), array of pins
   clockPin, latchPin, oePin,  // Other matrix control pins
-  false);                     // Double-buffering
+  true);                     // Double-buffering
 
 /**
  * @brief The graphics object responsible for all drawing operations.
