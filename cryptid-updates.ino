@@ -36,6 +36,7 @@
 #include "cryptid-config.h"
 #include "cryptid-gfx.h"
 #include "cryptid-heart.h"
+#include "cryptid-temperature.h"
 
 // HARDWARE CONFIG ---------------------------------------------------------------------------------
 
@@ -78,6 +79,11 @@ Gfx gfx(&matrix);
  * @brief A heart <3.
  */
 Heart heart(&gfx);
+
+/**
+ * @brief A heart <3.
+ */
+TemperatureDisplay tempDisplay(&gfx);
 
 // ERROR HANDLING ----------------------------------------------------------------------------------
 
@@ -175,9 +181,7 @@ void loop(void) {
   // --- Update pixel data ---
 
   heart.update();
-  // sht4.getEvent(&humidity, &temp);
-  // temp_f = celsius2fahrenheit(temp.temperature);
-  // drawTemperature(temp_f, 4, 10);
+  tempDisplay.update(temp_f);
 
   // --- Done ---
 
