@@ -53,8 +53,8 @@ Adafruit_LIS3DH accel = Adafruit_LIS3DH(); // The accelerometer.
 
 // ---- SHT4X Temperature and Humidity Sensor ----
 
-// Adafruit_SHT4x sht4 = Adafruit_SHT4x(); // The temperature and humidity sensor.
-// sensors_event_t humidity, temp; // % rH, °C
+Adafruit_SHT4x sht4 = Adafruit_SHT4x(); // The temperature and humidity sensor.
+sensors_event_t humidity, temp; // % rH, °C
 
 // THE SCREEN & GRAPHICS OBJECTS -------------------------------------------------------------------
 
@@ -113,25 +113,25 @@ void setup(void) {
 
   // --- Temperature & Humidity ---
 
-  // if (!sht4.begin()) {
-  //   err(400, "SHT4x failed to start");
-  // }
-  // Serial.print("SHT4x Serial 0x");
-  // Serial.println(sht4.readSerial(), HEX); // 0xF5D9FCC
+  if (!sht4.begin()) {
+    err(400, "SHT4x failed to start");
+  }
+  Serial.print("SHT4x Serial 0x");
+  Serial.println(sht4.readSerial(), HEX); // 0xF5D9FCC
 
   // SHT4X_HIGH_PRECISION
   // SHT4X_LOW_PRECISION
-  // sht4.setPrecision(SHT4X_MED_PRECISION);
+  sht4.setPrecision(SHT4X_MED_PRECISION);
 
-  // sht4.getEvent(&humidity, &temp);
+  sht4.getEvent(&humidity, &temp);
 
-  // Serial.print("Humidity: ");
-  // Serial.print(humidity.relative_humidity);
-  // Serial.println("% rH");
+  Serial.print("Humidity: ");
+  Serial.print(humidity.relative_humidity);
+  Serial.println("% rH");
 
-  // Serial.print("Temperature: ");
-  // Serial.print(temp.temperature);
-  // Serial.println("°C");
+  Serial.print("Temperature: ");
+  Serial.print(temp.temperature);
+  Serial.println("°C");
 }
 
 // LOOP --------------------------------------------------------------------------------------------
@@ -139,10 +139,12 @@ void setup(void) {
 uint32_t prevTime = 0;     // Used for frames-per-second throttle
 uint16_t frameCounter = 0; // Counts up every frame based on MAX_FPS.
 
-// float temp_f = 0; // Temperature in degrees fahrenheit.
+float temp_f = 0; // Temperature in degrees fahrenheit.
 
 void loop(void) {
+
   // --- Limit FPS ---
+
   // Limit the animation frame rate to MAX_FPS.  Because the subsequent sand
   // calculations are non-deterministic (don't always take the same amount
   // of time, depending on their current states), this helps ensure that
@@ -151,9 +153,15 @@ void loop(void) {
   while(((t = micros()) - prevTime) < (1000000L / MAX_FPS));
   prevTime = t;
 
+  // --- Every n Seconds ---
+
   // Do something every second.
   if (frameCounter % MAX_FPS == 0) {
-    
+    sht4.getEvent(&humidity, &temp);
+    temp_f = celsius2fahrenheit(temp.temperature);
+    Serial.print("Temperature: ");
+    Serial.print(temp_f);
+    Serial.println("°F");
   }
   // Do something every five seconds.
   if (frameCounter % (MAX_FPS * 5) == 0) {
@@ -165,12 +173,14 @@ void loop(void) {
   frameCounter++;
 
   // --- Update pixel data ---
+
   heart.update();
   // sht4.getEvent(&humidity, &temp);
   // temp_f = celsius2fahrenheit(temp.temperature);
   // drawTemperature(temp_f, 4, 10);
 
   // --- Done ---
+
   gfx.drawPixels();  // Move pixels[] to matrix
   matrix.show(); // Copy data to matrix buffers
 }
