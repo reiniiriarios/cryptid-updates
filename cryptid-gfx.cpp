@@ -201,34 +201,3 @@ pixel_mask_t Gfx::buildMaskFromChar(unsigned char c) {
 
   return char_mask;
 }
-
-uint8_t Gfx::fillMaskFromChar(unsigned char c, pixel_mask_t *pixel_mask) {
-  c -= (uint8_t)pgm_read_byte(&gfxFont->first);
-  GFXglyph *glyph = pgm_read_glyph_ptr(gfxFont, c);
-  uint8_t *bitmap = pgm_read_bitmap_ptr(gfxFont);
-
-  uint16_t bo = pgm_read_word(&glyph->bitmapOffset);
-  uint8_t w = pgm_read_byte(&glyph->width), h = pgm_read_byte(&glyph->height);
-  int8_t xo = pgm_read_byte(&glyph->xOffset),
-         yo = pgm_read_byte(&glyph->yOffset);
-  uint8_t xx, yy, bits = 0, bit = 0;
-  int16_t xo16 = 0, yo16 = 0;
-
-  uint8_t* mask = new uint8_t[w * h]();
-
-  uint8_t i = 0;
-  for (yy = 0; yy < h && yy < pixel_mask->height; yy++) {
-    for (xx = 0; xx < w && xx < pixel_mask->width; xx++) {
-      if (!(bit++ & 7)) {
-        bits = pgm_read_byte(&bitmap[bo++]);
-      }
-      if (bits & 0x80) {
-        pixel_mask->mask[i] = 1;
-      }
-      bits <<= 1;
-      i++;
-    }
-  }
-
-  return w;
-}
