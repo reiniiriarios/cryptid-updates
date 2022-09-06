@@ -28,6 +28,23 @@ class Gfx {
      * @brief Write the pixels[] data to the Protomatter matrix
      */
     void drawPixels(void);
+
+    /**
+     * @brief Toggle single pixel on display on/off.
+     * 
+     * @param x   The x-coord on pixels[].
+     * @param y   The y-coord on pixels[].
+     * @param on  Whether the pixel should be turned on or off.
+     */
+    void Gfx::togglePixel(uint8_t x, uint8_t y, bool on);
+
+    /**
+     * @brief Turn off single pixel on display.
+     * 
+     * @param x  The x-coord on pixels[].
+     * @param y  The y-coord on pixels[].
+     */
+    void Gfx::turnOffPixel(uint8_t x, uint8_t y);
   
     /**
      * @brief Build one frame of a gradient based on an image mask + config.

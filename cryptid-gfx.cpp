@@ -49,6 +49,14 @@ void Gfx::drawPixels(void) {
   }
 }
 
+void Gfx::togglePixel(uint8_t x, uint8_t y, bool on) {
+  pixels[y][x].on = on;
+}
+
+void Gfx::turnOffPixel(uint8_t x, uint8_t y) {
+  togglePixel(x, y, false);
+}
+
 void Gfx::buildCircularGradient(gradient_image_t *image) {
   // scale the start/end values to a useful value to compute hue for Protomatter (0-65535)
   image->config.gradient_start_scaled = image->config.gradient_start / 360.0f * 65535.0f;
@@ -176,6 +184,9 @@ uint8_t Gfx::buildCircularGradientFromChar(unsigned char c, uint8_t xDraw, uint8
       }
       if (bits & 0x80) {
         buildCircularGradientPixel(xDraw + xx, yDraw + yy, gradient_config);
+      }
+      else {
+        turnOffPixel(xDraw + xx, yDraw + yy);
       }
       bits <<= 1;
       i++;
