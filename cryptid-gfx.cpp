@@ -44,6 +44,8 @@ void Gfx::drawPixels(void) {
       if (pixels[y][x].on == true) {
         uint16_t color = matrix->colorHSV(pixels[y][x].hue);
         matrix->drawPixel(x, y, color);
+        // turn pixel back off after we move to buffer
+        pixels[y][x].on = false;
       }
       else {
         matrix->drawPixel(x, y, 0);
@@ -165,17 +167,9 @@ uint8_t Gfx::buildCircularGradientFromChar(unsigned char c, uint8_t xDraw, uint8
       if (bits & 0x80) {
         buildCircularGradientPixel(xDraw + xx, yDraw + yy, cfg);
       }
-      else {
-        pixels[yDraw + yy][xDraw + xx].on = false;
-      }
       bits <<= 1;
       i++;
     }
-  }
-
-  // empty the line after the char
-  for (uint8_t yyy = 0; yyy < h; yyy++) {
-    pixels[yDraw + yyy][xDraw + xx].on = false;
   }
 
   return w;
