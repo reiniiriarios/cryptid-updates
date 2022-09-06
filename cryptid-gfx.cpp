@@ -143,30 +143,20 @@ void Gfx::buildCircularGradientPixel(uint8_t x, uint8_t y, gradient_config_t *cf
   pixels[y][x].hue = hue;
 }
 
-void Gfx::drawNumber(float number, uint8_t x, uint8_t y, gradient_config_t *gradient_config) {
-  drawNumber((uint8_t)round(number), x, y, gradient_config);
+void Gfx::buildCircularGradientFromNumber(float number, uint8_t x, uint8_t y, gradient_config_t *gradient_config) {
+  buildCircularGradientFromNumber((uint8_t)round(number), x, y, gradient_config);
 }
 
-void Gfx::drawNumber(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *gradient_config) {
+void Gfx::buildCircularGradientFromNumber(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *gradient_config) {
   String number_chars = String(number);
   uint8_t drawX = x;
   for (uint8_t i = 0; i < number_chars.length(); i++) {
-    uint8_t width = drawChar(number_chars[i], drawX, y, gradient_config);
+    uint8_t width = buildCircularGradientFromChar(number_chars[i], drawX, y, gradient_config);
     drawX += width + 1;
   }
 }
 
-uint8_t Gfx::drawChar(unsigned char c, uint8_t x, uint8_t y, gradient_config_t *gradient_config) {
-  gradient_image_t charImage;
-  charImage.mask = buildMaskFromChar(c);
-  charImage.config = *gradient_config;
-  charImage.x = x;
-  charImage.y = y;
-  buildCircularGradient(&charImage);
-  return charImage.mask.width;
-}
-
-pixel_mask_t Gfx::buildMaskFromChar(unsigned char c) {
+uint8_t Gfx::buildCircularGradientFromChar(unsigned char c, uint8_t xDraw, uint8_t yDraw, gradient_config_t *gradient_config) {
   c -= (uint8_t)pgm_read_byte(&gfxFont->first);
   GFXglyph *glyph = pgm_read_glyph_ptr(gfxFont, c);
   uint8_t *bitmap = pgm_read_bitmap_ptr(gfxFont);
@@ -178,8 +168,6 @@ pixel_mask_t Gfx::buildMaskFromChar(unsigned char c) {
   uint8_t xx, yy, bits = 0, bit = 0;
   int16_t xo16 = 0, yo16 = 0;
 
-  uint8_t* mask = new uint8_t[w * h]();
-
   uint8_t i = 0;
   for (yy = 0; yy < h; yy++) {
     for (xx = 0; xx < w; xx++) {
@@ -187,17 +175,12 @@ pixel_mask_t Gfx::buildMaskFromChar(unsigned char c) {
         bits = pgm_read_byte(&bitmap[bo++]);
       }
       if (bits & 0x80) {
-        mask[i] = 1;
+        buildCircularGradientPixel(xDraw + xx, yDraw + yy, gradient_config);
       }
       bits <<= 1;
       i++;
     }
   }
 
-  pixel_mask_t char_mask;
-  char_mask.width = w;
-  char_mask.height = h;
-  char_mask.mask = mask;
-
-  return char_mask;
+  return w;
 }

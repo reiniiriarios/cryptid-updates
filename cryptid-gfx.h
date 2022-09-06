@@ -53,7 +53,7 @@ class Gfx {
      * @param y                The y-coord on pixels[].
      * @param gradient_config  The gradient config.
      */
-    void drawNumber(float number, uint8_t x, uint8_t y, gradient_config_t *gradient_config);
+    void buildCircularGradientFromNumber(float number, uint8_t x, uint8_t y, gradient_config_t *gradient_config);
 
     /**
      * @brief Draw an integer as characters on pixels[] with a gradient.
@@ -63,35 +63,18 @@ class Gfx {
      * @param y                The y-coord on pixels[].
      * @param gradient_config  The gradient config.
      */
-    void drawNumber(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *gradient_config);
+    void buildCircularGradientFromNumber(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *gradient_config);
 
     /**
-     * @brief Draw a single character as characters on pixels[] with a gradient.
+     * @brief Draw a character on pixels[] with a gradient.
      * 
      * @param c                The character to draw.
      * @param x                The x-coord on pixels[].
      * @param y                The y-coord on pixels[].
      * @param gradient_config  The gradient config.
+     * @return  Width of character drawn in pixels.
      */
-    uint8_t drawChar(unsigned char c, uint8_t x, uint8_t y, gradient_config_t *gradient_config);
-
-    /**
-     * @brief Build a mask from a single character.
-     * 
-     * @param c  The character to build a mask from.
-     * @return pixel_mask_t 
-     */
-    pixel_mask_t buildMaskFromChar(unsigned char c);
-
-    /**
-     * @brief Fill a mask based on a single character.
-     * 
-     * @param c           The character to build the mask from.
-     * @param pixel_mask  The mask to use.
-     * @return uint8_t    The width of the character (used to position additional characters).
-     */
-    uint8_t fillMaskFromChar(unsigned char c, pixel_mask_t *pixel_mask);
+    uint8_t buildCircularGradientFromChar(unsigned char c, uint8_t xDraw, uint8_t yDraw, gradient_config_t *gradient_config);
 };
-
 
 #endif
