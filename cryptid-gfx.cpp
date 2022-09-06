@@ -45,16 +45,11 @@ void Gfx::drawPixels(void) {
         uint16_t color = matrix->colorHSV(pixels[y][x].hue);
         matrix->drawPixel(x, y, color);
       }
+      else {
+        matrix->drawPixel(x, y, 0);
+      }
     }
   }
-}
-
-void Gfx::togglePixel(uint8_t x, uint8_t y, bool on) {
-  pixels[y][x].on = on;
-}
-
-void Gfx::turnOffPixel(uint8_t x, uint8_t y) {
-  togglePixel(x, y, false);
 }
 
 void Gfx::buildCircularGradient(uint8_t drawX, uint8_t drawY, pixel_mask_t *mask, gradient_config_t *cfg) {
@@ -171,7 +166,7 @@ uint8_t Gfx::buildCircularGradientFromChar(unsigned char c, uint8_t xDraw, uint8
         buildCircularGradientPixel(xDraw + xx, yDraw + yy, cfg);
       }
       else {
-        turnOffPixel(xDraw + xx, yDraw + yy);
+        pixels[yDraw + yy][xDraw + xx].on = false;
       }
       bits <<= 1;
       i++;
