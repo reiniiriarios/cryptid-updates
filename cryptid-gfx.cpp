@@ -57,40 +57,25 @@ void Gfx::turnOffPixel(uint8_t x, uint8_t y) {
   togglePixel(x, y, false);
 }
 
-void Gfx::buildCircularGradient(gradient_image_t *image) {
-  // scale the start/end values to a useful value to compute hue for Protomatter (0-65535)
-  image->config.gradient_start_scaled = image->config.gradient_start / 360.0f * 65535.0f;
-  image->config.gradient_end_scaled = image->config.gradient_end / 360.0f * 65535.0f;
-
-  // normalize hues
-  while (image->config.gradient_start < 0) image->config.gradient_start += 360;
-  while (image->config.gradient_start > 360) image->config.gradient_start -= 360;
-  while (image->config.gradient_end < 0) image->config.gradient_end += 360;
-  while (image->config.gradient_end > 360) image->config.gradient_end -= 360;
-
-  // if the start and end are reversed, gradient_reverse is backwards
-  if (image->config.gradient_start > image->config.gradient_end) {
-    image->config.gradient_reverse = !image->config.gradient_reverse;
-  }
-
+void Gfx::buildCircularGradient(uint8_t drawX, uint8_t drawY, pixel_mask_t *mask, gradient_config_t *cfg) {
   // loop through the mask
-  uint8_t *pixel = image->mask.mask;
-  for(int y = 0; y < image->mask.height && y < MATRIX_HEIGHT; y++) {
+  uint8_t *pixel = mask->mask;
+  for(int y = 0; y < mask->height && y < MATRIX_HEIGHT; y++) {
 
     // get y on pixels[] grid
-    uint8_t yDraw = image->y + y;
+    uint8_t yDraw = drawY + y;
     if (yDraw > MATRIX_HEIGHT) continue;
 
-    for(int x = 0; x < image->mask.width && x < MATRIX_WIDTH; x++, pixel++) {
+    for(int x = 0; x < mask->width && x < MATRIX_WIDTH; x++, pixel++) {
       // if mask is empty here, we're not drawing anything
       if (*pixel == 0) continue;
 
       // get x on pixels[] grid
-      uint8_t xDraw = image->x + x;
+      uint8_t xDraw = drawX + x;
       if (xDraw > MATRIX_WIDTH) continue;
 
       // add this pixel
-      buildCircularGradientPixel(xDraw, yDraw, &image->config);
+      buildCircularGradientPixel(xDraw, yDraw, cfg);
     }
   }
 }
@@ -151,20 +136,20 @@ void Gfx::buildCircularGradientPixel(uint8_t x, uint8_t y, gradient_config_t *cf
   pixels[y][x].hue = hue;
 }
 
-void Gfx::buildCircularGradientFromNumber(float number, uint8_t x, uint8_t y, gradient_config_t *gradient_config) {
-  buildCircularGradientFromNumber((uint8_t)round(number), x, y, gradient_config);
+void Gfx::buildCircularGradientFromNumber(float number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
+  buildCircularGradientFromNumber((uint8_t)round(number), x, y, cfg);
 }
 
-void Gfx::buildCircularGradientFromNumber(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *gradient_config) {
+void Gfx::buildCircularGradientFromNumber(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
   String number_chars = String(number);
   uint8_t drawX = x;
   for (uint8_t i = 0; i < number_chars.length(); i++) {
-    uint8_t width = buildCircularGradientFromChar(number_chars[i], drawX, y, gradient_config);
+    uint8_t width = buildCircularGradientFromChar(number_chars[i], drawX, y, cfg);
     drawX += width + 1;
   }
 }
 
-uint8_t Gfx::buildCircularGradientFromChar(unsigned char c, uint8_t xDraw, uint8_t yDraw, gradient_config_t *gradient_config) {
+uint8_t Gfx::buildCircularGradientFromChar(unsigned char c, uint8_t xDraw, uint8_t yDraw, gradient_config_t *cfg) {
   c -= (uint8_t)pgm_read_byte(&gfxFont->first);
   GFXglyph *glyph = pgm_read_glyph_ptr(gfxFont, c);
   uint8_t *bitmap = pgm_read_bitmap_ptr(gfxFont);
@@ -183,7 +168,7 @@ uint8_t Gfx::buildCircularGradientFromChar(unsigned char c, uint8_t xDraw, uint8
         bits = pgm_read_byte(&bitmap[bo++]);
       }
       if (bits & 0x80) {
-        buildCircularGradientPixel(xDraw + xx, yDraw + yy, gradient_config);
+        buildCircularGradientPixel(xDraw + xx, yDraw + yy, cfg);
       }
       else {
         turnOffPixel(xDraw + xx, yDraw + yy);

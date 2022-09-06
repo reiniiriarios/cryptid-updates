@@ -49,15 +49,16 @@ class Gfx {
     /**
      * @brief Build one frame of a gradient based on an image mask + config.
      * 
-     * @param image The gradient image mask + config to build the gradient on.
+     * @param drawX
+     * @param cfg  The gradient config.
      */
-    void buildCircularGradient(gradient_image_t *image);
+    void buildCircularGradient(uint8_t drawX, uint8_t drawY, pixel_mask_t *mask, gradient_config_t *cfg);
 
     /**
      * @brief Build one pixel in a gradient.
      * 
-     * @param x    The x-coord on pixels[].
-     * @param y    The y-coord on pixels[].
+     * @param x                The x-coord on pixels[].
+     * @param y                The y-coord on pixels[].
      * @param cfg  The gradient config.
      */
     void buildCircularGradientPixel(uint8_t x, uint8_t y, gradient_config_t *cfg);
@@ -65,33 +66,33 @@ class Gfx {
     /**
      * @brief Draw a float as characters on pixels[] with a gradient.
      * 
-     * @param number           The number to draw.
-     * @param x                The x-coord on pixels[].
-     * @param y                The y-coord on pixels[].
-     * @param gradient_config  The gradient config.
+     * @param number  The number to draw.
+     * @param x       The x-coord on pixels[].
+     * @param y       The y-coord on pixels[].
+     * @param cfg     The gradient config.
      */
-    void buildCircularGradientFromNumber(float number, uint8_t x, uint8_t y, gradient_config_t *gradient_config);
+    void buildCircularGradientFromNumber(float number, uint8_t x, uint8_t y, gradient_config_t *cfg);
 
     /**
      * @brief Draw an integer as characters on pixels[] with a gradient.
      * 
-     * @param number           The number to draw.
-     * @param x                The x-coord on pixels[].
-     * @param y                The y-coord on pixels[].
-     * @param gradient_config  The gradient config.
+     * @param number  The number to draw.
+     * @param x       The x-coord on pixels[].
+     * @param y       The y-coord on pixels[].
+     * @param cfg     The gradient config.
      */
-    void buildCircularGradientFromNumber(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *gradient_config);
+    void buildCircularGradientFromNumber(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *cfg);
 
     /**
      * @brief Draw a character on pixels[] with a gradient.
      * 
-     * @param c                The character to draw.
-     * @param x                The x-coord on pixels[].
-     * @param y                The y-coord on pixels[].
-     * @param gradient_config  The gradient config.
-     * @return  Width of character drawn in pixels.
+     * @param c    The character to draw.
+     * @param x    The x-coord on pixels[].
+     * @param y    The y-coord on pixels[].
+     * @param cfg  The gradient config.
+     * @return     Width of character drawn in pixels.
      */
-    uint8_t buildCircularGradientFromChar(unsigned char c, uint8_t xDraw, uint8_t yDraw, gradient_config_t *gradient_config);
+    uint8_t buildCircularGradientFromChar(unsigned char c, uint8_t xDraw, uint8_t yDraw, gradient_config_t *cfg);
 };
 
 #endif

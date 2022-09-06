@@ -52,16 +52,36 @@
     float gradient_start_scaled = 47330.8333;
     float gradient_end_scaled = 63714.5833;
 
-  } gradient_config_t;
+    gradient_config_t(
+      uint8_t animation_speed = 10,
+      uint8_t gradient_width = 32,
+      uint8_t shape_width = 16,
+      uint8_t gradient_start = 260,
+      uint8_t gradient_end = 350,
+      uint8_t gradient_reverse = false
+    ) :
+      animation_speed(animation_speed),
+      gradient_width(gradient_width),
+      shape_width(shape_width),
+      gradient_start(gradient_start),
+      gradient_end(gradient_end),
+      gradient_reverse(gradient_reverse)
+    {
+      // scale the start/end values to a useful value to compute hue for Protomatter (0-65535)
+      gradient_start_scaled = gradient_start / 360.0f * 65535.0f;
+      gradient_end_scaled = gradient_end / 360.0f * 65535.0f;
 
-  /**
-   * @brief A pixel_mask_t and gradient_config_t as a single entity with placement on screen.
-   */
-  typedef struct gradient_image_t {
-    pixel_mask_t mask;         /** A pixel mask struct. */
-    gradient_config_t config;  /** A gradient config struct. */
-    uint8_t x;                 /** The x-coord on pixels[]. */
-    uint8_t y;                 /** The y-coord on pixels[]. */
-  } gradient_mask_t;
+      // normalize hues
+      while (gradient_start < 0) gradient_start += 360;
+      while (gradient_start > 360) gradient_start -= 360;
+      while (gradient_end < 0) gradient_end += 360;
+      while (gradient_end > 360) gradient_end -= 360;
+
+      // if the start and end are reversed, gradient_reverse is backwards
+      if (gradient_start > gradient_end) {
+        gradient_reverse = !gradient_reverse;
+      }
+    }
+  } gradient_config_t;
 
 #endif

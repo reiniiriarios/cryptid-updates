@@ -13,14 +13,8 @@ Heart::Heart(Gfx *gfx_p) {
   gradient_config.shape_width      = 16;
   gradient_config.gradient_start   = 260;
   gradient_config.gradient_end     = 350;
-
-  gradient_image.config = gradient_config;
-  gradient_image.mask = pixel_mask;
-
-  gradient_image.x = 40;
-  gradient_image.y = 4;
 }
 
 void Heart::update(void) {
-  gfx->buildCircularGradient(&gradient_image);
+  gfx->buildCircularGradient(40, 4, &pixel_mask, &gradient_config);
 }

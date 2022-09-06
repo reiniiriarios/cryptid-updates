@@ -35,11 +35,6 @@
       gradient_config_t gradient_config;
 
       /**
-       * @brief The image struct.
-       */
-      gradient_image_t gradient_image;
-
-      /**
        * @brief The mask array.
        */
       uint8_t mask[11 * 11] = {
