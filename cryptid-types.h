@@ -82,6 +82,22 @@
         gradient_reverse = !gradient_reverse;
       }
     }
+
+    void setStart(uint16_t hue) {
+      gradient_start = hue;
+      gradient_start_scaled = gradient_start / 360.0f * 65535.0f;
+      if (gradient_start > gradient_end) {
+        gradient_reverse = !gradient_reverse;
+      }
+    }
+
+    void setEnd(uint16_t hue) {
+      gradient_end = hue;
+      gradient_end_scaled = gradient_end / 360.0f * 65535.0f;
+      if (gradient_start > gradient_end) {
+        gradient_reverse = !gradient_reverse;
+      }
+    }
   } gradient_config_t;
 
 #endif
