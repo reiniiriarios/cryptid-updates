@@ -174,7 +174,6 @@ uint8_t Gfx::buildCircularGradientFromChar(unsigned char c, uint8_t xDraw, uint8
   }
 
   // empty the line after the char
-  xx++;
   for (uint8_t yyy = 0; yyy < h; yyy++) {
     pixels[yDraw + yyy][xDraw + xx].on = false;
   }
