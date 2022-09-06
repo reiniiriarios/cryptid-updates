@@ -1,6 +1,6 @@
-//
-// CRYPTID UPDATES - LED Matrix Display
-//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~ CRYPTID UPDATES ~ LED Matrix Display ~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // INCLUDES ----------------------------------------------------------------------------------------
 
@@ -15,9 +15,6 @@
 
 // RGB Matrix
 #include <Adafruit_Protomatter.h>
-
-// Pixel Dust Simulator
-// #include <Adafruit_PixelDust.h>
 
 // Filesystem
 // #include <Adafruit_FlashCache.h>
@@ -40,49 +37,38 @@
 
 // HARDWARE CONFIG ---------------------------------------------------------------------------------
 
-// ---- MatrixPortal M4 pin configuration -----
-
+// MatrixPortal M4 pin configuration
 uint8_t rgbPins[]  = {7, 8, 9, 10, 11, 12};
 uint8_t addrPins[] = {17, 18, 19, 20}; // add 21 if 64-pixel tall
 uint8_t clockPin   = 14;
 uint8_t latchPin   = 15;
 uint8_t oePin      = 16;
 
-// ---- LIS3DH Triple-Axis Accelerometer ----
+// LIS3DH Triple-Axis Accelerometer
+Adafruit_LIS3DH accel = Adafruit_LIS3DH();
 
-Adafruit_LIS3DH accel = Adafruit_LIS3DH(); // The accelerometer.
-
-// ---- SHT4X Temperature and Humidity Sensor ----
-
-Adafruit_SHT4x sht4 = Adafruit_SHT4x(); // The temperature and humidity sensor.
+// SHT4X Temperature and Humidity Sensor
+Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 sensors_event_t humidity, temp; // % rH, °C
 
 // THE SCREEN & GRAPHICS OBJECTS -------------------------------------------------------------------
 
-/**
- * @brief The LED Matrix.
- */
+// The LED Matrix.
 Adafruit_Protomatter matrix(
   MATRIX_WIDTH,               // Width of matrix (or matrix chain) in pixels
   4,                          // Bit depth, 1-6, only green uses 6, avoid
   1, rgbPins,                 // # of matrix chains, array of 6 RGB pins for each
   sizeof(addrPins), addrPins, // # of address pins (height is inferred), array of pins
   clockPin, latchPin, oePin,  // Other matrix control pins
-  true);                     // Double-buffering
+  true);                      // Double-buffering
 
-/**
- * @brief The graphics object responsible for all drawing operations.
- */
+// The graphics object responsible for all drawing operations.
 Gfx gfx(&matrix);
 
-/**
- * @brief A heart <3.
- */
+// A heart <3.
 Heart heart(&gfx);
 
-/**
- * @brief The temperature display.
- */
+// The temperature display.
 TemperatureDisplay tempDisplay(&gfx);
 
 // ERROR HANDLING ----------------------------------------------------------------------------------
@@ -117,17 +103,14 @@ void setup(void) {
     err(200, "protomatter failed to start");
   }
 
-  // --- Temperature & Humidity ---
-
+  // Temperature & Humidity
   if (!sht4.begin()) {
     err(400, "SHT4x failed to start");
   }
   Serial.print("SHT4x Serial 0x");
   Serial.println(sht4.readSerial(), HEX); // 0xF5D9FCC
 
-  // SHT4X_HIGH_PRECISION
-  // SHT4X_LOW_PRECISION
-  sht4.setPrecision(SHT4X_MED_PRECISION);
+  sht4.setPrecision(SHT4X_MED_PRECISION); // SHT4X_HIGH_PRECISION SHT4X_LOW_PRECISION
 
   sht4.getEvent(&humidity, &temp);
 
@@ -148,18 +131,10 @@ uint16_t frameCounter = 0; // Counts up every frame based on MAX_FPS.
 float temp_f = 0; // Temperature in degrees fahrenheit.
 
 void loop(void) {
-
-  // --- Limit FPS ---
-
-  // Limit the animation frame rate to MAX_FPS.  Because the subsequent sand
-  // calculations are non-deterministic (don't always take the same amount
-  // of time, depending on their current states), this helps ensure that
-  // things like gravity appear constant in the simulation.
+  // Limit FPS
   uint32_t t;
   while(((t = micros()) - prevTime) < (1000000L / MAX_FPS));
   prevTime = t;
-
-  // --- Every n Seconds ---
 
   // Do something every second.
   if (frameCounter % MAX_FPS == 0) {
@@ -178,15 +153,13 @@ void loop(void) {
   }
   frameCounter++;
 
-  // --- Update pixel data ---
-
+  // Update pixel data
   heart.update();
   tempDisplay.update(temp_f);
 
-  // --- Done ---
-
-  gfx.drawPixels();  // Move pixels[] to matrix
-  matrix.show(); // Copy data to matrix buffers
+  // Done
+  gfx.drawPixels(); // Move pixels[] to matrix
+  matrix.show();    // Copy data to matrix buffers
 }
 
 // UTILITY -----------------------------------------------------------------------------------------
