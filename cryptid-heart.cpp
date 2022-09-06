@@ -8,11 +8,8 @@ Heart::Heart(Gfx *gfx_p) {
   pixel_mask.height = 11;
   pixel_mask.mask = mask;
 
-  gradient_config.animation_speed  = 10;
-  gradient_config.gradient_width   = 32;
-  gradient_config.shape_width      = 16;
-  gradient_config.gradient_start   = 260;
-  gradient_config.gradient_end     = 350;
+  gradient_config_t *cfg = new gradient_config_t(10, 32, 16, 260, 350, false);
+  gradient_config = *cfg;
 }
 
 void Heart::update(void) {

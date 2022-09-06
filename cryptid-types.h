@@ -5,9 +5,9 @@
    * @brief A representation of one pixel.
    */
   typedef struct pixel_t {
-    bool     on      = false; /** Whether to draw the pixel at all. */
-    uint8_t  opacity = 100;   /** Opacity, [0-100] */
-    uint16_t hue;             /** Hue in degrees, [0-360] */
+    bool     on      = false;  /** Whether to draw the pixel at all. */
+    uint8_t  opacity = 100;    /** Opacity, [0-100] */
+    uint16_t hue;              /** Hue in degrees, [0-360] */
   } pixel_t;
 
   /**
@@ -31,50 +31,50 @@
      * 1 = very slow, 10 = steady, 40 = uncomfortably fast
      * Set this high at your own risk (seizures, etc).
      */
-    uint8_t  animation_speed  = 10;
+    uint8_t  animation_speed;
 
     /** Size of gradient within shapes. No direct correlation to pixels. */
-    uint8_t  gradient_width   = 32;
+    uint8_t  gradient_width;
 
     /** Size of the shapes, no direct correlation to pixels */
-    uint8_t  shape_width      = 16;
+    uint8_t  shape_width;
 
     /** Starting color of the gradient, in degrees, 0-360 */
-    uint16_t gradient_start   = 260;
+    uint16_t gradient_start;
 
     /** End color of the gradient, in degrees, 0-360 */
-    uint16_t gradient_end     = 350;
+    uint16_t gradient_end;
 
     /** Whether to draw the gradient clockwise or counterclockwise */
-    boolean  gradient_reverse = false;
+    boolean  gradient_reverse;
 
-    /** Hue, 0-65535. Set within functions. */
-    float gradient_start_scaled = 47330.8333;
-    float gradient_end_scaled = 63714.5833;
+    /** Hue, 0-65535. */
+    float gradient_start_scaled;
+
+    /** Hue, 0-65535. */
+    float gradient_end_scaled;
 
     gradient_config_t(
-      uint8_t animation_speed = 10,
-      uint8_t gradient_width = 32,
-      uint8_t shape_width = 16,
-      uint8_t gradient_start = 260,
-      uint8_t gradient_end = 350,
-      uint8_t gradient_reverse = false
+      unsigned int animation_speed = 10,
+      unsigned int gradient_width = 32,
+      unsigned int shape_width = 16,
+      unsigned int gradient_start = 260,
+      unsigned int gradient_end = 350,
+      unsigned int gradient_reverse = false
     ) :
-      animation_speed(animation_speed),
-      gradient_width(gradient_width),
-      shape_width(shape_width),
-      gradient_start(gradient_start),
-      gradient_end(gradient_end),
-      gradient_reverse(gradient_reverse)
+      animation_speed((uint8_t)animation_speed),
+      gradient_width((uint8_t)gradient_width),
+      shape_width((uint8_t)shape_width),
+      gradient_start((uint8_t)gradient_start),
+      gradient_end((uint8_t)gradient_end),
+      gradient_reverse((uint8_t)gradient_reverse)
     {
       // scale the start/end values to a useful value to compute hue for Protomatter (0-65535)
       gradient_start_scaled = gradient_start / 360.0f * 65535.0f;
       gradient_end_scaled = gradient_end / 360.0f * 65535.0f;
 
       // normalize hues
-      while (gradient_start < 0) gradient_start += 360;
       while (gradient_start > 360) gradient_start -= 360;
-      while (gradient_end < 0) gradient_end += 360;
       while (gradient_end > 360) gradient_end -= 360;
 
       // if the start and end are reversed, gradient_reverse is backwards
