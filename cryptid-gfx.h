@@ -36,7 +36,7 @@ class Gfx {
      * @param y   The y-coord on pixels[].
      * @param on  Whether the pixel should be turned on or off.
      */
-    void Gfx::togglePixel(uint8_t x, uint8_t y, bool on);
+    void togglePixel(uint8_t x, uint8_t y, bool on);
 
     /**
      * @brief Turn off single pixel on display.
@@ -44,7 +44,7 @@ class Gfx {
      * @param x  The x-coord on pixels[].
      * @param y  The y-coord on pixels[].
      */
-    void Gfx::turnOffPixel(uint8_t x, uint8_t y);
+    void turnOffPixel(uint8_t x, uint8_t y);
   
     /**
      * @brief Build one frame of a gradient based on an image mask + config.
