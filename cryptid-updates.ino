@@ -81,7 +81,7 @@ Gfx gfx(&matrix);
 Heart heart(&gfx);
 
 /**
- * @brief A heart <3.
+ * @brief The temperature display.
  */
 TemperatureDisplay tempDisplay(&gfx);
 
