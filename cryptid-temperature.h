@@ -18,6 +18,11 @@
        */
       void update(float newTemperature);
 
+      /**
+       * @brief Convert temperature to hue by scaling the value to a different range.
+       */
+      uint16_t temperature2hue(int value, int minFrom, int maxFrom, int minTo, int maxTo);
+
     private:
       /**
        * @brief A pointer to the graphics object.
