@@ -4,8 +4,6 @@
 #include <SPI.h>
 #include <WiFiNINA.h>
 
-#include "cryptid-wifi-config.h"
-
 /**
  * @brief Connect to the interwebs and discover all the interesting webs.
  */
@@ -19,28 +17,28 @@ class Interwebs {
     /**
      * @brief Print WiFi status over the Serial connection.
      */
-    void Interwebs::printWifiStatus(void);
+    void printWifiStatus(void);
 
     /**
-     * @brief If connection is sending data, print it over the Serial connection. Run every loop.
+     * @brief If connection is sending data, print it over the Serial connection. Run in loop().
      *
      * @return Whether bytes were read from server.
      */
-    bool Interwebs::read(void);
+    bool read(void);
 
     /**
-     * @brief Check connection, close client if not connected. Run at end of every loop.
+     * @brief Check connection, close client if not connected. Run at end of loop().
      *
      * @return Whether client is connected.
      */
-    bool Interwebs::checkStatus(void);
+    bool checkStatus(void);
 
     /**
      * @brief Fetch data.
      *
      * @return False on connection failure.
      */
-    bool Interwebs::fetchData(void);
+    bool fetchData(void);
 
   private:
     /**
