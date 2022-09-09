@@ -18,9 +18,6 @@ Adafruit MQTT | dependency for WiFiNINA
 Adafruit GFX | dependency for Protomatter
 Adafruit IO Arduino | dependency for WiFiNINA
 Adafruit LIS3DH | Accelerometer
-Adafruit SPIFlash | Filesystem
-Adafruit ImageReader | Load images from SD
-Adafruit PixelDust | Particle simulation
 Adafruit Protomatter | RGB LED matrix
 Adafruit SHT4x | Temperature & humidity sensor
 ArduinoHttpClient | dependency for WiFiNINA
