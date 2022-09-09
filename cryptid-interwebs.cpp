@@ -26,10 +26,10 @@ bool Interwebs::connect(void) {
     status = WiFi.begin(wifi_ssid, wifi_pass);
     // wait 5 seconds for connection:
     delay(5000);
-    printWifiStatus();
-    fetchData();
 
     if (status == WL_CONNECTED) {
+      printWifiStatus();
+
       return true;
     }
   }
