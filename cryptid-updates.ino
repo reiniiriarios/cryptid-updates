@@ -31,6 +31,7 @@
 #include "cryptid-updates.h"
 #include "cryptid-types.h"
 #include "cryptid-config.h"
+#include "cryptid-interwebs.h"
 #include "cryptid-gfx.h"
 #include "cryptid-heart.h"
 #include "cryptid-temperature.h"
@@ -70,6 +71,10 @@ Heart heart(&gfx);
 
 // The temperature display.
 TemperatureDisplay tempDisplay(&gfx);
+
+// OTHER CONTROL OBJECTS ---------------------------------------------------------------------------
+
+Interwebs interwebs;
 
 // ERROR HANDLING ----------------------------------------------------------------------------------
 
@@ -121,6 +126,11 @@ void setup(void) {
   Serial.print("Temperature: ");
   Serial.print(temp.temperature);
   Serial.println("°C");
+
+  // Interwebs
+  if (interwebs.connect()) {
+    interwebs.fetchData();
+  }
 }
 
 // LOOP --------------------------------------------------------------------------------------------
@@ -152,6 +162,11 @@ void loop(void) {
     frameCounter = 0;
   }
   frameCounter++;
+
+  // Interwebs
+  if (interwebs.checkStatus()) {
+    interwebs.read();
+  }
 
   // Update pixel data
   heart.update();
