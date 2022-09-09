@@ -25,17 +25,7 @@ Interwebs::Interwebs() {
     // wait 5 seconds for connection:
     delay(5000);
     printWifiStatus();
-
-    Serial.println("starting connection to server");
-    // if we get a connection, report back via serial
-    if (client.connect(*server, 80)) {
-      Serial.println("connected to server");
-      // Make a HTTP request
-      client.println("GET /search?q=arduino HTTP/1.1");
-      client.println("Host: www.google.com");
-      client.println("Connection: close");
-      client.println();
-    }
+    fetchData();
   }
 }
 
@@ -74,4 +64,20 @@ void Interwebs::checkStatus(void) {
     Serial.println("disconnecting from server");
     client.stop();
   }
+}
+
+bool Interwebs::fetchData(void) {
+  Serial.println("starting connection to server");
+  if (!client.connect(*server, 80)) {
+    Serial.println("connection failed");
+    return false;
+  }
+  Serial.println("connected to server");
+  // Make an HTTP request
+  client.println("GET /search?q=arduino HTTP/1.1");
+  client.println("Host: www.google.com");
+  client.println("User-Agent: ArduinoWiFi/1.1");
+  client.println("Connection: close");
+  client.println();
+  return true;
 }

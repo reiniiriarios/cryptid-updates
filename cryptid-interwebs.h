@@ -31,6 +31,11 @@ class Interwebs {
      */
     void Interwebs::checkStatus(void);
 
+    /**
+     * @brief Fetch data.
+     */
+    bool Interwebs::fetchData(void);
+
   private:
     /**
      * @brief Connection status.
