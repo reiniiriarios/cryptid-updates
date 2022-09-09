@@ -24,7 +24,6 @@ Interwebs::Interwebs() {
     status = WiFi.begin(wifi_ssid, wifi_pass);
     // wait 5 seconds for connection:
     delay(5000);
-    Serial.println("connected to WiFi");
     printWifiStatus();
 
     Serial.println("starting connection to server");
@@ -45,6 +44,7 @@ void Interwebs::printWifiStatus(void) {
     Serial.println("not connected to WiFi");
     return;
   }
+  Serial.println("connected to WiFi");
   // print the SSID of the network you're attached to
   Serial.print("SSID: ");
   Serial.println(WiFi.SSID());
