@@ -4,3 +4,8 @@ build
 # vscode
 # including arduino.json and c_cpp_properties.json b/c they have useful data
 .vscode/settings.json
+
+# secrets
+cryptid-wifi-config.h
+cryptid-wifi-config.c
+cryptid-wifi-config.cpp
