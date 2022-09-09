@@ -1,5 +1,5 @@
-#ifndef CRYPTID_INTERWEBS_H
-#define CRYPTID_INTERWEBS_H
+#ifndef H_CRYPTID_INTERWEBS
+#define H_CRYPTID_INTERWEBS
 
 #include <SPI.h>
 #include <WiFiNINA.h>

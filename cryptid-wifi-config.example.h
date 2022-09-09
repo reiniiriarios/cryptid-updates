@@ -1,7 +1,7 @@
 // Copy to cryptid-wifi-config.h and edit.
 
-#ifndef CRYPTID_WIFI_CONFIG_H
-#define CRYPTID_WIFI_CONFIG_H
+#ifndef H_CRYPTID_WIFI_CONFIG
+#define H_CRYPTID_WIFI_CONFIG
 
   // your network SSID (name)
   char wifi_ssid[] = "SECRET_SSID";

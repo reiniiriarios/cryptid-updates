@@ -1,5 +1,5 @@
-#ifndef CRYPTID_UPDATES
-#define CRYPTID_UPDATES
+#ifndef H_CRYPTID_UPDATES
+#define H_CRYPTID_UPDATES
 
   /**
    * @brief Blink onboard LED and print message over serial.

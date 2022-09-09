@@ -1,5 +1,5 @@
-#ifndef CRYPTID_CONFIG_H
-#define CRYPTID_CONFIG_H
+#ifndef H_CRYPTID_CONFIG
+#define H_CRYPTID_CONFIG
 
   // ---- MatrixPortal M4 pin configuration -----
 

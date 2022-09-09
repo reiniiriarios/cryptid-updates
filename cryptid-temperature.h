@@ -1,5 +1,5 @@
-#ifndef CRYPTID_TEMP
-#define CRYPTID_TEMP
+#ifndef H_CRYPTID_TEMP
+#define H_CRYPTID_TEMP
 
   #include "cryptid-types.h"
   #include "cryptid-gfx.h"

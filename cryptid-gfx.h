@@ -1,5 +1,5 @@
-#ifndef CRYPTID_GFX
-#define CRYPTID_GFX
+#ifndef H_CRYPTID_GFX
+#define H_CRYPTID_GFX
 
 #include <Adafruit_Protomatter.h>
 #include "cryptid-types.h"

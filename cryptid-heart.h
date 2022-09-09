@@ -1,5 +1,5 @@
-#ifndef CRYPTID_HEART
-#define CRYPTID_HEART
+#ifndef H_CRYPTID_HEART
+#define H_CRYPTID_HEART
 
   #include "cryptid-types.h"
   #include "cryptid-gfx.h"
