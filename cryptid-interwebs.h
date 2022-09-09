@@ -15,6 +15,13 @@ class Interwebs {
     Interwebs();
 
     /**
+     * @brief Connect to WiFi. Run in setup().
+     *
+     * @return Whether the connection was successful.
+     */
+    bool connect(void);
+
+    /**
      * @brief Print WiFi status over the Serial connection.
      */
     void printWifiStatus(void);

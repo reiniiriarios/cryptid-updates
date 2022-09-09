@@ -15,9 +15,11 @@ Interwebs::Interwebs() {
   if (fv < WIFI_FIRMWARE_LATEST_VERSION) {
     Serial.println("firmware upgrade available");
   }
+}
 
+bool Interwebs::connect(void) {
   // attempt to connect to Wifi network
-  for (uint8_t i = 0; i < 5 && status != WL_CONNECTED; i++) {
+  for (uint8_t i = 0; i < 5; i++) {
     Serial.print("attempting to connect to SSID: ");
     Serial.println(wifi_ssid);
     // connect to WPA/WPA2 network; change this line if using open or WEP network
@@ -26,7 +28,13 @@ Interwebs::Interwebs() {
     delay(5000);
     printWifiStatus();
     fetchData();
+
+    if (status == WL_CONNECTED) {
+      return true;
+    }
   }
+
+  return false;
 }
 
 void Interwebs::printWifiStatus(void) {
