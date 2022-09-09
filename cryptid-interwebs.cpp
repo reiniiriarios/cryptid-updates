@@ -62,6 +62,11 @@ bool Interwebs::read(void) {
 }
 
 bool Interwebs::checkStatus(void) {
+  // return value of 0 means the client is closed
+  if (!client.status()) {
+    return false;
+  }
+
   // if the server's disconnected, stop the client
   if (!client.connected()) {
     Serial.println();
