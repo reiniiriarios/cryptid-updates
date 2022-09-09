@@ -49,29 +49,39 @@ void Interwebs::printWifiStatus(void) {
   Serial.println(" dBm");
 }
 
-void Interwebs::read(void) {
+bool Interwebs::read(void) {
   // if there are incoming bytes available from the server, read them and print them
+  bool read = false;
   while (client.available()) {
     char c = client.read();
     Serial.write(c);
+    read = true;
   }
+
+  return read;
 }
 
-void Interwebs::checkStatus(void) {
+bool Interwebs::checkStatus(void) {
   // if the server's disconnected, stop the client
   if (!client.connected()) {
     Serial.println();
     Serial.println("disconnecting from server");
     client.stop();
+  
+    return false;
   }
+
+  return true;
 }
 
 bool Interwebs::fetchData(void) {
   Serial.println("starting connection to server");
   if (!client.connect(*server, 80)) {
     Serial.println("connection failed");
+
     return false;
   }
+
   Serial.println("connected to server");
   // Make an HTTP request
   client.println("GET /search?q=arduino HTTP/1.1");
@@ -79,5 +89,6 @@ bool Interwebs::fetchData(void) {
   client.println("User-Agent: ArduinoWiFi/1.1");
   client.println("Connection: close");
   client.println();
+
   return true;
 }

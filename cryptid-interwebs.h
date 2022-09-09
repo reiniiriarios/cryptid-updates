@@ -23,16 +23,22 @@ class Interwebs {
 
     /**
      * @brief If connection is sending data, print it over the Serial connection. Run every loop.
+     *
+     * @return Whether bytes were read from server.
      */
-    void Interwebs::read(void);
+    bool Interwebs::read(void);
 
     /**
      * @brief Check connection, close client if not connected. Run at end of every loop.
+     *
+     * @return Whether client is connected.
      */
-    void Interwebs::checkStatus(void);
+    bool Interwebs::checkStatus(void);
 
     /**
      * @brief Fetch data.
+     *
+     * @return False on connection failure.
      */
     bool Interwebs::fetchData(void);
 
