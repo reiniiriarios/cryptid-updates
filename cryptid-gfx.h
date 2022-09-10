@@ -114,6 +114,17 @@ class Gfx {
      * @return     Width of character drawn in pixels.
      */
     uint8_t drawCircularGradientFont(char c, uint8_t x, uint8_t y, gradient_config_t *cfg);
+
+    /**
+     * @brief Convert value to hue by scaling the value to a different range.
+     *
+     * @param value    The value.
+     * @param minFrom  Bottom range of values.
+     * @param maxFrom  Upper range of values.
+     * @param minTo    Bottom range of hues.
+     * @param maxTo    Upper range of hues.
+     */
+    uint16_t value2hue(int value, int minFrom, int maxFrom, int minTo, int maxTo);
 };
 
 #endif
