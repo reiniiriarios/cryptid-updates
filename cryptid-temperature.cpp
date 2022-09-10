@@ -3,7 +3,6 @@ using namespace std;
 
 #include "cryptid-gfx.h"
 #include "cryptid-temperature.h"
-#include "cryptid-numbers.h"
 
 TemperatureDisplay::TemperatureDisplay(Gfx *graphics_object) {
   xStart = 4;
@@ -38,7 +37,7 @@ void TemperatureDisplay::update(float newTemperature) {
     gradient_config.setEnd(335);
   }
 
-  gfx->buildCircularGradientFromNumber(temperature, xStart, yStart, &gradient_config);
+  gfx->buildCircularGradientFromNumberMask(temperature, xStart, yStart, &gradient_config);
 }
 
 uint16_t TemperatureDisplay::temperature2hue(int value, int minFrom, int maxFrom, int minTo, int maxTo) {

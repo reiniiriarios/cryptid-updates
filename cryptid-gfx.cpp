@@ -6,6 +6,7 @@
 #include "cryptid-types.h"
 #include "cryptid-config.h"
 #include "cryptid-gfx.h"
+#include "cryptid-numbers.h"
 
 const GFXfont *gfxFont = &FreeSans9pt7b;
 
@@ -133,16 +134,38 @@ void Gfx::buildCircularGradientPixel(uint8_t x, uint8_t y, gradient_config_t *cf
   pixels[y][x].hue = hue;
 }
 
-void Gfx::buildCircularGradientFromNumber(float number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
-  buildCircularGradientFromNumber((uint8_t)round(number), x, y, cfg);
+void Gfx::buildCircularGradientFromNumberFont(float number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
+  buildCircularGradientFromNumberFont((uint8_t)round(number), x, y, cfg);
 }
 
-void Gfx::buildCircularGradientFromNumber(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
+void Gfx::buildCircularGradientFromNumberFont(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
   String number_chars = String(number);
   uint8_t drawX = x;
   for (uint8_t i = 0; i < number_chars.length(); i++) {
     uint8_t width = buildCircularGradientFromChar(number_chars[i], drawX, y, cfg);
     drawX += width + 1;
+  }
+}
+
+void Gfx::buildCircularGradientFromNumberMask(float number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
+  buildCircularGradientFromNumberMask((uint8_t)round(number), x, y, cfg);
+}
+
+void Gfx::buildCircularGradientFromNumberMask(uint8_t number, uint8_t xDraw, uint8_t yDraw, gradient_config_t *cfg) {
+  // Calculate the number of digits in the number.
+  uint8_t num_digits = 0;
+  for (uint8_t n = number; n > 0; n /= 10) {
+    num_digits++;
+  }
+  // Make an array of digits, small to large (right to left).
+  uint8_t digits[num_digits];
+  for (uint8_t n = number, i = 0; n > 0; n /= 10, i++) {
+    digits[i] = n % 10;
+  }
+  // Draw each digit in reverse order.
+  for (int8_t i = num_digits - 1; i >= 0; i--) {
+    buildCircularGradient(xDraw, yDraw, &numberMasks[digits[i]], cfg);
+    xDraw += numberMasks[digits[i]].width + 1;
   }
 }
 
