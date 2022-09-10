@@ -137,20 +137,20 @@ uint8_t Gfx::drawCircularGradientMask(pixel_mask_t *mask, uint8_t x, uint8_t y, 
   return mask->width;
 }
 
-uint8_t Gfx::drawCircularGradientMask(float number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
-  return drawCircularGradientMask((uint8_t)round(number), x, y, cfg);
+uint8_t Gfx::drawCircularGradientMask(float n, uint8_t x, uint8_t y, gradient_config_t *cfg) {
+  return drawCircularGradientMask((uint8_t)round(n), x, y, cfg);
 }
 
-uint8_t Gfx::drawCircularGradientMask(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
+uint8_t Gfx::drawCircularGradientMask(uint8_t n, uint8_t x, uint8_t y, gradient_config_t *cfg) {
   // Calculate the number of digits in the number.
   uint8_t num_digits = 0;
-  for (uint8_t n = number; n > 0; n /= 10) {
+  for (uint8_t nn = n; nn > 0; nn /= 10) {
     num_digits++;
   }
   // Make an array of digits, small to large (right to left).
   uint8_t digits[num_digits];
-  for (uint8_t n = number, i = 0; n > 0; n /= 10, i++) {
-    digits[i] = n % 10;
+  for (uint8_t nn = n, i = 0; nn > 0; nn /= 10, i++) {
+    digits[i] = nn % 10;
   }
   // Draw each digit in reverse order.
   uint8_t width = 0;
@@ -162,12 +162,12 @@ uint8_t Gfx::drawCircularGradientMask(uint8_t number, uint8_t x, uint8_t y, grad
   return width;
 }
 
-uint8_t Gfx::drawCircularGradientFont(float number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
-  return drawCircularGradientFont((uint8_t)round(number), x, y, cfg);
+uint8_t Gfx::drawCircularGradientFont(float n, uint8_t x, uint8_t y, gradient_config_t *cfg) {
+  return drawCircularGradientFont((uint8_t)round(n), x, y, cfg);
 }
 
-uint8_t Gfx::drawCircularGradientFont(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
-  return drawCircularGradientFont(String(number), x, y, cfg);
+uint8_t Gfx::drawCircularGradientFont(uint8_t n, uint8_t x, uint8_t y, gradient_config_t *cfg) {
+  return drawCircularGradientFont(String(n), x, y, cfg);
 }
 
 uint8_t Gfx::drawCircularGradientFont(String s, uint8_t x, uint8_t y, gradient_config_t *cfg) {

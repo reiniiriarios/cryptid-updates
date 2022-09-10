@@ -52,46 +52,46 @@ class Gfx {
     /**
      * @brief Draw an integer as characters on pixels[] with a gradient, using masks.
      * 
-     * @param number  The number to draw.
-     * @param x       The x-coord on pixels[].
-     * @param y       The y-coord on pixels[].
-     * @param cfg     The gradient config.
-     * @return        Width of image drawn in pixels.
+     * @param n    The number to draw.
+     * @param x    The x-coord on pixels[].
+     * @param y    The y-coord on pixels[].
+     * @param cfg  The gradient config.
+     * @return     Width of image drawn in pixels.
      */
-    uint8_t drawCircularGradientMask(float number, uint8_t x, uint8_t y, gradient_config_t *cfg);
+    uint8_t drawCircularGradientMask(float n, uint8_t x, uint8_t y, gradient_config_t *cfg);
 
     /**
      * @brief Draw an integer as characters on pixels[] with a gradient, using masks.
      * 
-     * @param number  The number to draw.
-     * @param x       The x-coord on pixels[].
-     * @param y       The y-coord on pixels[].
-     * @param cfg     The gradient config.
-     * @return        Width of image drawn in pixels.
+     * @param n    The number to draw.
+     * @param x    The x-coord on pixels[].
+     * @param y    The y-coord on pixels[].
+     * @param cfg  The gradient config.
+     * @return     Width of image drawn in pixels.
      */
-    uint8_t drawCircularGradientMask(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *cfg);
+    uint8_t drawCircularGradientMask(uint8_t n, uint8_t x, uint8_t y, gradient_config_t *cfg);
 
     /**
      * @brief Draw a float as characters on pixels[] with a gradient, using a font.
      * 
-     * @param number  The number to draw.
-     * @param x       The x-coord on pixels[].
-     * @param y       The y-coord on pixels[].
-     * @param cfg     The gradient config.
-     * @return        Width of image drawn in pixels.
+     * @param n    The number to draw.
+     * @param x    The x-coord on pixels[].
+     * @param y    The y-coord on pixels[].
+     * @param cfg  The gradient config.
+     * @return     Width of image drawn in pixels.
      */
-    uint8_t drawCircularGradientFont(float number, uint8_t x, uint8_t y, gradient_config_t *cfg);
+    uint8_t drawCircularGradientFont(float n, uint8_t x, uint8_t y, gradient_config_t *cfg);
 
     /**
      * @brief Draw an integer as characters on pixels[] with a gradient, using a font.
      * 
-     * @param number  The number to draw.
-     * @param x       The x-coord on pixels[].
-     * @param y       The y-coord on pixels[].
-     * @param cfg     The gradient config.
-     * @return        Width of image drawn in pixels.
+     * @param n    The number to draw.
+     * @param x    The x-coord on pixels[].
+     * @param y    The y-coord on pixels[].
+     * @param cfg  The gradient config.
+     * @return    Width of image drawn in pixels.
      */
-    uint8_t drawCircularGradientFont(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *cfg);
+    uint8_t drawCircularGradientFont(uint8_t n, uint8_t x, uint8_t y, gradient_config_t *cfg);
 
     /**
      * @brief Draw a float as characters on pixels[] with a gradient, using a font.
