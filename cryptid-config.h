@@ -7,6 +7,9 @@
   #define DOWN_BUTTON 3
   #define STATUS_LED 4
   #define D13_LED 13
+  #define ESP_CS 33
+  #define ESP_BUSY 31
+  #define ESP_RESET 30
 
   // ---- RGB LED Matrix configuration and setup ----
 
