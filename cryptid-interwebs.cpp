@@ -11,6 +11,7 @@ Interwebs::Interwebs() {
 bool Interwebs::connect(void) {
   if (WiFi.status() == WL_NO_MODULE) {
     Serial.println("Communication with WiFi module failed");
+
     return false;
   }
 
@@ -28,6 +29,7 @@ bool Interwebs::connect(void) {
 
     if (status != WL_CONNECTED) {
       Serial.println("Connection failed");
+
       continue;
     }
 
@@ -56,7 +58,7 @@ void Interwebs::printWifiStatus(void) {
   Serial.println(ip);
   // print the received signal strength
   long rssi = WiFi.RSSI();
-  Serial.print("Signal strength (RSSI):");
+  Serial.print("Signal strength (RSSI): ");
   Serial.print(rssi);
   Serial.println(" dBm");
 }
@@ -84,7 +86,7 @@ bool Interwebs::checkStatus(void) {
     Serial.println();
     Serial.println("Disconnecting from server");
     client.stop();
-  
+
     return false;
   }
 
