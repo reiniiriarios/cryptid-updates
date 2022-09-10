@@ -150,12 +150,15 @@ void loop(void) {
   if (frameCounter % MAX_FPS == 0) {
     sht4.getEvent(&humidity, &temp);
     temp_f = celsius2fahrenheit(temp.temperature);
+  }
+  // Do something every n seconds.
+  if (frameCounter % (MAX_FPS * 5) == 0) {
     Serial.print("Temperature: ");
     Serial.print(temp_f);
     Serial.println("°F");
   }
-  // Do something every five seconds.
-  if (frameCounter % (MAX_FPS * 5) == 0) {
+  // Do something every n seconds.
+  if (frameCounter % (MAX_FPS * 10) == 0) {
     Serial.print("Free Memory: ");
     Serial.println(freeMemory());
     // Start counter over.
