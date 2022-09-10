@@ -56,14 +56,14 @@ void TemperatureDisplay::update(float newTemperature, bool small) {
   }
 
   if (small) {
-    uint8_t width = gfx->buildCircularGradientFromNumberMask(temperature, xStart, yStart, &gradient_config);
-    gfx->buildCircularGradient(xStart + width, yStart, &degF_pixel_mask, &gradient_config);
+    uint8_t width = gfx->drawCircularGradientMask(temperature, xStart, yStart, &gradient_config);
+    gfx->drawCircularGradientMask(&degF_pixel_mask, xStart + width, yStart, &gradient_config);
   }
   else {
-    uint8_t width = gfx->buildCircularGradientFromNumberFont(temperature, xStart, yStart, &gradient_config);
-    gfx->buildCircularGradient(xStart + width, yStart, &deg_pixel_mask, &gradient_config);
+    uint8_t width = gfx->drawCircularGradientFont(temperature, xStart, yStart, &gradient_config);
+    gfx->drawCircularGradientMask(&deg_pixel_mask, xStart + width, yStart, &gradient_config);
     width += deg_pixel_mask.width + 1;
-    gfx->buildCircularGradientFromString("F", xStart + width, yStart, &gradient_config);
+    gfx->drawCircularGradientFont("F", xStart + width, yStart, &gradient_config);
   }
 }
 

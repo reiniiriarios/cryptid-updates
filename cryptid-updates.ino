@@ -174,8 +174,8 @@ void loop(void) {
   tempDisplay.update(temp_f);
 
   // Done
-  gfx.drawPixels(); // Move pixels[] to matrix
-  matrix.show();    // Copy data to matrix buffers
+  gfx.toBuffer(); // Move pixels[] to matrix
+  matrix.show();  // Copy data to matrix buffers
 }
 
 // UTILITY -----------------------------------------------------------------------------------------

@@ -39,7 +39,7 @@ Gfx::Gfx(Adafruit_Protomatter *matrix_p) {
   matrix = matrix_p;
 }
 
-void Gfx::drawPixels(void) {
+void Gfx::toBuffer(void) {
   for(int y = 0; y < MATRIX_HEIGHT; y++) {
     for(int x = 0; x < MATRIX_WIDTH; x++) {
       if (pixels[y][x].on == true) {
@@ -55,30 +55,7 @@ void Gfx::drawPixels(void) {
   }
 }
 
-void Gfx::buildCircularGradient(uint8_t drawX, uint8_t drawY, pixel_mask_t *mask, gradient_config_t *cfg) {
-  // loop through the mask
-  uint8_t *pixel = mask->mask;
-  for(int y = 0; y < mask->height && y < MATRIX_HEIGHT; y++) {
-
-    // get y on pixels[] grid
-    uint8_t yDraw = drawY + y;
-    if (yDraw > MATRIX_HEIGHT) continue;
-
-    for(int x = 0; x < mask->width && x < MATRIX_WIDTH; x++, pixel++) {
-      // if mask is empty here, we're not drawing anything
-      if (*pixel == 0) continue;
-
-      // get x on pixels[] grid
-      uint8_t xDraw = drawX + x;
-      if (xDraw > MATRIX_WIDTH) continue;
-
-      // add this pixel
-      buildCircularGradientPixel(xDraw, yDraw, cfg);
-    }
-  }
-}
-
-void Gfx::buildCircularGradientPixel(uint8_t x, uint8_t y, gradient_config_t *cfg) {
+void Gfx::drawCircularGradientPixel(uint8_t x, uint8_t y, gradient_config_t *cfg) {
   float tick = millis() * 0.0001f * cfg->animation_speed;
   float v = (
       cos(((float)x - CENTER_X) / (0.5f * cfg->shape_width))
@@ -134,19 +111,36 @@ void Gfx::buildCircularGradientPixel(uint8_t x, uint8_t y, gradient_config_t *cf
   pixels[y][x].hue = hue;
 }
 
-uint8_t Gfx::buildCircularGradientFromNumberFont(float number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
-  return buildCircularGradientFromNumberFont((uint8_t)round(number), x, y, cfg);
+uint8_t Gfx::drawCircularGradientMask(pixel_mask_t *mask, uint8_t x, uint8_t y, gradient_config_t *cfg) {
+  // loop through the mask
+  uint8_t *pixel = mask->mask;
+  for(int yy = 0; yy < mask->height && yy < MATRIX_HEIGHT; yy++) {
+
+    // get y on pixels[] grid
+    uint8_t yDraw = y + yy;
+    if (yDraw > MATRIX_HEIGHT) continue;
+
+    for(int xx = 0; xx < mask->width && xx < MATRIX_WIDTH; xx++, pixel++) {
+      // if mask is empty here, we're not drawing anything
+      if (*pixel == 0) continue;
+
+      // get x on pixels[] grid
+      uint8_t xDraw = x + xx;
+      if (xDraw > MATRIX_WIDTH) continue;
+
+      // add this pixel
+      drawCircularGradientPixel(xDraw, yDraw, cfg);
+    }
+  }
+
+  return mask->width;
 }
 
-uint8_t Gfx::buildCircularGradientFromNumberFont(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
-  return buildCircularGradientFromString(String(number), x, y, cfg);
+uint8_t Gfx::drawCircularGradientMask(float number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
+  return drawCircularGradientMask((uint8_t)round(number), x, y, cfg);
 }
 
-uint8_t Gfx::buildCircularGradientFromNumberMask(float number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
-  return buildCircularGradientFromNumberMask((uint8_t)round(number), x, y, cfg);
-}
-
-uint8_t Gfx::buildCircularGradientFromNumberMask(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
+uint8_t Gfx::drawCircularGradientMask(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
   // Calculate the number of digits in the number.
   uint8_t num_digits = 0;
   for (uint8_t n = number; n > 0; n /= 10) {
@@ -160,23 +154,31 @@ uint8_t Gfx::buildCircularGradientFromNumberMask(uint8_t number, uint8_t x, uint
   // Draw each digit in reverse order.
   uint8_t width = 0;
   for (int8_t i = num_digits - 1; i >= 0; i--) {
-    buildCircularGradient(x + width, y, &numberMasks[digits[i]], cfg);
+    drawCircularGradientMask(&numberMasks[digits[i]], x + width, y, cfg);
     width += numberMasks[digits[i]].width + 1;
   }
 
   return width;
 }
 
-uint8_t Gfx::buildCircularGradientFromString(String s, uint8_t x, uint8_t y, gradient_config_t *cfg) {
+uint8_t Gfx::drawCircularGradientFont(float number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
+  return drawCircularGradientFont((uint8_t)round(number), x, y, cfg);
+}
+
+uint8_t Gfx::drawCircularGradientFont(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
+  return drawCircularGradientFont(String(number), x, y, cfg);
+}
+
+uint8_t Gfx::drawCircularGradientFont(String s, uint8_t x, uint8_t y, gradient_config_t *cfg) {
   uint8_t width = 0;
   for (uint8_t i = 0; i < s.length(); i++) {
-    width += buildCircularGradientFromChar(s[i], x + width, y, cfg) + 1;
+    width += drawCircularGradientFont(s[i], x + width, y, cfg) + 1;
   }
 
   return width;
 }
 
-uint8_t Gfx::buildCircularGradientFromChar(char c, uint8_t x, uint8_t y, gradient_config_t *cfg) {
+uint8_t Gfx::drawCircularGradientFont(char c, uint8_t x, uint8_t y, gradient_config_t *cfg) {
   c -= (uint8_t)pgm_read_byte(&gfxFont->first);
   GFXglyph *glyph = pgm_read_glyph_ptr(gfxFont, c);
   uint8_t *bitmap = pgm_read_bitmap_ptr(gfxFont);
@@ -194,7 +196,7 @@ uint8_t Gfx::buildCircularGradientFromChar(char c, uint8_t x, uint8_t y, gradien
         bits = pgm_read_byte(&bitmap[bo++]);
       }
       if (bits & 0x80) {
-        buildCircularGradientPixel(x + xx, y + yy, cfg);
+        drawCircularGradientPixel(x + xx, y + yy, cfg);
       }
       bits <<= 1;
       i++;
