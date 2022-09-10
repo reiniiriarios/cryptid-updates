@@ -166,10 +166,8 @@ void loop(void) {
   }
   frameCounter++;
 
-  // Interwebs
-  if (interwebs.checkStatus()) {
-    interwebs.read();
-  }
+  // Read any buffer data from SPI and print to Serial
+  interwebs.read();
 
   // Update pixel data
   heart.update();
