@@ -1,7 +1,6 @@
 #ifndef H_CRYPTID_INTERWEBS
 #define H_CRYPTID_INTERWEBS
 
-#include <SPI.h>
 #include <WiFiNINA.h>
 
 /**
@@ -56,12 +55,12 @@ class Interwebs {
     /**
      * @brief The WiFi client.
      */
-    WiFiClient client;
+    WiFiSSLClient client;
 
     /**
      * @brief The IP address to connect to.
      */
-    IPAddress *server;
+    IPAddress server;
 };
 
 #endif
