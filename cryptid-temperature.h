@@ -15,11 +15,20 @@ class TemperatureDisplay {
 
     /**
      * @brief Update the temperature image (run each frame).
+     *
+     * @param newTemperature The temperature in degrees fahrenheit.
+     * @param small          Whether to draw it small or large.
      */
-    void update(float newTemperature);
+    void update(float newTemperature, bool small = false);
 
     /**
      * @brief Convert temperature to hue by scaling the value to a different range.
+     *
+     * @param value    The temperature.
+     * @param minFrom  Bottom range of temperatures.
+     * @param maxFrom  Upper range of temperatures.
+     * @param minTo    Bottom range of hues.
+     * @param maxTo    Upper range of hues.
      */
     uint16_t temperature2hue(int value, int minFrom, int maxFrom, int minTo, int maxTo);
 

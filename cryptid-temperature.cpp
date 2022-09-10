@@ -13,6 +13,15 @@ uint8_t degF_mask[7 * 6] = {
 };
 pixel_mask_t degF_pixel_mask = {degF_mask, 7, 6};
 
+uint8_t deg_mask[5 * 5] = {
+  0, 1, 1, 1, 0,
+  1, 1, 0, 1, 1,
+  1, 0, 0, 0, 1,
+  1, 1, 0, 1, 1,
+  0, 1, 1, 1, 0
+};
+pixel_mask_t deg_pixel_mask = {deg_mask, 5, 5};
+
 TemperatureDisplay::TemperatureDisplay(Gfx *graphics_object) {
   xStart = 4;
   yStart = 4;
@@ -22,7 +31,7 @@ TemperatureDisplay::TemperatureDisplay(Gfx *graphics_object) {
   gradient_config = *cfg;
 }
 
-void TemperatureDisplay::update(float newTemperature) {
+void TemperatureDisplay::update(float newTemperature, bool small) {
   temperature = (uint8_t)round(newTemperature);
 
   // really cold
@@ -46,10 +55,16 @@ void TemperatureDisplay::update(float newTemperature) {
     gradient_config.setEnd(335);
   }
 
-  // Draw temperature.
-  uint8_t width = gfx->buildCircularGradientFromNumberMask(temperature, xStart, yStart, &gradient_config);
-  // Draw °F.
-  gfx->buildCircularGradient(xStart + width, yStart, &degF_pixel_mask, &gradient_config);
+  if (small) {
+    uint8_t width = gfx->buildCircularGradientFromNumberMask(temperature, xStart, yStart, &gradient_config);
+    gfx->buildCircularGradient(xStart + width, yStart, &degF_pixel_mask, &gradient_config);
+  }
+  else {
+    uint8_t width = gfx->buildCircularGradientFromNumberFont(temperature, xStart, yStart, &gradient_config);
+    gfx->buildCircularGradient(xStart + width, yStart, &deg_pixel_mask, &gradient_config);
+    width += deg_pixel_mask.width + 1;
+    gfx->buildCircularGradientFromString("F", xStart + width, yStart, &gradient_config);
+  }
 }
 
 uint16_t TemperatureDisplay::temperature2hue(int value, int minFrom, int maxFrom, int minTo, int maxTo) {
