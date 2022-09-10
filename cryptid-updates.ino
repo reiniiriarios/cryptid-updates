@@ -74,7 +74,7 @@ TemperatureDisplay tempDisplay(&gfx);
 
 // OTHER CONTROL OBJECTS ---------------------------------------------------------------------------
 
-Interwebs interwebs;
+// Interwebs interwebs;
 
 // ERROR HANDLING ----------------------------------------------------------------------------------
 
@@ -128,9 +128,9 @@ void setup(void) {
   Serial.println("°C");
 
   // Interwebs
-  if (interwebs.connect()) {
-    interwebs.fetchData();
-  }
+  // if (interwebs.connect()) {
+  //   interwebs.fetchData();
+  // }
 }
 
 // LOOP --------------------------------------------------------------------------------------------
@@ -167,7 +167,7 @@ void loop(void) {
   frameCounter++;
 
   // Read any buffer data from SPI and print to Serial
-  interwebs.read();
+  // interwebs.read();
 
   // Update pixel data
   heart.update();
