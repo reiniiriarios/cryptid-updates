@@ -4,6 +4,15 @@ using namespace std;
 #include "cryptid-gfx.h"
 #include "cryptid-temperature.h"
 
+uint8_t degF_mask[7 * 6] = {
+  1, 1, 1, 0, 1, 1, 1,
+  1, 0, 1, 0, 1, 0, 0,
+  1, 1, 1, 0, 1, 1, 1,
+  0, 0, 0, 0, 1, 0, 0,
+  0, 0, 0, 0, 1, 0, 0
+};
+pixel_mask_t degF_pixel_mask = {degF_mask, 7, 6};
+
 TemperatureDisplay::TemperatureDisplay(Gfx *graphics_object) {
   xStart = 4;
   yStart = 4;
@@ -37,7 +46,10 @@ void TemperatureDisplay::update(float newTemperature) {
     gradient_config.setEnd(335);
   }
 
-  gfx->buildCircularGradientFromNumberMask(temperature, xStart, yStart, &gradient_config);
+  // Draw temperature.
+  uint8_t width = gfx->buildCircularGradientFromNumberMask(temperature, xStart, yStart, &gradient_config);
+  // Draw °F.
+  gfx->buildCircularGradient(xStart + width, yStart, &degF_pixel_mask, &gradient_config);
 }
 
 uint16_t TemperatureDisplay::temperature2hue(int value, int minFrom, int maxFrom, int minTo, int maxTo) {

@@ -54,7 +54,7 @@ class Gfx {
      * @param y       The y-coord on pixels[].
      * @param cfg     The gradient config.
      */
-    void buildCircularGradientFromNumberMask(float number, uint8_t x, uint8_t y, gradient_config_t *cfg);
+    uint8_t buildCircularGradientFromNumberMask(float number, uint8_t x, uint8_t y, gradient_config_t *cfg);
 
     /**
      * @brief Draw a float as characters on pixels[] with a gradient, using a font.
@@ -74,7 +74,7 @@ class Gfx {
      * @param y       The y-coord on pixels[].
      * @param cfg     The gradient config.
      */
-    void buildCircularGradientFromNumberMask(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *cfg);
+    uint8_t buildCircularGradientFromNumberMask(uint8_t number, uint8_t x, uint8_t y, gradient_config_t *cfg);
 
     /**
      * @brief Draw an integer as characters on pixels[] with a gradient, using a font.

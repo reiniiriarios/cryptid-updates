@@ -147,11 +147,11 @@ void Gfx::buildCircularGradientFromNumberFont(uint8_t number, uint8_t x, uint8_t
   }
 }
 
-void Gfx::buildCircularGradientFromNumberMask(float number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
-  buildCircularGradientFromNumberMask((uint8_t)round(number), x, y, cfg);
+uint8_t Gfx::buildCircularGradientFromNumberMask(float number, uint8_t x, uint8_t y, gradient_config_t *cfg) {
+  return buildCircularGradientFromNumberMask((uint8_t)round(number), x, y, cfg);
 }
 
-void Gfx::buildCircularGradientFromNumberMask(uint8_t number, uint8_t xDraw, uint8_t yDraw, gradient_config_t *cfg) {
+uint8_t Gfx::buildCircularGradientFromNumberMask(uint8_t number, uint8_t xDraw, uint8_t yDraw, gradient_config_t *cfg) {
   // Calculate the number of digits in the number.
   uint8_t num_digits = 0;
   for (uint8_t n = number; n > 0; n /= 10) {
@@ -163,10 +163,13 @@ void Gfx::buildCircularGradientFromNumberMask(uint8_t number, uint8_t xDraw, uin
     digits[i] = n % 10;
   }
   // Draw each digit in reverse order.
+  uint8_t width = 0;
   for (int8_t i = num_digits - 1; i >= 0; i--) {
-    buildCircularGradient(xDraw, yDraw, &numberMasks[digits[i]], cfg);
-    xDraw += numberMasks[digits[i]].width + 1;
+    buildCircularGradient(xDraw + width, yDraw, &numberMasks[digits[i]], cfg);
+    width += numberMasks[digits[i]].width + 1;
   }
+
+  return width;
 }
 
 uint8_t Gfx::buildCircularGradientFromChar(unsigned char c, uint8_t xDraw, uint8_t yDraw, gradient_config_t *cfg) {
