@@ -13,5 +13,5 @@ Heart::Heart(Gfx *gfx_p) {
 }
 
 void Heart::update(void) {
-  gfx->drawCircularGradientMask(&pixel_mask, 40, 4, &gradient_config);
+  gfx->drawCircularGradientMask(&pixel_mask, 45, 4, &gradient_config);
 }

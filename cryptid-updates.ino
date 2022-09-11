@@ -35,6 +35,7 @@
 #include "cryptid-gfx.h"
 #include "cryptid-heart.h"
 #include "cryptid-temperature.h"
+#include "cryptid-humidity.h"
 
 // HARDWARE CONFIG ---------------------------------------------------------------------------------
 
@@ -71,6 +72,9 @@ Heart heart(&gfx);
 
 // The temperature display.
 TemperatureDisplay tempDisplay(&gfx);
+
+// The humidity display.
+HumidityDisplay humidityDisplay(&gfx);
 
 // OTHER CONTROL OBJECTS ---------------------------------------------------------------------------
 
@@ -155,7 +159,9 @@ void loop(void) {
   if (frameCounter % (MAX_FPS * 5) == 0) {
     Serial.print("Temperature: ");
     Serial.print(temp_f);
-    Serial.println("°F");
+    Serial.print("°F, Humidity: ");
+    Serial.print(humidity.relative_humidity);
+    Serial.println("% rH");
   }
   // Do something every n seconds.
   if (frameCounter % (MAX_FPS * 10) == 0) {
@@ -172,6 +178,7 @@ void loop(void) {
   // Update pixel data
   heart.update();
   tempDisplay.update(temp_f);
+  humidityDisplay.update(humidity.relative_humidity);
 
   // Done
   gfx.toBuffer(); // Move pixels[] to matrix

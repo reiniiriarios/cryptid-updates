@@ -20,8 +20,8 @@ uint8_t deg_mask[5 * 5] = {
 pixel_mask_t deg_pixel_mask = {deg_mask, 5, 5};
 
 TemperatureDisplay::TemperatureDisplay(Gfx *graphics_object) {
-  xStart = 4;
-  yStart = 4;
+  xStart = 2;
+  yStart = 2;
   gfx = graphics_object;
 
   gradient_config_t *cfg = new gradient_config_t(10, 32, 16, 150, 250, false);
