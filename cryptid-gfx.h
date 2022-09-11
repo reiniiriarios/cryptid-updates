@@ -25,12 +25,12 @@ class Gfx {
     Gfx(Adafruit_Protomatter *matrix_p);
 
     /**
-     * @brief Write the pixels[] data to the Protomatter matrix
+     * @brief Write the pixels[] data to the Protomatter matrix.
      */
     void toBuffer(void);
 
     /**
-     * @brief Build one pixel in a gradient.
+     * @brief Build one pixel in a circular gradient.
      * 
      * @param x    The x-coord on pixels[].
      * @param y    The y-coord on pixels[].
@@ -39,7 +39,7 @@ class Gfx {
     void drawCircularGradientPixel(uint8_t x, uint8_t y, gradient_config_t *cfg);
   
     /**
-     * @brief Build one frame of a gradient based on an image mask + config.
+     * @brief Draw a pixel mask on pixels[] with a gradient.
      * 
      * @param mask  The pixel mask to draw.
      * @param x     The x-coord on pixels[].
@@ -50,7 +50,7 @@ class Gfx {
     uint8_t drawCircularGradientMask(pixel_mask_t *mask, uint8_t x, uint8_t y, gradient_config_t *cfg);
 
     /**
-     * @brief Draw an integer as characters on pixels[] with a gradient, using masks.
+     * @brief Draw a float (rounded) on pixels[] with a gradient, using masks.
      * 
      * @param n    The number to draw.
      * @param x    The x-coord on pixels[].
@@ -61,7 +61,7 @@ class Gfx {
     uint8_t drawCircularGradientMask(float n, uint8_t x, uint8_t y, gradient_config_t *cfg);
 
     /**
-     * @brief Draw an integer as characters on pixels[] with a gradient, using masks.
+     * @brief Draw an integer on pixels[] with a gradient, using masks.
      * 
      * @param n    The number to draw.
      * @param x    The x-coord on pixels[].
@@ -72,7 +72,7 @@ class Gfx {
     uint8_t drawCircularGradientMask(uint8_t n, uint8_t x, uint8_t y, gradient_config_t *cfg);
 
     /**
-     * @brief Draw a float as characters on pixels[] with a gradient, using a font.
+     * @brief Draw a float (rounded) on pixels[] with a gradient, using a font.
      * 
      * @param n    The number to draw.
      * @param x    The x-coord on pixels[].
@@ -83,7 +83,7 @@ class Gfx {
     uint8_t drawCircularGradientFont(float n, uint8_t x, uint8_t y, gradient_config_t *cfg);
 
     /**
-     * @brief Draw an integer as characters on pixels[] with a gradient, using a font.
+     * @brief Draw an integer on pixels[] with a gradient, using a font.
      * 
      * @param n    The number to draw.
      * @param x    The x-coord on pixels[].
@@ -94,7 +94,7 @@ class Gfx {
     uint8_t drawCircularGradientFont(uint8_t n, uint8_t x, uint8_t y, gradient_config_t *cfg);
 
     /**
-     * @brief Draw a float as characters on pixels[] with a gradient, using a font.
+     * @brief Draw a string on pixels[] with a gradient, using a font.
      * 
      * @param s    The string to draw.
      * @param x    The x-coord on pixels[].
