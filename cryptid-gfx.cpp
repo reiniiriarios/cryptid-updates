@@ -85,7 +85,7 @@ void Gfx::drawCircularGradientPixel(uint8_t x, uint8_t y, gradient_config_t *cfg
     float percent_across_gradient = distance_across_gradient / cfg->gradient_width;
 
     // counterclockwise
-    if (cfg->gradient_reverse) {
+    if (cfg->gradient_reverse || (cfg->gradient_start > cfg->gradient_end && !cfg->gradient_reverse)) {
       // how much to scale the percent_across by, rotating counterclockwise
       float scaling_factor = 360 - cfg->gradient_end_scaled - cfg->gradient_start_scaled;
       // percent_across_gradient * scaling_factor = degrees backwards from start

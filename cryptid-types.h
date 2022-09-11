@@ -46,7 +46,7 @@ typedef struct gradient_config_t {
   uint16_t gradient_end;
 
   /** Whether to draw the gradient clockwise or counterclockwise */
-  boolean  gradient_reverse;
+  bool  gradient_reverse;
 
   /** Hue, 0-65535. */
   float gradient_start_scaled;
@@ -67,7 +67,7 @@ typedef struct gradient_config_t {
     shape_width((uint8_t)shape_width),
     gradient_start((uint8_t)gradient_start),
     gradient_end((uint8_t)gradient_end),
-    gradient_reverse((uint8_t)gradient_reverse)
+    gradient_reverse((bool)gradient_reverse)
   {
     // scale the start/end values to a useful value to compute hue for Protomatter (0-65535)
     gradient_start_scaled = gradient_start / 360.0f * 65535.0f;
@@ -76,27 +76,16 @@ typedef struct gradient_config_t {
     // normalize hues
     while (gradient_start >= 360) gradient_start -= 360;
     while (gradient_end >= 360) gradient_end -= 360;
-
-    // if the start and end are reversed, gradient_reverse is backwards
-    if (gradient_start > gradient_end) {
-      gradient_reverse = !gradient_reverse;
-    }
   }
 
   void setStart(uint16_t hue) {
     gradient_start = hue;
     gradient_start_scaled = gradient_start / 360.0f * 65535.0f;
-    if (gradient_start > gradient_end) {
-      gradient_reverse = !gradient_reverse;
-    }
   }
 
   void setEnd(uint16_t hue) {
     gradient_end = hue;
     gradient_end_scaled = gradient_end / 360.0f * 65535.0f;
-    if (gradient_start > gradient_end) {
-      gradient_reverse = !gradient_reverse;
-    }
   }
 } gradient_config_t;
 
