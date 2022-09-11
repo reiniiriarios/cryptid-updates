@@ -74,8 +74,8 @@ typedef struct gradient_config_t {
     gradient_end_scaled = gradient_end / 360.0f * 65535.0f;
 
     // normalize hues
-    while (gradient_start > 360) gradient_start -= 360;
-    while (gradient_end > 360) gradient_end -= 360;
+    while (gradient_start >= 360) gradient_start -= 360;
+    while (gradient_end >= 360) gradient_end -= 360;
 
     // if the start and end are reversed, gradient_reverse is backwards
     if (gradient_start > gradient_end) {

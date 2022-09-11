@@ -210,6 +210,6 @@ uint8_t Gfx::drawCircularGradientFont(char c, uint8_t x, uint8_t y, gradient_con
 uint16_t Gfx::value2hue(int value, int minFrom, int maxFrom, int minTo, int maxTo) {
   int hue = round((float)(std::min(maxFrom, std::max(minFrom, value)) - minFrom) * ((float)(maxTo - minTo) / (float)(maxFrom - minFrom)) + minTo);
   while (hue < 0) hue += 360;
-  while (hue > 360) hue -= 360;
+  while (hue >= 360) hue -= 360;
   return (uint16_t)hue;
 }
