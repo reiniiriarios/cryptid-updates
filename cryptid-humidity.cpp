@@ -10,6 +10,23 @@ uint8_t percentS_mask[7 * 6] = {
 };
 pixel_mask_t percentS_pixel_mask = {percentS_mask, 7, 6};
 
+uint8_t percentL_mask[9 * 13] = {
+  0, 1, 1, 1, 0, 0, 0, 1, 0,
+  1, 1, 0, 1, 1, 0, 0, 1, 0,
+  1, 0, 0, 0, 1, 0, 1, 0, 0,
+  1, 1, 0, 1, 1, 0, 1, 0, 0,
+  0, 1, 1, 1, 0, 1, 0, 0, 0,
+  0, 0, 0, 0, 0, 1, 0, 0, 0,
+  0, 0, 0, 0, 1, 0, 0, 0, 0,
+  0, 0, 0, 1, 0, 0, 0, 0, 0,
+  0, 0, 0, 1, 0, 1, 1, 1, 0,
+  0, 0, 1, 0, 1, 1, 0, 1, 1,
+  0, 0, 1, 0, 1, 0, 0, 0, 1,
+  0, 1, 0, 0, 1, 1, 0, 1, 1,
+  0, 1, 0, 0, 0, 1, 1, 1, 0
+};
+pixel_mask_t percentL_pixel_mask = {percentL_mask, 9, 13};
+
 HumidityDisplay::HumidityDisplay(Gfx *graphics_object) {
   xStart = 2;
   yStart = 17;
@@ -31,6 +48,7 @@ void HumidityDisplay::update(float newHumidity, bool small) {
   }
   else {
     uint8_t width = gfx->drawCircularGradientFont(humidity, xStart, yStart, &gradient_config);
-    gfx->drawCircularGradientFont("%", xStart + width, yStart, &gradient_config);
+    gfx->drawCircularGradientMask(&percentL_pixel_mask, xStart + width, yStart, &gradient_config);
+    // gfx->drawCircularGradientFont("%", xStart + width, yStart, &gradient_config);
   }
 }
