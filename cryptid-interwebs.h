@@ -55,7 +55,7 @@ class Interwebs {
     /**
      * @brief The WiFi client.
      */
-    WiFiSSLClient client;
+    WiFiClient client;
 
     /**
      * @brief The IP address to connect to.

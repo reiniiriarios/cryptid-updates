@@ -96,7 +96,7 @@ bool Interwebs::checkStatus(void) {
 bool Interwebs::fetchData(void) {
   Serial.print("Starting connection to ");
   Serial.println(server);
-  if (!client.connect(server, 443)) {
+  if (!client.connect(server, 80)) {
     Serial.println("Connection failed");
 
     return false;
