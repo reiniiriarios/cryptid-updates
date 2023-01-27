@@ -78,7 +78,7 @@ HumidityDisplay humidityDisplay(&gfx);
 
 // OTHER CONTROL OBJECTS ---------------------------------------------------------------------------
 
-// Interwebs interwebs;
+Interwebs interwebs;
 
 // ERROR HANDLING ----------------------------------------------------------------------------------
 
@@ -132,9 +132,7 @@ void setup(void) {
   Serial.println("°C");
 
   // Interwebs
-  // if (interwebs.connect()) {
-  //   interwebs.fetchData();
-  // }
+  interwebs.connect();
 }
 
 // LOOP --------------------------------------------------------------------------------------------
@@ -167,13 +165,22 @@ void loop(void) {
   if (frameCounter % (MAX_FPS * 10) == 0) {
     Serial.print("Free Memory: ");
     Serial.println(freeMemory());
+  }
+  // Do something every n seconds.
+  if (frameCounter % (MAX_FPS * 20) == 0) {
+    if (interwebs.checkConnection()) {
+      interwebs.fetchData();
+    }
+    else {
+      interwebs.startConnection();
+    }
     // Start counter over.
     frameCounter = 0;
   }
   frameCounter++;
 
   // Read any buffer data from SPI and print to Serial
-  // interwebs.read();
+  interwebs.read();
 
   // Update pixel data
   heart.update();
