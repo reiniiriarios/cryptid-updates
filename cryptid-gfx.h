@@ -123,6 +123,7 @@ class Gfx {
      * @param maxFrom  Upper range of values.
      * @param minTo    Bottom range of hues.
      * @param maxTo    Upper range of hues.
+     * @return         Hue.
      */
     uint16_t value2hue(int value, int minFrom, int maxFrom, int minTo, int maxTo);
 };
