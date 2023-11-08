@@ -168,19 +168,13 @@ void loop(void) {
   }
   // Do something every n seconds.
   if (frameCounter % (MAX_FPS * 20) == 0) {
-    if (interwebs.checkConnection()) {
-      interwebs.fetchData();
-    }
-    else {
-      interwebs.startConnection();
-    }
-    // Start counter over.
+    interwebs.mqttSendMessage();
     frameCounter = 0;
   }
   frameCounter++;
 
-  // Read any buffer data from SPI and print to Serial
-  interwebs.read();
+  // Run main MQTT loop every loop.
+  interwebs.mqttLoop();
 
   // Update pixel data
   heart.update();

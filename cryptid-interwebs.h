@@ -2,6 +2,7 @@
 #define H_CRYPTID_INTERWEBS
 
 #include <WiFiNINA.h>
+#include <MQTT.h>
 
 typedef enum {
   INTERWEBS_STATUS_INIT = 0,
@@ -12,6 +13,11 @@ typedef enum {
   INTERWEBS_STATUS_CONNECTED = 12,
   INTERWEBS_NO_SOCKET_AVAIL = 255
 } interwebs_status_t;
+
+#define INTERWEBS_MQTT_HOST "public.cloud.shiftr.io"
+#define INTERWEBS_MQTT_USER "public"
+#define INTERWEBS_MQTT_PASS "public"
+#define INTERWEBS_MQTT_CLIENT_ID "arduino"
 
 /**
  * @brief Connect to the interwebs and discover all the interesting webs.
@@ -36,40 +42,23 @@ class Interwebs {
     void printWifiStatus(void);
 
     /**
-     * @brief If connection is sending data, print it over the Serial connection. Run in loop().
+     * @brief Initialize MQTT client.
      *
-     * @return Whether bytes were read from server.
+     * @return Success
      */
-    bool read(void);
+    bool mqttInit(void);
 
     /**
-     * @brief Check connection.
-     *
-     * @return Whether client is connected.
+     * @brief Handle MQTT messages received.
      */
-    bool checkConnection(void);
+    static void mqttMessageReceived(String &topic, String &payload);
 
     /**
-     * @brief Start connection.
-     *
-     * @return Whether client connection was able to initialize. Also fails if already connecting.
-     *
-     * @see WiFiClient::connect()
+     * @brief Main MQTT client loop.
      */
-    bool startConnection(void);
+    void mqttLoop(void);
 
-    /**
-     * @brief End connection.
-     *
-     * @see WiFiClient::stop()
-     */
-    void endConnection(void);
-
-    /**
-     * @brief Fetch data.
-     */
-    void fetchData(void);
-
+    void mqttSendMessage(void);
 
   private:
     /**
@@ -86,6 +75,11 @@ class Interwebs {
      * @brief The WiFi client.
      */
     WiFiClient client;
+
+    /**
+     * @brief The MQTT client.
+     */
+    MQTTClient mqttClient;
 
     /**
      * @brief The IP address to connect to.
