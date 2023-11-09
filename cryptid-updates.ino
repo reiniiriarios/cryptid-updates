@@ -30,6 +30,7 @@
 // Cryptid Updates
 #include "cryptid-updates.h"
 #include "cryptid-types.h"
+#include "cryptid-utilities.h"
 #include "cryptid-config.h"
 #include "cryptid-interwebs.h"
 #include "cryptid-gfx.h"
@@ -40,29 +41,29 @@
 // HARDWARE CONFIG ---------------------------------------------------------------------------------
 
 // MatrixPortal M4 pin configuration
-uint8_t rgbPins[]  = {7, 8, 9, 10, 11, 12};
-uint8_t addrPins[] = {17, 18, 19, 20}; // add 21 if 64-pixel tall
-uint8_t clockPin   = 14;
-uint8_t latchPin   = 15;
-uint8_t oePin      = 16;
+uint8_t rgbPins[] = { 7, 8, 9, 10, 11, 12 };
+uint8_t addrPins[] = { 17, 18, 19, 20 };  // add 21 if 64-pixel tall
+uint8_t clockPin = 14;
+uint8_t latchPin = 15;
+uint8_t oePin = 16;
 
 // LIS3DH Triple-Axis Accelerometer
 Adafruit_LIS3DH accel = Adafruit_LIS3DH();
 
 // SHT4X Temperature and Humidity Sensor
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
-sensors_event_t humidity, temp; // % rH, °C
+sensors_event_t humidity, temp;  // % rH, °C
 
 // THE SCREEN & GRAPHICS OBJECTS -------------------------------------------------------------------
 
 // The LED Matrix.
 Adafruit_Protomatter matrix(
-  MATRIX_WIDTH,               // Width of matrix (or matrix chain) in pixels
-  4,                          // Bit depth, 1-6, only green uses 6, avoid
-  1, rgbPins,                 // # of matrix chains, array of 6 RGB pins for each
-  sizeof(addrPins), addrPins, // # of address pins (height is inferred), array of pins
-  clockPin, latchPin, oePin,  // Other matrix control pins
-  true);                      // Double-buffering
+  MATRIX_WIDTH,                // Width of matrix (or matrix chain) in pixels
+  4,                           // Bit depth, 1-6, only green uses 6, avoid
+  1, rgbPins,                  // # of matrix chains, array of 6 RGB pins for each
+  sizeof(addrPins), addrPins,  // # of address pins (height is inferred), array of pins
+  clockPin, latchPin, oePin,   // Other matrix control pins
+  true);                       // Double-buffering
 
 // The graphics object responsible for all drawing operations.
 Gfx gfx(&matrix);
@@ -91,9 +92,9 @@ void err(int milliseconds, String message = "") {
   }
 
   uint8_t i;
-  pinMode(LED_BUILTIN, OUTPUT);       // Using onboard LED
-  for(i=1;;i++) {                     // Loop forever...
-    digitalWrite(LED_BUILTIN, i & 1); // LED on/off blink to alert user
+  pinMode(LED_BUILTIN, OUTPUT);        // Using onboard LED
+  for (i = 1;; i++) {                  // Loop forever...
+    digitalWrite(LED_BUILTIN, i & 1);  // LED on/off blink to alert user
     delay(milliseconds);
   }
 }
@@ -117,9 +118,9 @@ void setup(void) {
     err(400, "SHT4x failed to start");
   }
   Serial.print("SHT4x Serial 0x");
-  Serial.println(sht4.readSerial(), HEX); // 0xF5D9FCC
+  Serial.println(sht4.readSerial(), HEX);  // 0xF5D9FCC
 
-  sht4.setPrecision(SHT4X_MED_PRECISION); // SHT4X_HIGH_PRECISION SHT4X_LOW_PRECISION
+  sht4.setPrecision(SHT4X_MED_PRECISION);  // SHT4X_HIGH_PRECISION SHT4X_LOW_PRECISION
 
   sht4.getEvent(&humidity, &temp);
 
@@ -137,15 +138,16 @@ void setup(void) {
 
 // LOOP --------------------------------------------------------------------------------------------
 
-uint32_t prevTime = 0;     // Used for frames-per-second throttle
-uint16_t frameCounter = 0; // Counts up every frame based on MAX_FPS.
+uint32_t prevTime = 0;      // Used for frames-per-second throttle
+uint16_t frameCounter = 0;  // Counts up every frame based on MAX_FPS.
 
-float temp_f = 0; // Temperature in degrees fahrenheit.
+float temp_f = 0;  // Temperature in degrees fahrenheit.
 
 void loop(void) {
   // Limit FPS
   uint32_t t;
-  while(((t = micros()) - prevTime) < (1000000L / MAX_FPS));
+  while (((t = micros()) - prevTime) < (1000000L / MAX_FPS))
+    ;
   prevTime = t;
 
   // Do something every second.
@@ -182,32 +184,6 @@ void loop(void) {
   humidityDisplay.update(humidity.relative_humidity);
 
   // Done
-  gfx.toBuffer(); // Move pixels[] to matrix
-  matrix.show();  // Copy data to matrix buffers
-}
-
-// UTILITY -----------------------------------------------------------------------------------------
-
-float celsius2fahrenheit(float celsius) {
-  return ((celsius * 9)/5) + 32;
-}
-
-// Calculate SRAM Free
-// https://learn.adafruit.com/memories-of-an-arduino/measuring-free-memory
-#ifdef __arm__
-// should use uinstd.h to define sbrk but Due causes a conflict
-extern "C" char* sbrk(int incr);
-#else  // __ARM__
-extern char *__brkval;
-#endif  // __arm__
-
-int freeMemory() {
-  char top;
-#ifdef __arm__
-  return &top - reinterpret_cast<char*>(sbrk(0));
-#elif defined(CORE_TEENSY) || (ARDUINO > 103 && ARDUINO != 151)
-  return &top - __brkval;
-#else  // __arm__
-  return __brkval ? &top - __brkval : &top - __malloc_heap_start;
-#endif  // __arm__
+  gfx.toBuffer();  // Move pixels[] to matrix
+  matrix.show();   // Copy data to matrix buffers
 }

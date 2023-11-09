@@ -14,11 +14,6 @@ typedef enum {
   INTERWEBS_NO_SOCKET_AVAIL = 255
 } interwebs_status_t;
 
-#define INTERWEBS_MQTT_HOST "public.cloud.shiftr.io"
-#define INTERWEBS_MQTT_USER "public"
-#define INTERWEBS_MQTT_PASS "public"
-#define INTERWEBS_MQTT_CLIENT_ID "arduino"
-
 /**
  * @brief Connect to the interwebs and discover all the interesting webs.
  */

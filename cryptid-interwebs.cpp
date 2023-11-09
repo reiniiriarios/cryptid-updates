@@ -12,11 +12,12 @@ extern "C" {
 #include <utility/wifi_drv.h>
 #include <utility/WiFiSocketBuffer.h>
 
+#include "cryptid-utilities.h"
 #include "cryptid-wifi-config.h"
 #include "cryptid-interwebs.h"
 
 Interwebs::Interwebs() {
-  IPAddress mqtt_server(46,226,109,159);
+  IPAddress mqtt_server(172,16,0,131);
   server = mqtt_server;
 }
 
@@ -33,11 +34,13 @@ bool Interwebs::connect(void) {
   }
 
   // attempt to connect to Wifi network
+  delay(2000); // wait a breath, this seems to resolve something
   for (uint8_t i = 0; i < 5; i++) {
     Serial.print("Attempting to connect to SSID: ");
     Serial.println(wifi_ssid);
     // connect to WPA/WPA2 network; change this line if using open or WEP network
     int wifiStatus = WiFi.begin(wifi_ssid, wifi_pass);
+    delay(1000);
     if (wifiStatus != WL_CONNECTED) {
       Serial.println("Connection failed");
 
@@ -46,7 +49,7 @@ bool Interwebs::connect(void) {
 
     Serial.print("Waiting for connection");
     for (uint8_t i = 0; i < 10; i++) {
-      delay(1000);
+      delay(500);
       Serial.print(".");
     }
     Serial.println();
@@ -67,52 +70,51 @@ bool Interwebs::connect(void) {
 
 bool Interwebs::mqttInit(void) {
   Serial.print("MQTT connecting...");
-  // @todo Replace const with `server`
-  mqttClient.begin(INTERWEBS_MQTT_HOST, client);
+  mqttClient.begin(server, client);
   mqttClient.onMessage(mqttMessageReceived);
 
   // Connect
   bool connected = false;
-  for (uint8_t i = 0; !connected && i < 10; i++) {
-    connected = mqttClient.connect(INTERWEBS_MQTT_CLIENT_ID, INTERWEBS_MQTT_USER, INTERWEBS_MQTT_PASS);
-    if (connected) {
-      break;
-    }
-    delay(1000);
+  if (!attempt([&](){
     Serial.print(".");
-  }
-  if (!connected) {
+    return mqttClient.connect("cryptidUpdates", "cryptid", "public");
+  })) {
     Serial.println("Error connecting to MQTT broker.");
     return false;
   }
   Serial.println();
 
   // Subscribe
-  mqttClient.subscribe("/test");
-  mqttClient.subscribe("/hello");
+  if (!attempt([&](){ return mqttClient.subscribe("test"); }, 5, 250)) {
+    Serial.println("Error subscribing to /test");
+  }
+  if (!attempt([&](){ return mqttClient.subscribe("hello"); }, 5, 250)) {
+    Serial.println("Error subscribing to /hello");
+  }
 
   return true;
 }
 
 void Interwebs::mqttMessageReceived(String &topic, String &payload) {
   if (topic == "test") {
-    Serial.print("MQTT test: " + payload);
+    Serial.println("MQTT test: " + payload);
   }
   else if (topic == "hello") {
-    Serial.print("MQTT says, 'Hello world!'");
+    Serial.println("MQTT says, 'Hello world!'");
   }
   else {
-    Serial.print("Unrecognized MQTT topic: " + topic);
+    Serial.println("Unrecognized MQTT topic: " + topic);
   }
 }
 
 void Interwebs::mqttSendMessage(void) {
   Serial.println("MQTT publishing");
-  mqttClient.publish("/hello", "world");
+  if (!mqttClient.publish("hello", "world")) {
+    Serial.println("Error publishing");
+  }
 }
 
 void Interwebs::mqttLoop(void) {
-  Serial.println("MQTT Looping");
   mqttClient.loop();
 }
 
