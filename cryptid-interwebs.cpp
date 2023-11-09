@@ -87,7 +87,7 @@ void Interwebs::mqttMessageReceived(String &topic, String &payload) {
     Serial.println("MQTT test: " + payload);
   }
   else if (topic == "hello") {
-    Serial.println("MQTT says, 'Hello world!'");
+    Serial.println("MQTT says, 'Hello " + payload + "!'");
   }
   else {
     Serial.println("Unrecognized MQTT topic: " + topic);
