@@ -14,11 +14,10 @@ float celsius2fahrenheit(float celsius);
 /**
  * @brief Attempt callback function n tries with delays.
  * 
- * @param callback 
- * @param tries 
- * @param wait 
- * @return true 
- * @return false 
+ * @param callback  Function to try.
+ * @param tries     Number of tries before failure.
+ * @param wait      Delay in ms between tries.
+ * @return bool     success
  */
 template<typename T> bool attempt(T&& callback, int tries = 10, int wait = 500) {
   for (int i = 0; i < tries; i++) {
@@ -33,7 +32,7 @@ template<typename T> bool attempt(T&& callback, int tries = 10, int wait = 500) 
 /**
  * @brief Return current free memory.
  * 
- * @return int 
+ * @return int bytes
  */
 int freeMemory();
 

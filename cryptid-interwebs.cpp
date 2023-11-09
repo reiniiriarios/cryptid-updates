@@ -1,24 +1,13 @@
 #include <WiFiNINA.h>
 #include <MQTT.h>
 
-extern "C" {
-  #include <utility/wl_definitions.h>
-  #include <utility/wl_types.h>
-  #include <string.h>
-  #include <utility/debug.h>
-}
-
-#include <utility/server_drv.h>
-#include <utility/wifi_drv.h>
-#include <utility/WiFiSocketBuffer.h>
-
 #include "cryptid-utilities.h"
 #include "cryptid-wifi-config.h"
 #include "cryptid-interwebs.h"
 
 Interwebs::Interwebs() {
   IPAddress mqtt_server(172,16,0,131);
-  server = mqtt_server;
+  mqttBroker = mqtt_server;
 }
 
 bool Interwebs::connect(void) {
@@ -55,7 +44,6 @@ bool Interwebs::connect(void) {
     Serial.println();
 
     printWifiStatus();
-    connectionStatus = INTERWEBS_STATUS_WIFI;
 
     if (!mqttInit()) {
       return false;
@@ -64,13 +52,12 @@ bool Interwebs::connect(void) {
     return true;
   }
 
-  connectionStatus = INTERWEBS_STATUS_NO_WIFI;
   return false;
 }
 
 bool Interwebs::mqttInit(void) {
   Serial.print("MQTT connecting...");
-  mqttClient.begin(server, client);
+  mqttClient.begin(mqttBroker, wifiClient);
   mqttClient.onMessage(mqttMessageReceived);
 
   // Connect

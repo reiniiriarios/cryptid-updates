@@ -4,16 +4,6 @@
 #include <WiFiNINA.h>
 #include <MQTT.h>
 
-typedef enum {
-  INTERWEBS_STATUS_INIT = 0,
-  INTERWEBS_STATUS_NO_WIFI = 1,
-  INTERWEBS_STATUS_WIFI = 2,
-	INTERWEBS_STATUS_DISCONNECTED = 10,
-  INTERWEBS_STATUS_CONNECTING = 11,
-  INTERWEBS_STATUS_CONNECTED = 12,
-  INTERWEBS_NO_SOCKET_AVAIL = 255
-} interwebs_status_t;
-
 /**
  * @brief Connect to the interwebs and discover all the interesting webs.
  */
@@ -53,14 +43,12 @@ class Interwebs {
      */
     void mqttLoop(void);
 
+    /**
+     * @brief Send MQTT message.
+     */
     void mqttSendMessage(void);
 
   private:
-    /**
-     * @brief Connection status.
-     */
-    uint8_t connectionStatus = INTERWEBS_STATUS_INIT;
-
     /**
      * @brief Millis counter to wait for connection.
      */
@@ -69,7 +57,7 @@ class Interwebs {
     /**
      * @brief The WiFi client.
      */
-    WiFiClient client;
+    WiFiClient wifiClient;
 
     /**
      * @brief The MQTT client.
@@ -79,14 +67,7 @@ class Interwebs {
     /**
      * @brief The IP address to connect to.
      */
-    IPAddress server;
-
-    /**
-     * @brief Arduino WiFi socket.
-     *
-     * @see ServerDrv::getSocket()
-     */
-    uint8_t _sock = 255;
+    IPAddress mqttBroker;
 };
 
 #endif
