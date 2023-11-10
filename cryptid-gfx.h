@@ -126,6 +126,20 @@ class Gfx {
      * @return         Hue.
      */
     uint16_t value2hue(int value, int minFrom, int maxFrom, int minTo, int maxTo);
+
+    /**
+     * @brief Draw error pixel(s) to denote WiFi is down.
+     */
+    void drawErrorWiFi(void);
+
+    /**
+     * @brief Draw error pixel(s) to denote MQTT is down.
+     */
+    void drawErrorMqtt(void);
+
+  private:
+
+    uint16_t getHueBounce(int start, int end);
 };
 
 #endif

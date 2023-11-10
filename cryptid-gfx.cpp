@@ -213,3 +213,20 @@ uint16_t Gfx::value2hue(int value, int minFrom, int maxFrom, int minTo, int maxT
   while (hue >= 360) hue -= 360;
   return (uint16_t)hue;
 }
+
+void Gfx::drawErrorWiFi() {
+  pixels[MATRIX_HEIGHT - 1][MATRIX_WIDTH - 1].on = true;
+  pixels[MATRIX_HEIGHT - 1][MATRIX_WIDTH - 1].hue = getHueBounce(280, 320);
+}
+
+void Gfx::drawErrorMqtt() {
+  pixels[MATRIX_HEIGHT - 1][MATRIX_WIDTH - 1].on = true;
+  pixels[MATRIX_HEIGHT - 1][MATRIX_WIDTH - 1].hue = getHueBounce(10, 45);
+}
+
+uint16_t Gfx::getHueBounce(int start, int end) {
+  float tick = millis() * 0.001f;
+  float interval = fmod(tick, 1);
+  float hue = start + (interval * (end - start));
+  return round(hue / 360.0f * 65535.0f);
+}
