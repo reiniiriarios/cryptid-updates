@@ -105,21 +105,21 @@ void Interwebs::mqttMessageReceived(String &topic, String &payload) {
   }
 }
 
-void Interwebs::mqttSendMessage(void) {
-  if (!wifiClient.connected()) {
+void Interwebs::mqttSendMessage(String topic, String payload) {
+  if (!wifiIsConnected()) {
     Serial.println("WiFi disconnected, reconnecting...");
     if (!wifiInit()) {
       Serial.println("Error connecting");
     }
   }
-  if (!mqttClient.connected()) {
+  if (!mqttIsConnected()) {
     Serial.println("MQTT disconnected, reconnecting...");
     if (!mqttInit()) {
       Serial.println("Error connecting");
     }
   }
-  Serial.println("MQTT publishing");
-  if (!mqttClient.publish("hello", "world")) {
+  Serial.println("MQTT publishing to " + topic);
+  if (!mqttClient.publish(topic, payload)) {
     Serial.println("Error publishing");
   }
 }

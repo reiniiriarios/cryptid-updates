@@ -146,8 +146,7 @@ float temp_f = 0;  // Temperature in degrees fahrenheit.
 void loop(void) {
   // Limit FPS
   uint32_t t;
-  while (((t = micros()) - prevTime) < (1000000L / MAX_FPS))
-    ;
+  while (((t = micros()) - prevTime) < (1000000L / MAX_FPS));
   prevTime = t;
 
   // Do something every second.
@@ -170,7 +169,9 @@ void loop(void) {
   }
   // Do something every n seconds.
   if (frameCounter % (MAX_FPS * 20) == 0) {
-    interwebs.mqttSendMessage();
+    interwebs.mqttSendMessage("display/temperature", String(temp.temperature));
+    interwebs.mqttSendMessage("display/humidity", String(humidity.relative_humidity));
+    // reset at final repeat block:
     frameCounter = 0;
   }
   frameCounter++;

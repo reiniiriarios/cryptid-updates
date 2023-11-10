@@ -53,7 +53,7 @@ class Interwebs {
     /**
      * @brief Send MQTT message.
      */
-    void mqttSendMessage(void);
+    void mqttSendMessage(String topic, String payload);
 
     /**
      * @brief MQTT connection.
