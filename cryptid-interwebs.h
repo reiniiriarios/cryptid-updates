@@ -27,6 +27,13 @@ class Interwebs {
     void printWifiStatus(void);
 
     /**
+     * @brief Connect to the given WiFi network, using password.
+     * 
+     * @return bool 
+     */
+    bool wifiInit();
+
+    /**
      * @brief Initialize MQTT client.
      *
      * @return Success
@@ -47,6 +54,16 @@ class Interwebs {
      * @brief Send MQTT message.
      */
     void mqttSendMessage(void);
+
+    /**
+     * @brief MQTT connection.
+     */
+    bool mqttIsConnected(void);
+
+    /**
+     * @brief WiFi connection.
+     */
+    bool wifiIsConnected(void);
 
   private:
     /**

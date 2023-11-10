@@ -183,6 +183,13 @@ void loop(void) {
   tempDisplay.update(temp_f);
   humidityDisplay.update(humidity.relative_humidity);
 
+  if (!interwebs.wifiIsConnected()) {
+    gfx.drawErrorWiFi();
+  }
+  else if (!interwebs.mqttIsConnected()) {
+    gfx.drawErrorMqtt();
+  }
+
   // Done
   gfx.toBuffer();  // Move pixels[] to matrix
   matrix.show();   // Copy data to matrix buffers
