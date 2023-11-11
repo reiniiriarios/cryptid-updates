@@ -9,7 +9,7 @@
 #include "interwebs.h"
 
 Interwebs::Interwebs() {
-  IPAddress mqtt_server(172,16,0,131);
+  IPAddress mqtt_server(MQTT_SERVER);
   mqttBroker = mqtt_server;
 }
 
@@ -48,13 +48,13 @@ bool Interwebs::connect(void) {
 
 bool Interwebs::wifiInit(void) {
   Serial.print("Attempting to connect to SSID: ");
-  Serial.println(wifi_ssid);
+  Serial.println(WIFI_SSID);
 
   status = INTERWEBS_STATUS_WIFI_CONNECTING;
 	uint8_t wifiStatus = WL_IDLE_STATUS;
   uint8_t completeAttempts = 5;
   do {
-    wifiStatus = WiFiDrv::wifiSetPassphrase(wifi_ssid, strlen(wifi_ssid), wifi_pass, strlen(wifi_pass));
+    wifiStatus = WiFiDrv::wifiSetPassphrase(WIFI_SSID, strlen(WIFI_SSID), WIFI_PASS, strlen(WIFI_PASS));
     if (wifiStatus != WL_FAILURE) {
       Serial.print("Connecting");
     	uint8_t attempts = 5;
@@ -83,8 +83,8 @@ bool Interwebs::wifiReconnect(void) {
   // step 1, initiate connection
   if (status == INTERWEBS_STATUS_WIFI_OFFLINE) {
     Serial.print("Reconnecting WiFi: ");
-    Serial.println(wifi_ssid);
-    uint8_t wifiStatus = WiFiDrv::wifiSetPassphrase(wifi_ssid, strlen(wifi_ssid), wifi_pass, strlen(wifi_pass));
+    Serial.println(WIFI_SSID);
+    uint8_t wifiStatus = WiFiDrv::wifiSetPassphrase(WIFI_SSID, strlen(WIFI_SSID), WIFI_PASS, strlen(WIFI_PASS));
     status = INTERWEBS_STATUS_WIFI_CONNECTING;
     return false;
   }
