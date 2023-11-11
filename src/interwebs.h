@@ -66,6 +66,7 @@ typedef enum {
   INTERWEBS_STATUS_MQTT_CONNECTING_2 = 14,
   INTERWEBS_STATUS_MQTT_CONNECTED = 11,
   INTERWEBS_STATUS_MQTT_OFFLINE = 12,
+  INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL = 16,
   INTERWEBS_STATUS_MQTT_ERRORS = 13,
 } interwebs_status_t;
 
@@ -78,6 +79,11 @@ class Interwebs {
      * @brief Current status of interwebs connections.
      */
     int status = INTERWEBS_STATUS_INIT;
+
+    /**
+     * @brief The current weather.
+     */
+    weather_t* weather = nullptr;
 
     /**
      * @brief Construct a new Interwebs object.
@@ -132,9 +138,14 @@ class Interwebs {
     bool verifyConnection(void);
 
     /**
+     * @brief Connect MQTT subscriptions.
+     */
+    void mqttSubscribe(void);
+
+    /**
      * @brief Handle MQTT messages received.
      */
-    static void mqttMessageReceived(String &topic, String &payload);
+    void mqttMessageReceived(String &topic, String &payload);
 
     /**
      * @brief Main MQTT client loop.

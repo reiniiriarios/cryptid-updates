@@ -82,6 +82,8 @@ HumidityDisplay humidityDisplay(&gfx);
 
 Interwebs interwebs;
 
+weather_t weather;
+
 // ERROR HANDLING ----------------------------------------------------------------------------------
 
 void err(int milliseconds, String message = "") {
@@ -141,6 +143,7 @@ void setup(void) {
 
   // Interwebs
   interwebs.connect();
+  interwebs.weather = &weather;
 }
 
 // LOOP --------------------------------------------------------------------------------------------
@@ -185,6 +188,9 @@ void loop(void) {
 
   // Run main MQTT loop every loop.
   interwebs.mqttLoop();
+
+  // Choose which data to display.
+  // todo: FLIP FLOP LOL FLIP FLOP LOL
 
   // Update pixel data
   heart.update();

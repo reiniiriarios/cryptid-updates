@@ -4,6 +4,7 @@
 #include <utility/WiFiSocketBuffer.h>
 #include <MQTT.h>
 
+#include "types.h"
 #include "utilities.h"
 #include "../wifi-config.h"
 #include "interwebs.h"
@@ -129,7 +130,9 @@ bool Interwebs::wifiReconnect(void) {
 bool Interwebs::mqttInit(void) {
   Serial.print("MQTT connecting...");
   mqttClient.begin(mqttBroker, wifiClient);
-  mqttClient.onMessage(mqttMessageReceived);
+  mqttClient.onMessage([&](String &topic, String &payload){
+    mqttMessageReceived(topic, payload);
+  });
 
   status = INTERWEBS_STATUS_MQTT_CONNECTING;
 
@@ -144,24 +147,49 @@ bool Interwebs::mqttInit(void) {
   }
   Serial.println();
 
-  // Subscribe
-  if (!attempt([&](){ return mqttClient.subscribe("test"); }, 5, 250)) {
-    Serial.println("Error subscribing to /test");
-    status = INTERWEBS_STATUS_MQTT_ERRORS;
-  }
-  if (!attempt([&](){ return mqttClient.subscribe("hello"); }, 5, 250)) {
-    Serial.println("Error subscribing to /hello");
-    status = INTERWEBS_STATUS_MQTT_ERRORS;
-  }
-
   status = INTERWEBS_STATUS_MQTT_CONNECTED;
 
+  mqttSubscribe();
+
   return true;
+}
+
+void Interwebs::mqttSubscribe(void) {
+  status = INTERWEBS_STATUS_MQTT_CONNECTED;
+  if (!mqttClient.subscribe("test")) {
+    Serial.println("Error subscribing to test");
+    status = INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL;
+  }
+  if (!mqttClient.subscribe("hello")) {
+    Serial.println("Error subscribing to hello");
+    status = INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL;
+  }
+  if (!mqttClient.subscribe("weather/temperature")) {
+    Serial.println("Error subscribing to weather/temperature");
+    status = INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL;
+  }
+  if (!mqttClient.subscribe("weather/feelslike")) {
+    Serial.println("Error subscribing to weather/feelslike");
+    status = INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL;
+  }
+  if (!mqttClient.subscribe("weather/humidity")) {
+    Serial.println("Error subscribing to weather/humidity");
+    status = INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL;
+  }
+  if (!mqttClient.subscribe("weather/condition")) {
+    Serial.println("Error subscribing to weather/condition");
+    status = INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL;
+  }
 }
 
 bool Interwebs::mqttReconnect(void) {
   if (status == INTERWEBS_STATUS_MQTT_CONNECTED) {
     status = INTERWEBS_STATUS_MQTT_OFFLINE;
+  }
+
+  if (status == INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL) {
+    mqttSubscribe();
+    return status == INTERWEBS_STATUS_MQTT_CONNECTED;
   }
 
   // mqttClient.netClient
@@ -260,6 +288,20 @@ void Interwebs::mqttMessageReceived(String &topic, String &payload) {
   else if (topic == "hello") {
     Serial.println("MQTT says, 'Hello " + payload + "!'");
   }
+  else if (topic == "weather/temperature") {
+    weather->temp_c = payload.toFloat();
+    weather->temp_f = celsius2fahrenheit(weather->temp_c);
+  }
+  else if (topic == "weather/feelslike") {
+    weather->feelslike_c = payload.toFloat();
+    weather->feelslike_f = celsius2fahrenheit(weather->feelslike_c);
+  }
+  else if (topic == "weather/humidity") {
+    weather->humidity = payload.toInt();
+  }
+  else if (topic == "weather/condition") {
+    weather->condition = payload;
+  }
   else {
     Serial.println("Unrecognized MQTT topic: " + topic);
   }
@@ -298,7 +340,7 @@ void Interwebs::mqttLoop(void) {
 }
 
 bool Interwebs::mqttIsConnected(void) {
-  return mqttClient.connected();
+  return mqttClient.connected() && status == INTERWEBS_STATUS_MQTT_CONNECTED;
 }
 
 bool Interwebs::wifiIsConnected(void) {
