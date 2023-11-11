@@ -4,11 +4,80 @@
 #include <WiFiNINA.h>
 #include <MQTT.h>
 
+//-------- Rob MQTTClient Private Methods/Properties --------
+
+template<typename Tag>
+struct robbed {
+  /* export it ... */
+  typedef typename Tag::type type;
+  static type ptr;
+};
+
+template<typename Tag>
+typename robbed<Tag>::type robbed<Tag>::ptr;
+
+template<typename Tag, typename Tag::type p>
+struct rob : robbed<Tag> {
+  /* fill it ... */
+  struct filler {
+    filler() { robbed<Tag>::ptr = p; }
+  };
+  static filler filler_obj;
+};
+
+template<typename Tag, typename Tag::type p>
+typename rob<Tag, p>::filler rob<Tag, p>::filler_obj;
+
+struct MQTTClientConnected { typedef bool MQTTClient::*type; };
+template class rob<MQTTClientConnected, &MQTTClient::_connected>;
+
+struct MQTTClientLastError { typedef lwmqtt_err_t MQTTClient::*type; };
+template class rob<MQTTClientLastError, &MQTTClient::_lastError>;
+
+struct MQTTClientNetClient { typedef Client* MQTTClient::*type; };
+template class rob<MQTTClientNetClient, &MQTTClient::netClient>;
+
+struct MQTTClientClient { typedef lwmqtt_client_t MQTTClient::*type; };
+template class rob<MQTTClientClient, &MQTTClient::client>;
+
+struct MQTTClientWiFiClientSock { typedef uint8_t WiFiClient::*type; };
+template class rob<MQTTClientWiFiClientSock, &WiFiClient::_sock>;
+
+struct MQTTClientWill { typedef lwmqtt_will_t* MQTTClient::*type; };
+template class rob<MQTTClientWill, &MQTTClient::will>;
+
+struct MQTTClientReturnCode { typedef lwmqtt_return_code_t MQTTClient::*type; };
+template class rob<MQTTClientReturnCode, &MQTTClient::_returnCode>;
+
+//-------- End MQTTClient Robbery --------
+
+typedef enum {
+  INTERWEBS_STATUS_INIT = 0,
+  INTERWEBS_STATUS_WIFI_CONNECTING = 1,
+  INTERWEBS_STATUS_WIFI_CONNECTED = 2,
+  INTERWEBS_STATUS_WIFI_OFFLINE = 3,
+  INTERWEBS_STATUS_WIFI_ERRORS = 4,
+  INTERWEBS_STATUS_MQTT_CONNECTING = 10,
+  INTERWEBS_STATUS_MQTT_CONNECTING_2 = 14,
+  INTERWEBS_STATUS_MQTT_CONNECTED = 11,
+  INTERWEBS_STATUS_MQTT_OFFLINE = 12,
+  INTERWEBS_STATUS_MQTT_ERRORS = 13,
+} interwebs_status_t;
+
+#define MQTT_CLIENT_ID "cryptidUpdates"
+#define MQTT_USER "cryptid"
+#define MQTT_PASS "public"
+
 /**
  * @brief Connect to the interwebs and discover all the interesting webs.
  */
 class Interwebs {
   public:
+    /**
+     * @brief Current status of interwebs connections.
+     */
+    int status = INTERWEBS_STATUS_INIT;
+
     /**
      * @brief Construct a new Interwebs object.
      */
@@ -39,6 +108,20 @@ class Interwebs {
      * @return Success
      */
     bool mqttInit(void);
+
+    /**
+     * @brief Reconnect to MQTT broker.
+     * 
+     * @return Success
+     */
+    bool mqttReconnect(void);
+
+    /**
+     * @brief Verify connection to WiFi and MQTT.
+     * 
+     * @return Connected
+     */
+    bool verifyConnection(void);
 
     /**
      * @brief Handle MQTT messages received.
