@@ -34,6 +34,7 @@
 #include "src/utilities.h"
 #include "src/interwebs.h"
 #include "src/gfx.h"
+#include "src/loading.h"
 #include "src/heart.h"
 #include "src/temperature.h"
 #include "src/humidity.h"
@@ -107,11 +108,17 @@ void setup(void) {
   // if code not commented out, the display will not function until serial port opens
   while (!Serial) delay(10);
 
+  // The display
   ProtomatterStatus status = matrix.begin();
   Serial.printf("Protomatter begin() status: %d\n", status);
   if (status != 0) {
     err(200, "protomatter failed to start");
   }
+
+  // Loading screen
+  displayLoadingScreen(&gfx);
+  gfx.toBuffer();
+  matrix.show();
 
   // Temperature & Humidity
   if (!sht4.begin()) {
