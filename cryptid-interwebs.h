@@ -40,14 +40,14 @@ template class rob<MQTTClientNetClient, &MQTTClient::netClient>;
 struct MQTTClientClient { typedef lwmqtt_client_t MQTTClient::*type; };
 template class rob<MQTTClientClient, &MQTTClient::client>;
 
-struct MQTTClientWiFiClientSock { typedef uint8_t WiFiClient::*type; };
-template class rob<MQTTClientWiFiClientSock, &WiFiClient::_sock>;
-
 struct MQTTClientWill { typedef lwmqtt_will_t* MQTTClient::*type; };
 template class rob<MQTTClientWill, &MQTTClient::will>;
 
 struct MQTTClientReturnCode { typedef lwmqtt_return_code_t MQTTClient::*type; };
 template class rob<MQTTClientReturnCode, &MQTTClient::_returnCode>;
+
+struct WiFiClientSock { typedef uint8_t WiFiClient::*type; };
+template class rob<WiFiClientSock, &WiFiClient::_sock>;
 
 //-------- End MQTTClient Robbery --------
 
@@ -58,6 +58,7 @@ typedef enum {
   INTERWEBS_STATUS_WIFI_OFFLINE = 3,
   INTERWEBS_STATUS_WIFI_ERRORS = 4,
   INTERWEBS_STATUS_MQTT_CONNECTING = 10,
+  INTERWEBS_STATUS_MQTT_CLOSING_SOCKET = 15,
   INTERWEBS_STATUS_MQTT_CONNECTING_2 = 14,
   INTERWEBS_STATUS_MQTT_CONNECTED = 11,
   INTERWEBS_STATUS_MQTT_OFFLINE = 12,
@@ -110,7 +111,7 @@ class Interwebs {
     bool mqttInit(void);
 
     /**
-     * @brief Reconnect to MQTT broker.
+     * @brief Reconnect to MQTT broker. This method operates step-by-step, continuing each call.
      * 
      * @return Success
      */

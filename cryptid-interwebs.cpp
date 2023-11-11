@@ -1,6 +1,7 @@
 #include <WiFiNINA.h>
 #include <utility/wifi_drv.h>
 #include <utility/server_drv.h>
+#include <utility/WiFiSocketBuffer.h>
 #include <MQTT.h>
 
 #include "cryptid-utilities.h"
@@ -112,32 +113,50 @@ bool Interwebs::mqttReconnect(void) {
     status = INTERWEBS_STATUS_MQTT_OFFLINE;
   }
 
+  // mqttClient.netClient
+  WiFiClient* mqttNetClient = (WiFiClient*)(mqttClient.*robbed<MQTTClientNetClient>::ptr);
+
+  // step 1b copied from WiFiClient::stop()
+  if (status == INTERWEBS_STATUS_MQTT_CLOSING_SOCKET) {
+    if (mqttNetClient->status() != CLOSED) {
+      // if not closed yet, keep waiting until the next loop
+      return false;
+    }
+    WiFiSocketBuffer.close(mqttNetClient->*robbed<WiFiClientSock>::ptr);
+    // _sock
+    mqttNetClient->*robbed<WiFiClientSock>::ptr = NO_SOCKET_AVAIL;
+    status = INTERWEBS_STATUS_MQTT_CONNECTING;
+  }
+
   // step 1 copied from WiFiClient::connect()
-  if (status == INTERWEBS_STATUS_MQTT_OFFLINE) {
+  if (status == INTERWEBS_STATUS_MQTT_OFFLINE || status == INTERWEBS_STATUS_MQTT_CONNECTING) {
     Serial.println("Reconnecting MQTT...");
     status = INTERWEBS_STATUS_MQTT_CONNECTING;
 
     if (!(mqttClient.*robbed<MQTTClientNetClient>::ptr)->connected()) {
       Serial.println("Connecting via network client...");
-      WiFiClient* mqttNetClient = (WiFiClient*)(mqttClient.*robbed<MQTTClientNetClient>::ptr);
 
-      if (mqttNetClient->*robbed<MQTTClientWiFiClientSock>::ptr != NO_SOCKET_AVAIL) {
-        // todo: break apart
-        (mqttClient.*robbed<MQTTClientNetClient>::ptr)->stop();
+      // step 1a copied from WiFiClient::stop()
+      // If the socket isn't closed, close it and wait for the next loop.
+      if (mqttNetClient->*robbed<WiFiClientSock>::ptr != NO_SOCKET_AVAIL) {
+        ServerDrv::stopClient(mqttNetClient->*robbed<WiFiClientSock>::ptr);
+        status = INTERWEBS_STATUS_MQTT_CLOSING_SOCKET;
+        return false;
       }
 
-      mqttNetClient->*robbed<MQTTClientWiFiClientSock>::ptr = ServerDrv::getSocket();
-      if (mqttNetClient->*robbed<MQTTClientWiFiClientSock>::ptr == NO_SOCKET_AVAIL) {
+      mqttNetClient->*robbed<WiFiClientSock>::ptr = ServerDrv::getSocket();
+      if (mqttNetClient->*robbed<WiFiClientSock>::ptr == NO_SOCKET_AVAIL) {
+        // failure, flag to start over
       	Serial.println("No Socket available");
         mqttClient.*robbed<MQTTClientLastError>::ptr = LWMQTT_NETWORK_FAILED_CONNECT;
         status = INTERWEBS_STATUS_MQTT_OFFLINE;
         return false;
       }
 
-    	ServerDrv::startClient(uint32_t(mqttBroker), (uint16_t)1883, mqttNetClient->*robbed<MQTTClientWiFiClientSock>::ptr);
+    	ServerDrv::startClient(uint32_t(mqttBroker), (uint16_t)1883, mqttNetClient->*robbed<WiFiClientSock>::ptr);
     }
+    // step complete, break
     status = INTERWEBS_STATUS_MQTT_CONNECTING_2;
-    // return and continue loop, pick up here next iteration
     return false;
   }
 
