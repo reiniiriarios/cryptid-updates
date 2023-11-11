@@ -4,6 +4,10 @@
 #include <WiFiNINA.h>
 #include <MQTT.h>
 
+#define MQTT_CLIENT_ID "cryptidUpdates"
+#define MQTT_USER "cryptid"
+#define MQTT_PASS "public"
+
 //-------- Rob MQTTClient Private Methods/Properties --------
 
 template<typename Tag>
@@ -65,10 +69,6 @@ typedef enum {
   INTERWEBS_STATUS_MQTT_ERRORS = 13,
 } interwebs_status_t;
 
-#define MQTT_CLIENT_ID "cryptidUpdates"
-#define MQTT_USER "cryptid"
-#define MQTT_PASS "public"
-
 /**
  * @brief Connect to the interwebs and discover all the interesting webs.
  */
@@ -101,7 +101,14 @@ class Interwebs {
      * 
      * @return bool 
      */
-    bool wifiInit();
+    bool wifiInit(void);
+
+    /**
+     * @brief Reconnect to WiFi. This method operates step-by-step, continuing each call.
+     * 
+     * @return Connected
+     */
+    bool wifiReconnect(void);
 
     /**
      * @brief Initialize MQTT client.
@@ -113,7 +120,7 @@ class Interwebs {
     /**
      * @brief Reconnect to MQTT broker. This method operates step-by-step, continuing each call.
      * 
-     * @return Success
+     * @return Connected
      */
     bool mqttReconnect(void);
 

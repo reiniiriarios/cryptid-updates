@@ -46,7 +46,7 @@ bool Interwebs::connect(void) {
   return true;
 }
 
-bool Interwebs::wifiInit() {
+bool Interwebs::wifiInit(void) {
   Serial.print("Attempting to connect to SSID: ");
   Serial.println(wifi_ssid);
 
@@ -73,6 +73,57 @@ bool Interwebs::wifiInit() {
 
   status = INTERWEBS_STATUS_WIFI_CONNECTED;
   return true;
+}
+
+bool Interwebs::wifiReconnect(void) {
+  if (status == INTERWEBS_STATUS_WIFI_CONNECTED || status == INTERWEBS_STATUS_MQTT_CONNECTED) {
+    status = INTERWEBS_STATUS_WIFI_OFFLINE;
+  }
+
+  // step 1, initiate connection
+  if (status == INTERWEBS_STATUS_WIFI_OFFLINE) {
+    Serial.print("Reconnecting WiFi: ");
+    Serial.println(wifi_ssid);
+    uint8_t wifiStatus = WiFiDrv::wifiSetPassphrase(wifi_ssid, strlen(wifi_ssid), wifi_pass, strlen(wifi_pass));
+    status = INTERWEBS_STATUS_WIFI_CONNECTING;
+    return false;
+  }
+
+  // step 2, check connection
+  if (status == INTERWEBS_STATUS_WIFI_CONNECTING) {
+    uint8_t wifiStatus = WiFiDrv::getConnectionStatus();
+    if (wifiStatus == WL_CONNECTED) {
+      // yay!
+      status = INTERWEBS_STATUS_WIFI_CONNECTED;
+      return true;
+    }
+    else if (wifiStatus == WL_IDLE_STATUS) {
+      // keep waiting...
+      Serial.println("Connection idle...");
+    }
+    else if (wifiStatus == WL_SCAN_COMPLETED) {
+      // keep waiting...
+      Serial.println("Connection scan complete...");
+    }
+    else if (wifiStatus == WL_NO_SSID_AVAIL) {
+      // fail
+      status = INTERWEBS_STATUS_WIFI_OFFLINE;
+      Serial.println("Connection failure, no SSID available");
+    }
+    else if (wifiStatus == WL_FAILURE) {
+      // fail
+      status = INTERWEBS_STATUS_WIFI_OFFLINE;
+      Serial.println("Connection failure");
+    }
+    else {
+      // fail (unknown)
+      status = INTERWEBS_STATUS_WIFI_OFFLINE;
+      Serial.println("Connection failure, unknown failure (" + String(wifiStatus) + ")");
+    }
+    return false;
+  }
+
+  return status == INTERWEBS_STATUS_WIFI_CONNECTED;
 }
 
 bool Interwebs::mqttInit(void) {
@@ -227,7 +278,7 @@ bool Interwebs::verifyConnection() {
   if (!wifiIsConnected()) {
     status = INTERWEBS_STATUS_WIFI_OFFLINE;
     Serial.println("WiFi disconnected...");
-    if (!wifiInit()) {
+    if (!wifiReconnect()) {
       Serial.println("Error reconnecting WiFi");
       return false;
     }
