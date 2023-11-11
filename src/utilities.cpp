@@ -1,4 +1,4 @@
-#include "cryptid-utilities.h"
+#include "utilities.h"
 
 float celsius2fahrenheit(float celsius) {
   return ((celsius * 9) / 5) + 32;

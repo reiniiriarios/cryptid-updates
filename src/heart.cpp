@@ -1,5 +1,5 @@
-#include "cryptid-gfx.h"
-#include "cryptid-heart.h"
+#include "gfx.h"
+#include "heart.h"
 
 Heart::Heart(Gfx *gfx_p) {
   gfx = gfx_p;

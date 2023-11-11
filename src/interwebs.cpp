@@ -4,9 +4,9 @@
 #include <utility/WiFiSocketBuffer.h>
 #include <MQTT.h>
 
-#include "cryptid-utilities.h"
-#include "cryptid-wifi-config.h"
-#include "cryptid-interwebs.h"
+#include "utilities.h"
+#include "../wifi-config.h"
+#include "interwebs.h"
 
 Interwebs::Interwebs() {
   IPAddress mqtt_server(172,16,0,131);

@@ -1,8 +1,8 @@
 #ifndef H_CRYPTID_HUMIDITY
 #define H_CRYPTID_HUMIDITY
 
-#include "cryptid-types.h"
-#include "cryptid-gfx.h"
+#include "types.h"
+#include "gfx.h"
 
 class HumidityDisplay {
   public:

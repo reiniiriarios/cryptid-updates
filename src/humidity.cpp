@@ -1,5 +1,5 @@
-#include "cryptid-gfx.h"
-#include "cryptid-humidity.h"
+#include "gfx.h"
+#include "humidity.h"
 
 uint8_t percentS_mask[7 * 6] = {
   1, 0, 1,

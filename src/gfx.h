@@ -2,8 +2,8 @@
 #define H_CRYPTID_GFX
 
 #include <Adafruit_Protomatter.h>
-#include "cryptid-types.h"
-#include "cryptid-config.h"
+#include "types.h"
+#include "config.h"
 
 class Gfx {
   public:

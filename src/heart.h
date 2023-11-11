@@ -1,8 +1,8 @@
 #ifndef H_CRYPTID_HEART
 #define H_CRYPTID_HEART
 
-#include "cryptid-types.h"
-#include "cryptid-gfx.h"
+#include "types.h"
+#include "gfx.h"
 
 class Heart {
   public:

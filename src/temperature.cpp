@@ -1,5 +1,5 @@
-#include "cryptid-gfx.h"
-#include "cryptid-temperature.h"
+#include "gfx.h"
+#include "temperature.h"
 
 uint8_t degF_mask[7 * 6] = {
   1, 1, 1, 0, 1, 1, 1,

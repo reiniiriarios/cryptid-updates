@@ -1,7 +1,7 @@
 #ifndef H_CRYPTID_NUMBERS
 #define H_CRYPTID_NUMBERS
 
-#include "cryptid-types.h"
+#include "types.h"
 
 uint8_t mask_0[3 * 6] = {
   1, 1, 1,

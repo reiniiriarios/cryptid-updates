@@ -1,6 +1,7 @@
 # build
 build
 
+# arduino ide
 .theia
 
 # vscode
@@ -8,6 +9,6 @@ build
 .vscode/settings.json
 
 # secrets
-cryptid-wifi-config.h
-cryptid-wifi-config.c
-cryptid-wifi-config.cpp
+wifi-config.h
+wifi-config.c
+wifi-config.cpp

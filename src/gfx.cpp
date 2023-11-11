@@ -4,10 +4,10 @@ using namespace std;
 #include <Adafruit_Protomatter.h>
 #include <Fonts/FreeSans9pt7b.h>
 
-#include "cryptid-types.h"
-#include "cryptid-config.h"
-#include "cryptid-gfx.h"
-#include "cryptid-numbers.h"
+#include "types.h"
+#include "config.h"
+#include "gfx.h"
+#include "numbers.h"
 
 const GFXfont *gfxFont = &FreeSans9pt7b;
 

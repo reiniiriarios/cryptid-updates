@@ -29,14 +29,14 @@
 
 // Cryptid Updates
 #include "cryptid-updates.h"
-#include "cryptid-types.h"
-#include "cryptid-utilities.h"
-#include "cryptid-config.h"
-#include "cryptid-interwebs.h"
-#include "cryptid-gfx.h"
-#include "cryptid-heart.h"
-#include "cryptid-temperature.h"
-#include "cryptid-humidity.h"
+#include "src/types.h"
+#include "src/config.h"
+#include "src/utilities.h"
+#include "src/interwebs.h"
+#include "src/gfx.h"
+#include "src/heart.h"
+#include "src/temperature.h"
+#include "src/humidity.h"
 
 // HARDWARE CONFIG ---------------------------------------------------------------------------------
 

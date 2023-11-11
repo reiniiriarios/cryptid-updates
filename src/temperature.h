@@ -1,8 +1,8 @@
 #ifndef H_CRYPTID_TEMP
 #define H_CRYPTID_TEMP
 
-#include "cryptid-types.h"
-#include "cryptid-gfx.h"
+#include "types.h"
+#include "gfx.h"
 
 class TemperatureDisplay {
   public:
