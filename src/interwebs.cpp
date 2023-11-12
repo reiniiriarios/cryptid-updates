@@ -138,15 +138,15 @@ bool Interwebs::mqttInit(void) {
 
   // Connect
   bool connected = false;
-  if (!attempt([&](){
+  for (int attempts = 5; !connected && attempts >= 0; attempts--) {
     Serial.print(".");
-    return mqttClient.connect(MQTT_CLIENT_ID, MQTT_USER, MQTT_PASS);
-  })) {
+    connected = mqttClient.connect(MQTT_CLIENT_ID, MQTT_USER, MQTT_PASS);
+  }
+  if (!connected) {
     Serial.println("Error connecting to MQTT broker.");
     return false;
   }
   Serial.println();
-
   status = INTERWEBS_STATUS_MQTT_CONNECTED;
 
   mqttSubscribe();

@@ -32,6 +32,7 @@
 #include "src/types.h"
 #include "src/config.h"
 #include "src/utilities.h"
+#include "src/error_display.h"
 #include "src/interwebs.h"
 #include "src/gfx.h"
 #include "src/loading.h"
@@ -69,20 +70,18 @@ Adafruit_Protomatter matrix(
 // The graphics object responsible for all drawing operations.
 Gfx gfx(&matrix);
 
-// A heart <3.
-Heart heart(&gfx);
-
-// The temperature display.
+// Graphics display objects.
 TemperatureDisplay tempDisplay(&gfx);
-
-// The humidity display.
 HumidityDisplay humidityDisplay(&gfx);
+ErrorDisplay errorDisplay(&gfx);
+Heart heart(&gfx);
 
 // OTHER CONTROL OBJECTS ---------------------------------------------------------------------------
 
 Interwebs interwebs;
 
-weather_t weather;
+weather_t weatherInterior;
+weather_t weatherExterior;
 
 // ERROR HANDLING ----------------------------------------------------------------------------------
 
@@ -143,15 +142,14 @@ void setup(void) {
 
   // Interwebs
   interwebs.connect();
-  interwebs.weather = &weather;
+  interwebs.weather = &weatherExterior;
 }
 
 // LOOP --------------------------------------------------------------------------------------------
 
 uint32_t prevTime = 0;      // Used for frames-per-second throttle
-uint16_t frameCounter = 0;  // Counts up every frame based on MAX_FPS.
 
-float temp_f = 0;  // Temperature in degrees fahrenheit.
+current_display_t currentDisplay = CURRENT_DISPLAY_NONE;
 
 void loop(void) {
   // Limit FPS
@@ -159,44 +157,31 @@ void loop(void) {
   while (((t = micros()) - prevTime) < (1000000L / MAX_FPS));
   prevTime = t;
 
-  // Do something every second.
-  if (frameCounter % MAX_FPS == 0) {
-    sht4.getEvent(&humidity, &temp);
-    temp_f = celsius2fahrenheit(temp.temperature);
-  }
-  // Do something every n seconds.
-  if (frameCounter % (MAX_FPS * 5) == 0) {
-    Serial.print("Temperature: ");
-    Serial.print(temp_f);
-    Serial.print("°F, Humidity: ");
-    Serial.print(humidity.relative_humidity);
-    Serial.println("% rH");
-  }
-  // Do something every n seconds.
-  if (frameCounter % (MAX_FPS * 10) == 0) {
-    Serial.print("Free Memory: ");
-    Serial.println(freeMemory());
-  }
-  // Do something every n seconds.
-  if (frameCounter % (MAX_FPS * 20) == 0) {
-    interwebs.mqttSendMessage("display/temperature", String(temp.temperature));
-    interwebs.mqttSendMessage("display/humidity", String(humidity.relative_humidity));
-    // reset at final repeat block:
-    frameCounter = 0;
-  }
-  frameCounter++;
+  // Do things every n seconds.
+  everyN();
 
   // Run main MQTT loop every loop.
   interwebs.mqttLoop();
 
-  // Choose which data to display.
-  // todo: FLIP FLOP LOL FLIP FLOP LOL
+  // Update display.
+  if (currentDisplay == CURRENT_DISPLAY_INT_TEMP_HUMID) {
+    heart.update();
+    tempDisplay.update(weatherInterior.temp_f);
+    humidityDisplay.update(weatherInterior.humidity);
+  }
+  else if (currentDisplay == CURRENT_DISPLAY_EXT_TEMP_HUMID) {
+    if (weatherExterior.condition != "") {
+      tempDisplay.update(weatherExterior.temp_f);
+      humidityDisplay.update(weatherExterior.humidity);
+    } else {
+      errorDisplay.update(201);
+    }
+  }
+  else {
+    errorDisplay.update(101);
+  }
 
-  // Update pixel data
-  heart.update();
-  tempDisplay.update(temp_f);
-  humidityDisplay.update(humidity.relative_humidity);
-
+  // Draw error pixels.
   if (!interwebs.wifiIsConnected()) {
     gfx.drawErrorWiFi();
   }
@@ -204,7 +189,53 @@ void loop(void) {
     gfx.drawErrorMqtt();
   }
 
-  // Done
+  // Done.
   gfx.toBuffer();  // Move pixels[] to matrix
   matrix.show();   // Copy data to matrix buffers
+}
+
+uint16_t frameCounter = 0;  // Counts up every frame based on MAX_FPS.
+
+void everyN(void) {
+  // Once per second.
+  if (frameCounter % MAX_FPS == 0) {
+    sht4.getEvent(&humidity, &temp);
+    weatherInterior.temp_c = temp.temperature;
+    weatherInterior.temp_f = celsius2fahrenheit(temp.temperature);
+    weatherInterior.humidity = humidity.relative_humidity;
+  }
+
+  // Every 5 seconds.
+  if (frameCounter % (MAX_FPS * 5) == 0) {
+    Serial.print("Temperature: ");
+    Serial.print(weatherInterior.temp_f);
+    Serial.print("°F, Humidity: ");
+    Serial.print(weatherInterior.humidity);
+    Serial.println("% rH");
+
+    // Loop current display.
+    if (currentDisplay == CURRENT_DISPLAY_INT_TEMP_HUMID) {
+      Serial.println("Switching to exterior temp, humidity...");
+      currentDisplay = CURRENT_DISPLAY_EXT_TEMP_HUMID;
+    } else {
+      Serial.println("Switching to interior temp, humidity...");
+      currentDisplay = CURRENT_DISPLAY_INT_TEMP_HUMID;
+    }
+  }
+
+  // Every 10 seconds.
+  if (frameCounter % (MAX_FPS * 10) == 0) {
+    Serial.print("Free Memory: ");
+    Serial.println(freeMemory());
+  }
+
+  // Every 20 seconds.
+  if (frameCounter % (MAX_FPS * 20) == 0) {
+    interwebs.mqttSendMessage("display/temperature", String(temp.temperature));
+    interwebs.mqttSendMessage("display/humidity", String(humidity.relative_humidity));
+
+    // reset at final "every" block:
+    frameCounter = 0;
+  }
+  frameCounter++;
 }

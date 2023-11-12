@@ -1,5 +1,5 @@
-#ifndef H_CRYPTID_NUMBERS
-#define H_CRYPTID_NUMBERS
+#ifndef CRYPTID_NUMBERS_H
+#define CRYPTID_NUMBERS_H
 
 #include "types.h"
 
