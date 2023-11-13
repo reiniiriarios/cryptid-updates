@@ -6,6 +6,9 @@
 #include "types.h"
 #include "gfx.h"
 
+/**
+ * @brief Weather symbols.
+ */
 typedef enum {
   WEATHER_SYMBOL_INT = -1,
   WEATHER_SYMBOL_UNKNOWN = 0,
@@ -21,7 +24,11 @@ typedef enum {
   WEATHER_SYMBOL_FOG = 12,
 } weather_symbol_t;
 
-// https://www.weatherapi.com/docs/weather_conditions.json
+/**
+ * @brief Weather condition codes from Weather API.
+ *
+ * @see https://www.weatherapi.com/docs/weather_conditions.json
+ */
 typedef enum {
   WEATHER_CODE_UNKNOWN = 0,
   WEATHER_CODE_CLEAR = 1000,

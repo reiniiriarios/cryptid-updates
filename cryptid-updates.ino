@@ -167,9 +167,9 @@ void loop(void) {
 
   // Update display.
   if (currentDisplay == CURRENT_DISPLAY_INT_TEMP_HUMID) {
-    heart.update();
     tempDisplay.update(weatherInterior.temp_f);
     humidityDisplay.update(weatherInterior.humidity);
+    weatherSymbol.updateInterior();
   }
   else if (currentDisplay == CURRENT_DISPLAY_EXT_TEMP_HUMID) {
     if (weatherExterior.code != WEATHER_CODE_UNKNOWN) {
