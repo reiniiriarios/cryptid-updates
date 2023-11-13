@@ -39,12 +39,12 @@ void TemperatureDisplay::update(float newTemperature, bool small) {
   // still cold
   else if (temperature < 70) {
     gradient_config.setStart(gfx->value2hue(temperature, 65, 69, 175, 150));
-    gradient_config.setEnd(gfx->value2hue(temperature, 65, 69, 245, 220));
+    gradient_config.setEnd(gfx->value2hue(temperature, 65, 69, 255, 230));
   }
   // okay warm now
   else if (temperature < 90) {
-    gradient_config.setStart(gfx->value2hue(temperature, 70, 89, 410, 315));
-    gradient_config.setEnd(gfx->value2hue(temperature, 70, 89, 435, 340));
+    gradient_config.setStart(gfx->value2hue(temperature, 70, 89, 315, 335));
+    gradient_config.setEnd(gfx->value2hue(temperature, 70, 89, 340, 360));
   }
   // and we're hot af
   else {
