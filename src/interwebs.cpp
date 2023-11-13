@@ -154,32 +154,39 @@ bool Interwebs::mqttInit(void) {
   return true;
 }
 
-void Interwebs::mqttSubscribe(void) {
-  status = INTERWEBS_STATUS_MQTT_CONNECTED;
+bool Interwebs::mqttSubscribe(void) {
+  bool success = true;
   if (!mqttClient.subscribe("test")) {
     Serial.println("Error subscribing to test");
-    status = INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL;
+    success = false;
   }
   if (!mqttClient.subscribe("hello")) {
     Serial.println("Error subscribing to hello");
-    status = INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL;
+    success = false;
   }
   if (!mqttClient.subscribe("weather/temperature")) {
     Serial.println("Error subscribing to weather/temperature");
-    status = INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL;
+    success = false;
   }
   if (!mqttClient.subscribe("weather/feelslike")) {
     Serial.println("Error subscribing to weather/feelslike");
-    status = INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL;
+    success = false;
   }
   if (!mqttClient.subscribe("weather/humidity")) {
     Serial.println("Error subscribing to weather/humidity");
-    status = INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL;
+    success = false;
   }
   if (!mqttClient.subscribe("weather/condition")) {
     Serial.println("Error subscribing to weather/condition");
-    status = INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL;
+    success = false;
   }
+  if (!success) {
+    status = INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL;
+    return false;
+  }
+
+  status = INTERWEBS_STATUS_MQTT_CONNECTED;
+  return true;
 }
 
 bool Interwebs::mqttReconnect(void) {
@@ -187,7 +194,7 @@ bool Interwebs::mqttReconnect(void) {
     status = INTERWEBS_STATUS_MQTT_OFFLINE;
   }
 
-  if (status == INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL) {
+  if (status == INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL || status == INTERWEBS_STATUS_MQTT_CONNECTION_SUCCESS) {
     mqttSubscribe();
     return status == INTERWEBS_STATUS_MQTT_CONNECTED;
   }
@@ -272,10 +279,11 @@ bool Interwebs::mqttReconnect(void) {
 
       return false;
     }
-    // complete
     Serial.println("MQTT connected to broker.");
-    status = INTERWEBS_STATUS_MQTT_CONNECTED;
+    status = INTERWEBS_STATUS_MQTT_CONNECTION_SUCCESS;
     mqttClient.*robbed<MQTTClientConnected>::ptr = true;
+    // success, but still need subscriptions
+    return false;
   }
 
   return status == INTERWEBS_STATUS_MQTT_CONNECTED;

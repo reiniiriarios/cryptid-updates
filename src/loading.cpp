@@ -13,6 +13,6 @@ void displayLoadingScreen(Gfx* gfx) {
     1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0,
   };
   mask.mask = loadingMask;
-  gradient_config_t *cfg = new gradient_config_t(10, 32, 16, 0, 10, false);
+  gradient_config_t *cfg = new gradient_config_t(10, 32, 16, 225, 240, false);
   gfx->drawCircularGradientMask(&mask, 18, 13, cfg);
 }

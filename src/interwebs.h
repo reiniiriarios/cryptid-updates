@@ -64,6 +64,7 @@ typedef enum {
   INTERWEBS_STATUS_MQTT_CONNECTING = 10,
   INTERWEBS_STATUS_MQTT_CLOSING_SOCKET = 15,
   INTERWEBS_STATUS_MQTT_CONNECTING_2 = 14,
+  INTERWEBS_STATUS_MQTT_CONNECTION_SUCCESS = 17,
   INTERWEBS_STATUS_MQTT_CONNECTED = 11,
   INTERWEBS_STATUS_MQTT_OFFLINE = 12,
   INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL = 16,
@@ -139,8 +140,10 @@ class Interwebs {
 
     /**
      * @brief Connect MQTT subscriptions.
+     *
+     * @return All subscribed.
      */
-    void mqttSubscribe(void);
+    bool mqttSubscribe(void);
 
     /**
      * @brief Handle MQTT messages received.
