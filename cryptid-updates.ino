@@ -39,6 +39,7 @@
 #include "src/heart.h"
 #include "src/temperature.h"
 #include "src/humidity.h"
+#include "src/weather.h"
 
 // HARDWARE CONFIG ---------------------------------------------------------------------------------
 
@@ -73,6 +74,7 @@ Gfx gfx(&matrix);
 // Graphics display objects.
 TemperatureDisplay tempDisplay(&gfx);
 HumidityDisplay humidityDisplay(&gfx);
+WeatherSymbol weatherSymbol(&gfx);
 ErrorDisplay errorDisplay(&gfx);
 Heart heart(&gfx);
 
@@ -170,9 +172,10 @@ void loop(void) {
     humidityDisplay.update(weatherInterior.humidity);
   }
   else if (currentDisplay == CURRENT_DISPLAY_EXT_TEMP_HUMID) {
-    if (weatherExterior.condition != "") {
+    if (weatherExterior.code != WEATHER_CODE_UNKNOWN) {
       tempDisplay.update(weatherExterior.temp_f);
       humidityDisplay.update(weatherExterior.humidity);
+      weatherSymbol.update(weatherExterior.code);
     } else {
       errorDisplay.update(201);
     }

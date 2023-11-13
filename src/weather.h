@@ -1,12 +1,14 @@
 #ifndef CRYPTID_WEATHER_SYMBOL_H
 #define CRYPTID_WEATHER_SYMBOL_H
 
+#include <map>
+
 #include "types.h"
 #include "gfx.h"
 
 typedef enum {
-  WEATHER_SYMBOL_UNKNOWN = -1,
-  WEATHER_SYMBOL_INT = 0,
+  WEATHER_SYMBOL_INT = -1,
+  WEATHER_SYMBOL_UNKNOWN = 0,
   WEATHER_SYMBOL_SUN = 1,
   WEATHER_SYMBOL_MOON = 2,
   WEATHER_SYMBOL_CLOUDY = 3,
@@ -22,6 +24,7 @@ typedef enum {
 
 // https://www.weatherapi.com/docs/weather_conditions.json
 typedef enum {
+  WEATHER_CODE_UNKNOWN = 0,
   WEATHER_CODE_CLEAR = 1000,
   WEATHER_CODE_PARTLY_CLOUDY = 1003,
   WEATHER_CODE_CLOUDY = 1006,
@@ -71,6 +74,18 @@ typedef enum {
   WEATHER_CODE_PATCHY_LIGHT_SNOW_WITH_THUNDER = 1279,
   WEATHER_CODE_MODERATE_OR_HEAVY_SNOW_WITH_THUNDER = 1282,
 } weather_code_t;
+
+/**
+ * @brief The current weather.
+ */
+typedef struct weather_t {
+  float temp_c = 0;
+  float temp_f = 0;
+  float feelslike_c = 0;
+  float feelslike_f = 0;
+  uint8_t humidity = 0;
+  weather_code_t code = WEATHER_CODE_UNKNOWN;
+} weather_t;
 
 class WeatherSymbol {
   public:

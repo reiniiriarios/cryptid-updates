@@ -5,6 +5,7 @@
 #include <MQTT.h>
 
 #include "types.h"
+#include "weather.h"
 #include "utilities.h"
 #include "../wifi-config.h"
 #include "interwebs.h"
@@ -156,12 +157,8 @@ bool Interwebs::mqttInit(void) {
 
 bool Interwebs::mqttSubscribe(void) {
   bool success = true;
-  if (!mqttClient.subscribe("test")) {
-    Serial.println("Error subscribing to test");
-    success = false;
-  }
-  if (!mqttClient.subscribe("hello")) {
-    Serial.println("Error subscribing to hello");
+  if (!mqttClient.subscribe("weather/code")) {
+    Serial.println("Error subscribing to weather/code");
     success = false;
   }
   if (!mqttClient.subscribe("weather/temperature")) {
@@ -174,10 +171,6 @@ bool Interwebs::mqttSubscribe(void) {
   }
   if (!mqttClient.subscribe("weather/humidity")) {
     Serial.println("Error subscribing to weather/humidity");
-    success = false;
-  }
-  if (!mqttClient.subscribe("weather/condition")) {
-    Serial.println("Error subscribing to weather/condition");
     success = false;
   }
   if (!success) {
@@ -195,8 +188,13 @@ bool Interwebs::mqttReconnect(void) {
   }
 
   if (status == INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL || status == INTERWEBS_STATUS_MQTT_CONNECTION_SUCCESS) {
-    mqttSubscribe();
-    return status == INTERWEBS_STATUS_MQTT_CONNECTED;
+    if (!mqttClient.connected()) {
+      status = INTERWEBS_STATUS_MQTT_OFFLINE;
+    }
+    else {
+      mqttSubscribe();
+      return status == INTERWEBS_STATUS_MQTT_CONNECTED;
+    }
   }
 
   // mqttClient.netClient
@@ -290,13 +288,8 @@ bool Interwebs::mqttReconnect(void) {
 }
 
 void Interwebs::mqttMessageReceived(String &topic, String &payload) {
-  if (topic == "test") {
-    Serial.println("MQTT test: " + payload);
-  }
-  else if (topic == "hello") {
-    Serial.println("MQTT says, 'Hello " + payload + "!'");
-  }
-  else if (topic == "weather/temperature") {
+  Serial.println("MQTT receipt: " + topic + " = " + payload);
+  if (topic == "weather/temperature") {
     weather->temp_c = payload.toFloat();
     weather->temp_f = celsius2fahrenheit(weather->temp_c);
   }
@@ -307,8 +300,8 @@ void Interwebs::mqttMessageReceived(String &topic, String &payload) {
   else if (topic == "weather/humidity") {
     weather->humidity = payload.toInt();
   }
-  else if (topic == "weather/condition") {
-    weather->condition = payload;
+  else if (topic == "weather/code") {
+    weather->code = static_cast<weather_code_t>(payload.toInt());
   }
   else {
     Serial.println("Unrecognized MQTT topic: " + topic);

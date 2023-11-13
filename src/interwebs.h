@@ -4,6 +4,8 @@
 #include <WiFiNINA.h>
 #include <MQTT.h>
 
+#include "weather.h"
+
 #define MQTT_CLIENT_ID "cryptidUpdates"
 #define MQTT_USER "cryptid"
 #define MQTT_PASS "public"

@@ -2,18 +2,6 @@
 #define CRYPTID_TYPES_H
 
 /**
- * @brief The current weather.
- */
-typedef struct weather_t {
-  float temp_c = 0;
-  float temp_f = 0;
-  float feelslike_c = 0;
-  float feelslike_f = 0;
-  uint8_t humidity = 0;
-  String condition = "";
-} weather_t;
-
-/**
  * @brief A representation of one pixel.
  */
 typedef struct pixel_t {
