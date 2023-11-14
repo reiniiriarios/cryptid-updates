@@ -73,10 +73,12 @@ typedef struct weather_t {
   float feelslike_f = 0;
   uint8_t humidity = 0;
   weather_code_t code = WEATHER_CODE_UNKNOWN;
+  bool is_day = true;
   int temp_last = 0;
   int feelslike_last = 0;
   int humidity_last = 0;
   int code_last = 0;
+  int is_day_last = 0;
 } weather_t;
 
 class WeatherSymbol {
@@ -96,7 +98,7 @@ class WeatherSymbol {
     /**
      * @brief Draw symbol from condition code.
      */
-    void drawSymbol(weather_code_t code);
+    void drawSymbol(weather_code_t code, bool is_day = true);
 
   private:
     /**

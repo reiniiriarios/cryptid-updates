@@ -91,6 +91,49 @@ uint8_t WEATHER_MASK_SUN[SYMBOL_W * SYMBOL_H] = {
 pixel_mask_t WEATHER_PMASK_SUN = {WEATHER_MASK_SUN, SYMBOL_W, SYMBOL_H};
 gradient_config_t WEATHER_GCFG_SUN = { 10, 32, 16, 40, 70, false };
 
+uint8_t WEATHER_MASK_MOON[18 * SYMBOL_H] = {
+  0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,
+  0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,
+  0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
+  1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
+  1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
+  1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
+  1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
+  1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,
+  1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,
+  0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,
+  0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,
+  0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,
+  0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,
+  0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,
+  0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,
+  0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,
+  0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,
+  0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,
+};
+pixel_mask_t WEATHER_PMASK_MOON = {WEATHER_MASK_MOON, 18, SYMBOL_H};
+gradient_config_t WEATHER_GCFG_MOON = { 10, 32, 16, 40, 70, false };
+
+uint8_t WEATHER_MASK_STARS[8 * 9] = {
+  0,0,0,0,0,0,1,0,
+  0,0,0,0,0,1,1,1,
+  0,0,0,0,0,0,1,0,
+  0,0,0,0,0,0,0,0,
+  0,0,1,0,0,0,0,0,
+  0,1,1,1,0,0,0,0,
+  1,1,1,1,1,0,0,0,
+  0,1,1,1,0,0,0,0,
+  0,0,1,0,0,0,0,0,
+};
+pixel_mask_t WEATHER_PMASK_STARS = {WEATHER_MASK_STARS, 8, 9};
+gradient_config_t WEATHER_GCFG_STARS = { 10, 32, 16, 180, 200, false };
+
 uint8_t WEATHER_MASK_CLOUD[SYMBOL_W * 15] = {
   0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
   0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,
@@ -143,6 +186,23 @@ uint8_t WEATHER_MASK_SUN_S[14 * 13] = {
 };
 pixel_mask_t WEATHER_PMASK_SUN_S = {WEATHER_MASK_SUN_S, 14, 15};
 gradient_config_t WEATHER_GCFG_SUN_S = { 10, 32, 16, 40, 70, false };
+
+uint8_t WEATHER_MASK_MOON_S[7 * 12] = {
+  0,0,0,1,1,0,0,
+  0,0,1,1,0,0,0,
+  0,1,1,1,0,0,0,
+  0,1,1,1,0,0,0,
+  1,1,1,1,0,0,0,
+  1,1,1,1,0,0,0,
+  1,1,1,1,0,0,0,
+  0,1,1,1,1,0,0,
+  0,1,1,1,1,0,0,
+  0,0,1,1,1,1,1,
+  0,0,0,1,1,1,1,
+  0,0,0,0,0,1,0,
+};
+pixel_mask_t WEATHER_PMASK_MOON_S = {WEATHER_MASK_MOON_S, 7, 12};
+gradient_config_t WEATHER_GCFG_MOON_S = { 10, 32, 16, 40, 70, false };
 
 uint8_t WEATHER_MASK_RAIN_L[SYMBOL_W * 4] = {
   0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,
@@ -252,16 +312,26 @@ void WeatherSymbol::drawSymbolInterior(void) {
   gfx->drawCircularGradientMask(&WEATHER_PMASK_INT, x, y, &WEATHER_GCFG_INT);
 }
 
-void WeatherSymbol::drawSymbol(weather_code_t code) {
+void WeatherSymbol::drawSymbol(weather_code_t code, bool is_day) {
   switch (code) {
     case WEATHER_CODE_CLEAR:
-      //todo: moon by time of day
-      gfx->drawCircularGradientMask(&WEATHER_PMASK_SUN, x, y, &WEATHER_GCFG_SUN);
+      if (is_day) {
+        gfx->drawCircularGradientMask(&WEATHER_PMASK_SUN, x, y, &WEATHER_GCFG_SUN);
+      }
+      else {
+        gfx->drawCircularGradientMask(&WEATHER_PMASK_MOON, x + 2, y, &WEATHER_GCFG_MOON);
+        gfx->drawCircularGradientMask(&WEATHER_PMASK_STARS, x + 13, y + 4, &WEATHER_GCFG_STARS);
+      }
       return;
     case WEATHER_CODE_PARTLY_CLOUDY:
-      //todo: moon by time of day
-      gfx->drawCircularGradientMask(&WEATHER_PMASK_SUN_S, x + 3, y, &WEATHER_GCFG_SUN_S);
-      gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD_S, x + 8, y + 7, &WEATHER_GCFG_CLOUD_S);
+      if (is_day) {
+        gfx->drawCircularGradientMask(&WEATHER_PMASK_SUN_S, x + 3, y, &WEATHER_GCFG_SUN_S);
+        gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD_S, x + 8, y + 7, &WEATHER_GCFG_CLOUD_S);
+      }
+      else {
+        gfx->drawCircularGradientMask(&WEATHER_PMASK_MOON_S, x + 5, y, &WEATHER_GCFG_MOON_S);
+        gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD_S, x + 8, y + 7, &WEATHER_GCFG_CLOUD_S);
+      }
       return;
     case WEATHER_CODE_CLOUDY:
     case WEATHER_CODE_OVERCAST:

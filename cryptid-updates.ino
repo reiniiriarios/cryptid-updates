@@ -180,9 +180,13 @@ void loop(void) {
         millis() - weatherExterior.humidity_last < 600000 ||
         millis() - weatherExterior.code_last < 600000
       ) { // 1 min = 60000 ms
+        bool is_day = true;
+        if (weatherExterior.is_day_last < 600000) {
+          is_day = weatherExterior.is_day;
+        }
         tempDisplay.update(weatherExterior.temp_f);
         humidityDisplay.update(weatherExterior.humidity);
-        weatherSymbol.drawSymbol(weatherExterior.code);
+        weatherSymbol.drawSymbol(weatherExterior.code, is_day);
       }
       else {
         // Weather more than 10 minutes out of date.

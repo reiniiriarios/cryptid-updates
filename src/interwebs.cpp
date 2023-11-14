@@ -173,6 +173,10 @@ bool Interwebs::mqttSubscribe(void) {
     Serial.println("Error subscribing to weather/humidity");
     success = false;
   }
+  if (!mqttClient.subscribe("weather/isday")) {
+    Serial.println("Error subscribing to weather/isday");
+    success = false;
+  }
   if (!success) {
     status = INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL;
     return false;
@@ -306,6 +310,11 @@ void Interwebs::mqttMessageReceived(String &topic, String &payload) {
   else if (topic == "weather/code") {
     weather->code = static_cast<weather_code_t>(payload.toInt());
     weather->code_last = millis();
+  }
+  else if (topic == "weather/isday") {
+    // 1 = day, 0 = night
+    weather->is_day = payload.toInt() == 1;
+    weather->is_day_last = millis();
   }
   else {
     Serial.println("Unrecognized MQTT topic: " + topic);
