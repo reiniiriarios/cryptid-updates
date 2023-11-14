@@ -89,7 +89,7 @@ uint8_t WEATHER_MASK_SUN[SYMBOL_W * SYMBOL_H] = {
   0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
 };
 pixel_mask_t WEATHER_PMASK_SUN = {WEATHER_MASK_SUN, SYMBOL_W, SYMBOL_H};
-gradient_config_t WEATHER_GCFG_SUN = { 10, 32, 16, 60, 80, false };
+gradient_config_t WEATHER_GCFG_SUN = { 10, 32, 16, 40, 70, false };
 
 uint8_t WEATHER_MASK_CLOUDY_SUN[SYMBOL_W * SYMBOL_H] = {
   0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
@@ -118,7 +118,7 @@ uint8_t WEATHER_MASK_CLOUDY_SUN[SYMBOL_W * SYMBOL_H] = {
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 };
 pixel_mask_t WEATHER_PMASK_CLOUDY_SUN = {WEATHER_MASK_CLOUDY_SUN, SYMBOL_W, SYMBOL_H};
-gradient_config_t WEATHER_GCFG_CLOUDY_SUN = { 10, 32, 16, 70, 90, false };
+gradient_config_t WEATHER_GCFG_CLOUDY_SUN = { 10, 32, 16, 50, 80, false };
 
 uint8_t WEATHER_MASK_CLOUDY[SYMBOL_W * SYMBOL_H] = {
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -263,7 +263,7 @@ uint8_t WEATHER_MASK_LIGHTNING[SYMBOL_W * SYMBOL_H] = {
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,
 };
 pixel_mask_t WEATHER_PMASK_LIGHTNING = {WEATHER_MASK_LIGHTNING, SYMBOL_W, SYMBOL_H};
-gradient_config_t WEATHER_GCFG_LIGHTNING = { 10, 32, 16, 60, 70, false };
+gradient_config_t WEATHER_GCFG_LIGHTNING = { 10, 32, 16, 50, 80, false };
 
 uint8_t WEATHER_MASK_FOG[SYMBOL_W * SYMBOL_H] = {
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

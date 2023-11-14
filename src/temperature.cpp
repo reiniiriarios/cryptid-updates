@@ -31,22 +31,27 @@ TemperatureDisplay::TemperatureDisplay(Gfx *graphics_object) {
 void TemperatureDisplay::update(float newTemperature, bool small) {
   temperature = (uint8_t)round(newTemperature);
 
+  // brrr
+  if (temperature < 40) {
+    gradient_config.setStart(205);
+    gradient_config.setEnd(285);
+  }
   // really cold
-  if (temperature < 65) {
-    gradient_config.setStart(170);
-    gradient_config.setEnd(240);
+  else if (temperature < 65) {
+    gradient_config.setStart(gfx->value2hue(temperature, 40, 65, 200, 175));
+    gradient_config.setEnd(gfx->value2hue(temperature, 40, 65, 280, 255));
   }
   // still cold
   else if (temperature < 70) {
-    gradient_config.setStart(gfx->value2hue(temperature, 65, 69, 175, 150));
-    gradient_config.setEnd(gfx->value2hue(temperature, 65, 69, 255, 230));
+    gradient_config.setStart(gfx->value2hue(temperature, 65, 70, 175, 150));
+    gradient_config.setEnd(gfx->value2hue(temperature, 65, 70, 255, 230));
   }
   // okay warm now
   else if (temperature < 90) {
-    gradient_config.setStart(gfx->value2hue(temperature, 70, 89, 50, 0));
-    gradient_config.setEnd(gfx->value2hue(temperature, 70, 89, 60, 10));
+    gradient_config.setStart(gfx->value2hue(temperature, 70, 89, 40, 0));
+    gradient_config.setEnd(gfx->value2hue(temperature, 70, 89, 70, 30));
   }
-  // and we're hot af
+  // and we're hot
   else {
     gradient_config.setStart(310);
     gradient_config.setEnd(335);
