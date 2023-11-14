@@ -302,6 +302,7 @@ void Interwebs::mqttMessageReceived(String &topic, String &payload) {
   }
   else if (topic == "weather/code") {
     weather->code = static_cast<weather_code_t>(payload.toInt());
+    weather->received_at = millis();
   }
   else {
     Serial.println("Unrecognized MQTT topic: " + topic);

@@ -60,7 +60,7 @@ uint8_t WEATHER_MASK_INT[SYMBOL_W * SYMBOL_H] = {
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 };
 pixel_mask_t WEATHER_PMASK_INT = {WEATHER_MASK_INT, SYMBOL_W, SYMBOL_H};
-gradient_config_t WEATHER_GCFG_INT = { 10, 32, 16, 0, 10, false };
+gradient_config_t WEATHER_GCFG_INT = { 10, 32, 16, 290, 310, false };
 
 uint8_t WEATHER_MASK_SUN[SYMBOL_W * SYMBOL_H] = {
   0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
