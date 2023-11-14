@@ -170,7 +170,7 @@ void loop(void) {
   if (currentDisplay == CURRENT_DISPLAY_INT_TEMP_HUMID) {
     tempDisplay.update(weatherInterior.temp_f);
     humidityDisplay.update(weatherInterior.humidity);
-    weatherSymbol.updateInterior();
+    weatherSymbol.drawSymbolInterior();
   }
   // CURRENT WEATHER
   else if (currentDisplay == CURRENT_DISPLAY_EXT_TEMP_HUMID) {
@@ -182,7 +182,7 @@ void loop(void) {
       ) { // 1 min = 60000 ms
         tempDisplay.update(weatherExterior.temp_f);
         humidityDisplay.update(weatherExterior.humidity);
-        weatherSymbol.update(weatherExterior.code);
+        weatherSymbol.drawSymbol(weatherExterior.code);
       }
       else {
         // Weather more than 10 minutes out of date.

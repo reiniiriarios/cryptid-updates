@@ -7,24 +7,6 @@
 #include "gfx.h"
 
 /**
- * @brief Weather symbols.
- */
-typedef enum {
-  WEATHER_SYMBOL_INT = -1,
-  WEATHER_SYMBOL_UNKNOWN = 0,
-  WEATHER_SYMBOL_SUN = 1,
-  WEATHER_SYMBOL_MOON = 2,
-  WEATHER_SYMBOL_CLOUDY = 3,
-  WEATHER_SYMBOL_CLOUDY_SUN = 4,
-  WEATHER_SYMBOL_CLOUDY_MOON = 5,
-  WEATHER_SYMBOL_RAIN = 8,
-  WEATHER_SYMBOL_SNOW = 9,
-  WEATHER_SYMBOL_SLEET = 10,
-  WEATHER_SYMBOL_LIGHTNING = 11,
-  WEATHER_SYMBOL_FOG = 12,
-} weather_symbol_t;
-
-/**
  * @brief Weather condition codes from Weather API.
  *
  * @see https://www.weatherapi.com/docs/weather_conditions.json
@@ -109,28 +91,28 @@ class WeatherSymbol {
     /**
      * @brief Update the gradient image (run each frame).
      */
-    void update(weather_code_t code);
+    void drawSymbolInterior(void);
 
     /**
-     * @brief Update the gradient image (run each frame).
+     * @brief Draw symbol from condition code.
      */
-    void update(weather_symbol_t symbol);
-
-    /**
-     * @brief Update the gradient image (run each frame).
-     */
-    void updateInterior(void);
-
-    /**
-     * @brief Get symbol from condition code.
-     */
-    weather_symbol_t getSymbol(weather_code_t code);
+    void drawSymbol(weather_code_t code);
 
   private:
     /**
      * @brief A pointer to the graphics object.
      */
     Gfx *gfx;
+
+    /**
+     * @brief X position.
+     */
+    uint8_t x = 38;
+
+    /**
+     * @brief X position.
+     */
+    uint8_t y = 4;
 };
 
 #endif
