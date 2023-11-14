@@ -175,7 +175,11 @@ void loop(void) {
   // CURRENT WEATHER
   else if (currentDisplay == CURRENT_DISPLAY_EXT_TEMP_HUMID) {
     if (weatherExterior.code != WEATHER_CODE_UNKNOWN) {
-      if (millis() - weatherExterior.received_at < 600000) { // 1 min = 60000 ms
+      if (
+        millis() - weatherExterior.temp_last < 600000 ||
+        millis() - weatherExterior.humidity_last < 600000 ||
+        millis() - weatherExterior.code_last < 600000
+      ) { // 1 min = 60000 ms
         tempDisplay.update(weatherExterior.temp_f);
         humidityDisplay.update(weatherExterior.humidity);
         weatherSymbol.update(weatherExterior.code);

@@ -292,17 +292,20 @@ void Interwebs::mqttMessageReceived(String &topic, String &payload) {
   if (topic == "weather/temperature") {
     weather->temp_c = payload.toFloat();
     weather->temp_f = celsius2fahrenheit(weather->temp_c);
+    weather->temp_last = millis();
   }
   else if (topic == "weather/feelslike") {
     weather->feelslike_c = payload.toFloat();
     weather->feelslike_f = celsius2fahrenheit(weather->feelslike_c);
+    weather->feelslike_last = millis();
   }
   else if (topic == "weather/humidity") {
     weather->humidity = payload.toInt();
+    weather->humidity_last = millis();
   }
   else if (topic == "weather/code") {
     weather->code = static_cast<weather_code_t>(payload.toInt());
-    weather->received_at = millis();
+    weather->code_last = millis();
   }
   else {
     Serial.println("Unrecognized MQTT topic: " + topic);

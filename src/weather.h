@@ -91,7 +91,10 @@ typedef struct weather_t {
   float feelslike_f = 0;
   uint8_t humidity = 0;
   weather_code_t code = WEATHER_CODE_UNKNOWN;
-  int received_at = 0;
+  int temp_last = 0;
+  int feelslike_last = 0;
+  int humidity_last = 0;
+  int code_last = 0;
 } weather_t;
 
 class WeatherSymbol {
