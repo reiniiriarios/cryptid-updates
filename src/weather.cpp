@@ -1,36 +1,31 @@
 #include "weather.h"
 #include "gfx.h"
 
-const int SYMBOL_W = 24;
-const int SYMBOL_H = 24;
-
-uint8_t WEATHER_MASK_UNKNOWN[SYMBOL_W * SYMBOL_H] = {
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,1,1,1,1,1,0,0,1,1,1,1,1,0,0,0,0,0,0,
-  0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,
-  0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,
-  0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,
-  0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,
-  0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+uint8_t WEATHER_MASK_UNKNOWN[16 * 22] = {
+  0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,
+  0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,
+  0,0,1,1,1,1,1,0,0,1,1,1,1,1,0,0,
+  0,1,1,1,1,0,0,0,0,0,0,1,1,1,1,0,
+  1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,0,
+  1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,
+  1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,
+  1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,
+  0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,
+  0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,
+  0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,
+  0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,
+  0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,
+  0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,
+  0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,
+  0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,
+  0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,
+  0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,
+  0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,
 };
-pixel_mask_t WEATHER_PMASK_UNKNOWN = {WEATHER_MASK_UNKNOWN, SYMBOL_W, SYMBOL_H};
+pixel_mask_t WEATHER_PMASK_UNKNOWN = {WEATHER_MASK_UNKNOWN, 16, 22};
 gradient_config_t WEATHER_GCFG_UNKNOWN = { 10, 32, 16, 0, 10, false };
 
 uint8_t WEATHER_MASK_HOUSE[16 * 16] = {
@@ -86,7 +81,7 @@ uint8_t WEATHER_MASK_HOUSE_BUSHES[26 * 4] = {
 pixel_mask_t WEATHER_PMASK_HOUSE_BUSHES = {WEATHER_MASK_HOUSE_BUSHES, 26, 4};
 gradient_config_t WEATHER_GCFG_HOUSE_BUSHES = { 10, 32, 16, 95, 130, false };
 
-uint8_t WEATHER_MASK_SUN[SYMBOL_W * SYMBOL_H] = {
+uint8_t WEATHER_MASK_SUN[24 * 24] = {
   0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
   0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
   0,0,0,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,0,0,0,
@@ -112,10 +107,10 @@ uint8_t WEATHER_MASK_SUN[SYMBOL_W * SYMBOL_H] = {
   0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
   0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
 };
-pixel_mask_t WEATHER_PMASK_SUN = {WEATHER_MASK_SUN, SYMBOL_W, SYMBOL_H};
+pixel_mask_t WEATHER_PMASK_SUN = {WEATHER_MASK_SUN, 24, 24};
 gradient_config_t WEATHER_GCFG_SUN = { 10, 32, 16, 40, 70, false };
 
-uint8_t WEATHER_MASK_MOON[18 * SYMBOL_H] = {
+uint8_t WEATHER_MASK_MOON[18 * 24] = {
   0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,
   0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,
   0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,
@@ -141,7 +136,7 @@ uint8_t WEATHER_MASK_MOON[18 * SYMBOL_H] = {
   0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,
   0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,
 };
-pixel_mask_t WEATHER_PMASK_MOON = {WEATHER_MASK_MOON, 18, SYMBOL_H};
+pixel_mask_t WEATHER_PMASK_MOON = {WEATHER_MASK_MOON, 18, 24};
 gradient_config_t WEATHER_GCFG_MOON = { 10, 32, 16, 40, 70, false };
 
 uint8_t WEATHER_MASK_STARS[8 * 9] = {
@@ -158,7 +153,7 @@ uint8_t WEATHER_MASK_STARS[8 * 9] = {
 pixel_mask_t WEATHER_PMASK_STARS = {WEATHER_MASK_STARS, 8, 9};
 gradient_config_t WEATHER_GCFG_STARS = { 10, 32, 16, 180, 200, false };
 
-uint8_t WEATHER_MASK_CLOUD[SYMBOL_W * 15] = {
+uint8_t WEATHER_MASK_CLOUD[24 * 15] = {
   0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
   0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,
   0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,
@@ -175,7 +170,7 @@ uint8_t WEATHER_MASK_CLOUD[SYMBOL_W * 15] = {
   0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,
   0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,
 };
-pixel_mask_t WEATHER_PMASK_CLOUD = {WEATHER_MASK_CLOUD, SYMBOL_W, 15};
+pixel_mask_t WEATHER_PMASK_CLOUD = {WEATHER_MASK_CLOUD, 24, 15};
 gradient_config_t WEATHER_GCFG_CLOUD = { 10, 32, 16, 170, 190, false };
 
 uint8_t WEATHER_MASK_CLOUD_S[16 * 10] = {
@@ -228,67 +223,67 @@ uint8_t WEATHER_MASK_MOON_S[7 * 12] = {
 pixel_mask_t WEATHER_PMASK_MOON_S = {WEATHER_MASK_MOON_S, 7, 12};
 gradient_config_t WEATHER_GCFG_MOON_S = { 10, 32, 16, 40, 70, false };
 
-uint8_t WEATHER_MASK_RAIN_L[SYMBOL_W * 4] = {
-  0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,
-  0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,
-  0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,
-  0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,
+uint8_t WEATHER_MASK_RAIN_L[16 * 4] = {
+  1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,
+  1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,
+  0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,
+  0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,
 };
-pixel_mask_t WEATHER_PMASK_RAIN_L = {WEATHER_MASK_RAIN_L, SYMBOL_W, 4};
+pixel_mask_t WEATHER_PMASK_RAIN_L = {WEATHER_MASK_RAIN_L, 16, 4};
 gradient_config_t WEATHER_GCFG_RAIN_L = { 10, 32, 16, 220, 240, false };
 
-uint8_t WEATHER_MASK_RAIN_H[SYMBOL_W * 7] = {
-  0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
-  0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
-  0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
-  0,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0,0,
-  0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,
-  0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,
-  0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,
+uint8_t WEATHER_MASK_RAIN_H[20 * 7] = {
+  1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,
+  1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,
+  0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,
+  0,1,0,0,1,0,0,0,1,0,0,1,0,0,0,1,0,0,1,0,
+  0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,
+  0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,
+  0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,
 };
-pixel_mask_t WEATHER_PMASK_RAIN_H = {WEATHER_MASK_RAIN_H, SYMBOL_W, 7};
+pixel_mask_t WEATHER_PMASK_RAIN_H = {WEATHER_MASK_RAIN_H, 20, 7};
 gradient_config_t WEATHER_GCFG_RAIN_H = { 10, 32, 16, 220, 240, false };
 
-uint8_t WEATHER_MASK_SNOW_L[SYMBOL_W * 5] = {
-  0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,
-  0,0,0,1,1,1,0,0,0,1,0,0,0,0,1,0,0,0,1,1,1,0,0,0,
-  0,0,0,0,1,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,
+uint8_t WEATHER_MASK_SNOW_L[18 * 5] = {
+  0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,
+  0,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,1,0,
+  1,1,1,0,0,0,1,0,0,0,0,1,0,0,0,1,1,1,
+  0,1,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,0,
+  0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,
 };
-pixel_mask_t WEATHER_PMASK_SNOW_L = {WEATHER_MASK_SNOW_L, SYMBOL_W, 5};
+pixel_mask_t WEATHER_PMASK_SNOW_L = {WEATHER_MASK_SNOW_L, 18, 5};
 gradient_config_t WEATHER_GCFG_SNOW_L = { 10, 32, 16, 180, 200, false };
 
-uint8_t WEATHER_MASK_SNOW_H[SYMBOL_W * 7] = {
-  0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,
-  0,1,1,1,0,0,0,0,0,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,
-  0,0,1,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
-  0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,
-  0,0,0,0,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,1,1,1,0,0,
-  0,0,0,0,0,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,
+uint8_t WEATHER_MASK_SNOW_H[21 * 7] = {
+  0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,
+  1,1,1,0,0,0,0,0,1,0,0,0,0,0,0,1,1,1,0,0,0,
+  0,1,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,0,0,0,0,
+  0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,
+  0,0,0,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,1,1,1,
+  0,0,0,0,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,0,
+  0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,
 };
-pixel_mask_t WEATHER_PMASK_SNOW_H = {WEATHER_MASK_SNOW_H, SYMBOL_W, 7};
+pixel_mask_t WEATHER_PMASK_SNOW_H = {WEATHER_MASK_SNOW_H, 21, 7};
 gradient_config_t WEATHER_GCFG_SNOW_H = { 10, 32, 16, 180, 200, false };
 
-uint8_t WEATHER_MASK_SLEET_L[SYMBOL_W * 4] = {
-  0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,1,1,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,
-  0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,
+uint8_t WEATHER_MASK_SLEET_L[17 * 4] = {
+  0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,
+  1,1,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,
+  1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,
+  0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,
 };
-pixel_mask_t WEATHER_PMASK_SLEET_L = {WEATHER_MASK_SLEET_L, SYMBOL_W, 4};
+pixel_mask_t WEATHER_PMASK_SLEET_L = {WEATHER_MASK_SLEET_L, 17, 4};
 gradient_config_t WEATHER_GCFG_SLEET_L = { 10, 32, 16, 210, 230, false };
 
-uint8_t WEATHER_MASK_SLEET_H[SYMBOL_W * 6] = {
-  0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,
-  0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,
-  0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,
+uint8_t WEATHER_MASK_SLEET_H[20 * 6] = {
+  1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,
+  1,1,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,
+  0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,
+  0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,1,1,
+  0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,
 };
-pixel_mask_t WEATHER_PMASK_SLEET_H = {WEATHER_MASK_SLEET_H, SYMBOL_W, 6};
+pixel_mask_t WEATHER_PMASK_SLEET_H = {WEATHER_MASK_SLEET_H, 20, 6};
 gradient_config_t WEATHER_GCFG_SLEET_H = { 10, 32, 16, 210, 230, false };
 
 uint8_t WEATHER_MASK_LIGHTNING[8 * 14] = {
@@ -310,7 +305,7 @@ uint8_t WEATHER_MASK_LIGHTNING[8 * 14] = {
 pixel_mask_t WEATHER_PMASK_LIGHTNING = {WEATHER_MASK_LIGHTNING, 8, 14};
 gradient_config_t WEATHER_GCFG_LIGHTNING = { 10, 32, 16, 40, 70, false };
 
-uint8_t WEATHER_MASK_FOG[SYMBOL_W * 13] = {
+uint8_t WEATHER_MASK_FOG[24 * 13] = {
   0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,
   0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,
   0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,
@@ -325,7 +320,7 @@ uint8_t WEATHER_MASK_FOG[SYMBOL_W * 13] = {
   0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,
   0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,
 };
-pixel_mask_t WEATHER_PMASK_FOG = {WEATHER_MASK_FOG, SYMBOL_W, 13};
+pixel_mask_t WEATHER_PMASK_FOG = {WEATHER_MASK_FOG, 24, 13};
 gradient_config_t WEATHER_GCFG_FOG = { 10, 32, 16, 200, 220, false };
 
 WeatherSymbol::WeatherSymbol(Gfx *gfx_p) {
@@ -376,14 +371,14 @@ void WeatherSymbol::drawSymbol(weather_code_t code, bool is_day) {
     case WEATHER_CODE_LIGHT_RAIN_SHOWER:
     case WEATHER_CODE_MODERATE_RAIN_AT_TIMES:
       gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD, x, y + 2, &WEATHER_GCFG_CLOUD);
-      gfx->drawCircularGradientMask(&WEATHER_PMASK_RAIN_L, x, y + 18, &WEATHER_GCFG_RAIN_L);
+      gfx->drawCircularGradientMask(&WEATHER_PMASK_RAIN_L, x + 4, y + 18, &WEATHER_GCFG_RAIN_L);
       return;
     case WEATHER_CODE_HEAVY_RAIN:
     case WEATHER_CODE_MODERATE_OR_HEAVY_RAIN_SHOWER:
     case WEATHER_CODE_TORRENTIAL_RAIN_SHOWER:
     case WEATHER_CODE_HEAVY_RAIN_AT_TIMES:
       gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD, x, y + 2, &WEATHER_GCFG_CLOUD);
-      gfx->drawCircularGradientMask(&WEATHER_PMASK_RAIN_H, x, y + 17, &WEATHER_GCFG_RAIN_H);
+      gfx->drawCircularGradientMask(&WEATHER_PMASK_RAIN_H, x + 2, y + 17, &WEATHER_GCFG_RAIN_H);
       return;
     case WEATHER_CODE_LIGHT_SNOW:
     case WEATHER_CODE_LIGHT_SNOW_SHOWERS:
@@ -391,7 +386,7 @@ void WeatherSymbol::drawSymbol(weather_code_t code, bool is_day) {
     case WEATHER_CODE_PATCHY_LIGHT_SNOW:
     case WEATHER_CODE_PATCHY_MODERATE_SNOW:
       gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD, x, y + 2, &WEATHER_GCFG_CLOUD);
-      gfx->drawCircularGradientMask(&WEATHER_PMASK_SNOW_L, x, y + 18, &WEATHER_GCFG_SNOW_L);
+      gfx->drawCircularGradientMask(&WEATHER_PMASK_SNOW_L, x + 3, y + 18, &WEATHER_GCFG_SNOW_L);
       return;
     case WEATHER_CODE_HEAVY_SNOW:
     case WEATHER_CODE_MODERATE_SNOW:
@@ -400,7 +395,7 @@ void WeatherSymbol::drawSymbol(weather_code_t code, bool is_day) {
     case WEATHER_CODE_BLOWING_SNOW:
     case WEATHER_CODE_BLIZZARD:
       gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD, x, y + 2, &WEATHER_GCFG_CLOUD);
-      gfx->drawCircularGradientMask(&WEATHER_PMASK_SNOW_H, x, y + 17, &WEATHER_GCFG_SNOW_H);
+      gfx->drawCircularGradientMask(&WEATHER_PMASK_SNOW_H, x + 1, y + 17, &WEATHER_GCFG_SNOW_H);
       return;
     case WEATHER_CODE_LIGHT_SLEET:
     case WEATHER_CODE_LIGHT_SLEET_SHOWERS:
@@ -410,7 +405,7 @@ void WeatherSymbol::drawSymbol(weather_code_t code, bool is_day) {
     case WEATHER_CODE_ICE_PELLETS:
     case WEATHER_CODE_LIGHT_SHOWERS_OF_ICE_PELLETS:
       gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD, x, y + 2, &WEATHER_GCFG_CLOUD);
-      gfx->drawCircularGradientMask(&WEATHER_PMASK_SLEET_L, x, y + 18, &WEATHER_GCFG_SLEET_L);
+      gfx->drawCircularGradientMask(&WEATHER_PMASK_SLEET_L, x + 3, y + 18, &WEATHER_GCFG_SLEET_L);
       return;
     case WEATHER_CODE_MODERATE_OR_HEAVY_SLEET:
     case WEATHER_CODE_MODERATE_OR_HEAVY_SLEET_SHOWERS:
@@ -419,7 +414,7 @@ void WeatherSymbol::drawSymbol(weather_code_t code, bool is_day) {
     case WEATHER_CODE_MODERATE_OR_HEAVY_FREEZING_RAIN:
     case WEATHER_CODE_MODERATE_OR_HEAVY_SHOWERS_OF_ICE_PELLETS:
       gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD, x, y + 2, &WEATHER_GCFG_CLOUD);
-      gfx->drawCircularGradientMask(&WEATHER_PMASK_SLEET_H, x, y + 17, &WEATHER_GCFG_SLEET_H);
+      gfx->drawCircularGradientMask(&WEATHER_PMASK_SLEET_H, x + 2, y + 17, &WEATHER_GCFG_SLEET_H);
       return;
     case WEATHER_CODE_THUNDERY_OUTBREAKS_POSSIBLE:
     case WEATHER_CODE_PATCHY_LIGHT_RAIN_WITH_THUNDER:
@@ -430,5 +425,5 @@ void WeatherSymbol::drawSymbol(weather_code_t code, bool is_day) {
       gfx->drawCircularGradientMask(&WEATHER_PMASK_LIGHTNING, x + 7, y + 6, &WEATHER_GCFG_LIGHTNING);
       return;
   }
-  gfx->drawCircularGradientMask(&WEATHER_PMASK_UNKNOWN, x, y, &WEATHER_GCFG_UNKNOWN);
+  gfx->drawCircularGradientMask(&WEATHER_PMASK_UNKNOWN, x + 4, y + 1, &WEATHER_GCFG_UNKNOWN);
 }
