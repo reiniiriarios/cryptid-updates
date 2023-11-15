@@ -141,15 +141,15 @@ uint8_t Gfx::drawCircularGradientMask(float n, uint8_t x, uint8_t y, gradient_co
   return drawCircularGradientMask((uint8_t)round(n), x, y, cfg);
 }
 
-uint8_t Gfx::drawCircularGradientMask(uint8_t n, uint8_t x, uint8_t y, gradient_config_t *cfg) {
+uint8_t Gfx::drawCircularGradientMask(int n, uint8_t x, uint8_t y, gradient_config_t *cfg) {
   // Calculate the number of digits in the number.
   uint8_t num_digits = 0;
-  for (uint8_t nn = n; nn > 0; nn /= 10) {
+  for (int nn = n; nn > 0; nn /= 10) {
     num_digits++;
   }
   // Make an array of digits, small to large (right to left).
   uint8_t digits[num_digits];
-  for (uint8_t nn = n, i = 0; nn > 0; nn /= 10, i++) {
+  for (int nn = n, i = 0; nn > 0; nn /= 10, i++) {
     digits[i] = nn % 10;
   }
   // Draw each digit in reverse order.
@@ -212,7 +212,10 @@ uint8_t Gfx::drawCircularGradientFont(char c, uint8_t x, uint8_t y, gradient_con
 }
 
 uint16_t Gfx::value2hue(int value, int minFrom, int maxFrom, int minTo, int maxTo) {
-  int hue = round((float)(std::min(maxFrom, std::max(minFrom, value)) - minFrom) * ((float)(maxTo - minTo) / (float)(maxFrom - minFrom)) + minTo);
+  int hue = round(
+    (float)(std::min(maxFrom, std::max(minFrom, value)) - minFrom) *
+    ((float)(maxTo - minTo) / (float)(maxFrom - minFrom)) + minTo
+  );
   while (hue < 0) hue += 360;
   while (hue >= 360) hue -= 360;
   return (uint16_t)hue;
@@ -233,4 +236,22 @@ uint16_t Gfx::getHueBounce(int start, int end) {
   float interval = fmod(tick, 1);
   float hue = start + (interval * (end - start));
   return round(hue / 360.0f * 65535.0f);
+}
+
+uint8_t Gfx::getStringWidth(const char *str) {
+  uint8_t w = 0;
+  uint8_t first = pgm_read_byte(&gfxFont->first);
+  uint8_t last = pgm_read_byte(&gfxFont->last);
+  uint8_t c;
+  while (c = *str++) {
+    if (c >= first && c <= last) { // char present in this font?
+      GFXglyph *glyph = pgm_read_glyph_ptr(gfxFont, c - first);
+      w += pgm_read_byte(&glyph->width) + 1;
+    }
+  }
+  return w;
+}
+
+uint8_t Gfx::getCenterFontX(String *str) {
+  return (MATRIX_WIDTH - getStringWidth(str->c_str())) / 2;
 }

@@ -69,7 +69,7 @@ class Gfx {
      * @param cfg  The gradient config.
      * @return     Width of image drawn in pixels.
      */
-    uint8_t drawCircularGradientMask(uint8_t n, uint8_t x, uint8_t y, gradient_config_t *cfg);
+    uint8_t drawCircularGradientMask(int n, uint8_t x, uint8_t y, gradient_config_t *cfg);
 
     /**
      * @brief Draw a float (rounded) on pixels[] with a gradient, using a font.
@@ -136,6 +136,22 @@ class Gfx {
      * @brief Draw error pixel(s) to denote MQTT is down.
      */
     void drawErrorMqtt(void);
+
+    /**
+     * @brief Get width of string.
+     * 
+     * @param str 
+     * @return uint8_t width
+     */
+    uint8_t getStringWidth(const char *str);
+
+    /**
+     * @brief Get start x of string to center it on the display.
+     * 
+     * @param str 
+     * @return uint8_t x
+     */
+    uint8_t getCenterFontX(String *str);
 
   private:
 

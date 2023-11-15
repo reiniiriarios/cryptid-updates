@@ -12,8 +12,10 @@ void TimeDisplay::setTime(time_t unix_ts) {
 void TimeDisplay::updateScreen(void) {
   setGfxDay();
   setGfxDate();
-  gfx->drawCircularGradientFont(getDayOfWeek(), 13, 2, &gcfg_day);
-  gfx->drawCircularGradientFont(getMonth() + " " + String(time->tm_mday), 8, 17, &gcfg_date);
+  String day = getDayOfWeek();
+  String date = getMonth() + " " + String(time->tm_mday);
+  gfx->drawCircularGradientFont(day, gfx->getCenterFontX(&day), 2, &gcfg_day);
+  gfx->drawCircularGradientFont(date, gfx->getCenterFontX(&date), 17, &gcfg_date);
 }
 
 time_t TimeDisplay::getTimestamp(void) {

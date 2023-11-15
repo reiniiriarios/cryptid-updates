@@ -15,11 +15,6 @@ class ErrorDisplay {
     /**
      * @brief Update the error image (run each frame).
      */
-    void update(uint8_t errorCode);
-
-    /**
-     * @brief Update the error image (run each frame).
-     */
     void update(int errorCode);
 
   private:

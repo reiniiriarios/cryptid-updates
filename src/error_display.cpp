@@ -12,11 +12,7 @@ ErrorDisplay::ErrorDisplay(Gfx *gfx_p) {
   gradient_config = *cfg;
 }
 
-void ErrorDisplay::update(uint8_t errorCode) {
+void ErrorDisplay::update(int errorCode) {
   gfx->drawCircularGradientMask(&pixel_mask, x, y, &gradient_config);
   gfx->drawCircularGradientMask(errorCode, x + pixel_mask.width + 1, y, &gradient_config);
-}
-
-void ErrorDisplay::update(int errorCode) {
-  update((uint8_t)errorCode);
 }
