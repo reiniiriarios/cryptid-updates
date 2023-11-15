@@ -6,6 +6,11 @@
 
 #include "error_display.h"
 #include "weather.h"
+#include "time.h"
+#include "types.h"
+#include "error_display.h"
+#include "weather.h"
+#include "utilities.h"
 
 #define MQTT_CLIENT_ID "cryptidUpdates"
 #define MQTT_USER "cryptid"
@@ -90,12 +95,18 @@ class Interwebs {
     weather_t* weather = nullptr;
 
     /**
+     * @brief A pointer to the time display object.
+     */
+    TimeDisplay* time = nullptr;
+
+    /**
      * @brief Construct a new Interwebs object.
      * 
      * @param gfx_p A pointer to the graphics object.
      * @param err_p A pointer to the error display object.
+     * @param time_p A pointer to the time display object.
      */
-    Interwebs(Gfx *gfx_p, ErrorDisplay *err_p);
+    Interwebs(Gfx *gfx_p, ErrorDisplay *err_p, TimeDisplay *time_p);
 
     /**
      * @brief Connect to WiFi. Run in setup().

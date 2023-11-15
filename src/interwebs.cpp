@@ -4,16 +4,13 @@
 #include <utility/WiFiSocketBuffer.h>
 #include <MQTT.h>
 
-#include "types.h"
-#include "error_display.h"
-#include "weather.h"
-#include "utilities.h"
 #include "../wifi-config.h"
 #include "interwebs.h"
 
-Interwebs::Interwebs(Gfx *gfx_p, ErrorDisplay *err_p) {
+Interwebs::Interwebs(Gfx *gfx_p, ErrorDisplay *err_p, TimeDisplay *time_p) {
   gfx = gfx_p;
   err = err_p;
+  time = time_p;
   IPAddress mqtt_server(MQTT_SERVER);
   mqttBroker = mqtt_server;
 }
@@ -163,6 +160,10 @@ bool Interwebs::mqttInit(void) {
 
 bool Interwebs::mqttSubscribe(void) {
   bool success = true;
+  if (!mqttClient.subscribe("current_time")) {
+    Serial.println("Error subscribing to current_time");
+    success = false;
+  }
   if (!mqttClient.subscribe("weather/code")) {
     Serial.println("Error subscribing to weather/code");
     success = false;
@@ -299,7 +300,11 @@ bool Interwebs::mqttReconnect(void) {
 
 void Interwebs::mqttMessageReceived(String &topic, String &payload) {
   Serial.println("MQTT receipt: " + topic + " = " + payload);
-  if (topic == "weather/temperature") {
+  if (topic == "current_time") {
+    time_t ts = payload.toInt();
+    time->setTime(ts);
+  }
+  else if (topic == "weather/temperature") {
     weather->temp_c = payload.toFloat();
     weather->temp_f = celsius2fahrenheit(weather->temp_c);
     weather->temp_last = millis();

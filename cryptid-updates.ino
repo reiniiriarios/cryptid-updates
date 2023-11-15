@@ -40,6 +40,7 @@
 #include "src/temperature.h"
 #include "src/humidity.h"
 #include "src/weather.h"
+#include "src/time.h"
 
 // HARDWARE CONFIG ---------------------------------------------------------------------------------
 
@@ -75,12 +76,13 @@ Gfx gfx(&matrix);
 TemperatureDisplay tempDisplay(&gfx);
 HumidityDisplay humidityDisplay(&gfx);
 WeatherSymbol weatherSymbol(&gfx);
+TimeDisplay timeDisplay(&gfx);
 ErrorDisplay errorDisplay(&gfx);
 Heart heart(&gfx);
 
 // OTHER CONTROL OBJECTS ---------------------------------------------------------------------------
 
-Interwebs interwebs(&gfx, &errorDisplay);
+Interwebs interwebs(&gfx, &errorDisplay, &timeDisplay);
 
 weather_t weatherInterior;
 weather_t weatherExterior;
@@ -196,6 +198,9 @@ void loop(void) {
       errorDisplay.update(201);
     }
   }
+  else if (currentDisplay == CURRENT_DISPLAY_DATE_TIME) {
+    timeDisplay.updateScreen();
+  }
   else {
     // Undefined display option.
     errorDisplay.update(101);
@@ -235,10 +240,10 @@ void everyN(void) {
 
     // Loop current display.
     if (currentDisplay == CURRENT_DISPLAY_INT_TEMP_HUMID) {
-      Serial.println("Switching to exterior temp, humidity...");
       currentDisplay = CURRENT_DISPLAY_EXT_TEMP_HUMID;
+    } else if (currentDisplay == CURRENT_DISPLAY_EXT_TEMP_HUMID) {
+      currentDisplay = CURRENT_DISPLAY_DATE_TIME;
     } else {
-      Serial.println("Switching to interior temp, humidity...");
       currentDisplay = CURRENT_DISPLAY_INT_TEMP_HUMID;
     }
   }
