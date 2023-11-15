@@ -44,6 +44,9 @@
 
 // HARDWARE CONFIG ---------------------------------------------------------------------------------
 
+#define BACK_BUTTON 2
+#define NEXT_BUTTON 3
+
 // MatrixPortal M4 pin configuration
 uint8_t rgbPins[] = { 7, 8, 9, 10, 11, 12 };
 uint8_t addrPins[] = { 17, 18, 19, 20 };  // add 21 if 64-pixel tall
@@ -112,6 +115,10 @@ void setup(void) {
   // Wait for serial port to open.
   // while (!Serial) delay(10);
 
+  // Button setup.
+  pinMode(BACK_BUTTON, INPUT_PULLUP);
+  pinMode(NEXT_BUTTON, INPUT_PULLUP);
+
   // The display
   ProtomatterStatus status = matrix.begin();
   Serial.printf("Protomatter begin() status: %d\n", status);
@@ -159,6 +166,16 @@ void loop(void) {
   uint32_t t;
   while (((t = micros()) - prevTime) < (1000000L / MAX_FPS));
   prevTime = t;
+
+  // Buttons.
+  if (digitalRead(BACK_BUTTON) == LOW) {
+    Serial.println("BACK");
+    while(digitalRead(BACK_BUTTON) == LOW); // wait for release
+  }
+  if (digitalRead(NEXT_BUTTON) == LOW) {
+    Serial.println("NEXT");
+    while(digitalRead(NEXT_BUTTON) == LOW); // wait for release
+  }
 
   // Do things every n seconds.
   everyN();
