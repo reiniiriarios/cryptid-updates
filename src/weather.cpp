@@ -347,12 +347,12 @@ void WeatherSymbol::drawSymbol(weather_code_t code, bool is_day) {
       return;
     case WEATHER_CODE_PARTLY_CLOUDY:
       if (is_day) {
-        gfx->drawCircularGradientMask(&WEATHER_PMASK_SUN_S, x + 3, y, &WEATHER_GCFG_SUN_S);
-        gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD_S, x + 8, y + 7, &WEATHER_GCFG_CLOUD_S);
+        gfx->drawCircularGradientMask(&WEATHER_PMASK_SUN_S, x + 2, y + 4, &WEATHER_GCFG_SUN_S);
+        gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD_S, x + 7, y + 11, &WEATHER_GCFG_CLOUD_S);
       }
       else {
-        gfx->drawCircularGradientMask(&WEATHER_PMASK_MOON_S, x + 5, y, &WEATHER_GCFG_MOON_S);
-        gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD_S, x + 8, y + 7, &WEATHER_GCFG_CLOUD_S);
+        gfx->drawCircularGradientMask(&WEATHER_PMASK_MOON_S, x + 4, y + 4, &WEATHER_GCFG_MOON_S);
+        gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD_S, x + 7, y + 11, &WEATHER_GCFG_CLOUD_S);
       }
       return;
     case WEATHER_CODE_CLOUDY:
