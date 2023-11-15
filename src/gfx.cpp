@@ -190,6 +190,10 @@ uint8_t Gfx::drawCircularGradientFont(char c, uint8_t x, uint8_t y, gradient_con
   uint8_t xx, yy, bits = 0, bit = 0;
   int16_t xo16 = 0, yo16 = 0;
 
+  // If less than full height, push down to baseline.
+  // 13 = height of capital letter for current font.
+  uint8_t y_adj = 13 - h;
+
   uint8_t i = 0;
   for (yy = 0; yy < h; yy++) {
     for (xx = 0; xx < w; xx++) {
@@ -197,7 +201,7 @@ uint8_t Gfx::drawCircularGradientFont(char c, uint8_t x, uint8_t y, gradient_con
         bits = pgm_read_byte(&bitmap[bo++]);
       }
       if (bits & 0x80) {
-        drawCircularGradientPixel(x + xx, y + yy, cfg);
+        drawCircularGradientPixel(x + xx, y + y_adj + yy, cfg);
       }
       bits <<= 1;
       i++;
