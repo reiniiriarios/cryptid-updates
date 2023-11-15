@@ -46,6 +46,13 @@ class TimeDisplay {
      * @return String Sun-Sat
      */
     String getDayOfWeek(void);
+
+    /**
+     * @brief Get the timestamp.
+     * 
+     * @return time_t
+     */
+    time_t getTimestamp(void);
   
   private:
     /**

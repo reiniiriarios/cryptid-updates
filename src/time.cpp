@@ -16,6 +16,10 @@ void TimeDisplay::updateScreen(void) {
   gfx->drawCircularGradientFont(getMonth() + " " + String(time->tm_mday), 2, 17, &gcfg_date);
 }
 
+time_t TimeDisplay::getTimestamp(void) {
+  return timestamp;
+}
+
 String TimeDisplay::getYear(void) {
   return String(time->tm_year - 100);
 }

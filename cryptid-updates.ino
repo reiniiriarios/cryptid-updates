@@ -216,7 +216,12 @@ void updateDisplay(void) {
   }
   // CURRENT TIME
   else if (currentDisplay == CURRENT_DISPLAY_DATE_TIME) {
-    timeDisplay.updateScreen();
+    if (timeDisplay.getTimestamp() != 0 && timeDisplay.getTimestamp() > 1700000000) {
+      timeDisplay.updateScreen();
+    }
+    else {
+      errorDisplay.update(401);
+    }
   }
   // Oops.
   else {
