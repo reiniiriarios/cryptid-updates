@@ -41,6 +41,7 @@
 #include "src/humidity.h"
 #include "src/weather.h"
 #include "src/time.h"
+#include "src/aaahhh.h"
 
 // HARDWARE CONFIG ---------------------------------------------------------------------------------
 
@@ -55,11 +56,15 @@ uint8_t latchPin = 15;
 uint8_t oePin = 16;
 
 // LIS3DH Triple-Axis Accelerometer
-Adafruit_LIS3DH accel = Adafruit_LIS3DH();
+Adafruit_LIS3DH accelerometer = Adafruit_LIS3DH();
+double accel_x, accel_y, accel_z;
+bool moving_fast = false;
+long started_moving_fast = 0;
 
 // SHT4X Temperature and Humidity Sensor
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
-sensors_event_t humidity, temp;  // % rH, °C
+
+sensors_event_t accel, humidity, temp;  // % rH, °C
 
 // THE SCREEN & GRAPHICS OBJECTS -------------------------------------------------------------------
 
@@ -82,6 +87,7 @@ WeatherSymbol weatherSymbol(&gfx);
 TimeDisplay timeDisplay(&gfx);
 ErrorDisplay errorDisplay(&gfx);
 Heart heart(&gfx);
+Aaahhh aaahhh(&gfx);
 
 // OTHER CONTROL OBJECTS ---------------------------------------------------------------------------
 
@@ -131,6 +137,16 @@ void setup(void) {
   gfx.toBuffer();
   matrix.show();
 
+  // Accelerometer
+  if (!accelerometer.begin(0x19)) {
+    err(250, "couldn't find accelerometer");
+  }
+  accelerometer.setRange(LIS3DH_RANGE_4_G); // 2, 4, 8 or 16 G
+  accelerometer.getEvent(&accel);
+  accel_x = accel.acceleration.x * 1000;
+  accel_y = accel.acceleration.y * 1000;
+  accel_z = accel.acceleration.z * 1000;
+
   // Temperature & Humidity
   if (!sht4.begin()) {
     err(400, "SHT4x failed to start");
@@ -177,6 +193,9 @@ void loop(void) {
     while(digitalRead(NEXT_BUTTON) == LOW); // wait for release
   }
 
+  // Read and log accelerometer data.
+  areWeMovingMe();
+
   // Do things every n seconds.
   everyN();
 
@@ -200,50 +219,57 @@ void loop(void) {
 }
 
 void updateDisplay(void) {
+  // AAAHHH
+  if (moving_fast) {
+    aaahhh.display();
+    return;
+  }
+
   // INTERIOR
   if (currentDisplay == CURRENT_DISPLAY_INT_TEMP_HUMID) {
     tempDisplay.update(weatherInterior.temp_f);
     humidityDisplay.update(weatherInterior.humidity);
     weatherSymbol.drawSymbolInterior();
+    return;
   }
+
   // CURRENT WEATHER
-  else if (currentDisplay == CURRENT_DISPLAY_EXT_TEMP_HUMID) {
-    if (weatherExterior.code != WEATHER_CODE_UNKNOWN) {
-      if (
-        millis() - weatherExterior.temp_last < 600000 ||
-        millis() - weatherExterior.humidity_last < 600000 ||
-        millis() - weatherExterior.code_last < 600000
-      ) { // 1 min = 60000 ms
-        bool is_day = true;
-        if (weatherExterior.is_day_last < 600000) {
-          is_day = weatherExterior.is_day;
-        }
-        tempDisplay.update(weatherExterior.temp_f);
-        humidityDisplay.update(weatherExterior.humidity);
-        weatherSymbol.drawSymbol(weatherExterior.code, is_day);
-      }
-      else {
-        // Weather more than 10 minutes out of date.
-        errorDisplay.update(202);
-      }
-    } else {
-      // Weather never fetched.
+  if (currentDisplay == CURRENT_DISPLAY_EXT_TEMP_HUMID) {
+    if (weatherExterior.code == WEATHER_CODE_UNKNOWN) {
       errorDisplay.update(201);
+      return;
     }
+    if (
+      millis() - weatherExterior.temp_last > 600000 ||
+      millis() - weatherExterior.humidity_last > 600000 ||
+      millis() - weatherExterior.code_last > 600000
+    ) { // 1 min = 60000 ms
+      // Weather more than 10 minutes out of date.
+      errorDisplay.update(202);
+      return;
+    }
+    bool is_day = true;
+    if (weatherExterior.is_day_last < 600000) {
+      is_day = weatherExterior.is_day;
+    }
+    tempDisplay.update(weatherExterior.temp_f);
+    humidityDisplay.update(weatherExterior.humidity);
+    weatherSymbol.drawSymbol(weatherExterior.code, is_day);
+    return;
   }
+
   // CURRENT TIME
-  else if (currentDisplay == CURRENT_DISPLAY_DATE_TIME) {
-    if (timeDisplay.getTimestamp() != 0 && timeDisplay.getTimestamp() > 1700000000) {
-      timeDisplay.updateScreen();
-    }
-    else {
+  if (currentDisplay == CURRENT_DISPLAY_DATE_TIME) {
+    if (timeDisplay.getTimestamp() == 0 || timeDisplay.getTimestamp() < 1700000000) {
       errorDisplay.update(401);
+      return;
     }
+    timeDisplay.updateScreen();
+    return;
   }
+
   // Oops.
-  else {
-    errorDisplay.update(101);
-  }
+  errorDisplay.update(101);
 }
 
 uint16_t frameCounter = 0;  // Counts up every frame based on MAX_FPS.
@@ -290,4 +316,24 @@ void everyN(void) {
     frameCounter = 0;
   }
   frameCounter++;
+}
+
+void areWeMovingMe(void) {
+  accelerometer.getEvent(&accel);
+  double accx = accel.acceleration.x * 1000;
+  double accy = accel.acceleration.y * 1000;
+  double accz = accel.acceleration.z * 1000;
+  double movex = accel_x - accx;
+  double movey = accel_y - accy;
+  double movez = accel_z - accz;
+  if (movex > 1000 || movex < -1000 || movey > 1000 || movey < -1000 || movez > 1000 || movez < -1000) {
+    moving_fast = true;
+    started_moving_fast = millis();
+  }
+  else if (moving_fast && millis() - started_moving_fast > 1000) {
+    moving_fast = false;
+  }
+  accel_x = accx;
+  accel_y = accy;
+  accel_z = accz;
 }

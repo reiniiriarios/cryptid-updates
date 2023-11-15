@@ -39,4 +39,9 @@ void updateDisplay(void);
  */
 void everyN(void);
 
+/**
+ * @brief Read and log accelerometer data.
+ */
+void areWeMovingMe(void);
+
 #endif
