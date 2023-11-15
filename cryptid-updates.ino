@@ -166,7 +166,23 @@ void loop(void) {
   // Run main MQTT loop every loop.
   interwebs.mqttLoop();
 
-  // Update display.
+  // Draw things.
+  updateDisplay();
+
+  // Draw error pixels.
+  if (!interwebs.wifiIsConnected()) {
+    gfx.drawErrorWiFi();
+  }
+  else if (!interwebs.mqttIsConnected()) {
+    gfx.drawErrorMqtt();
+  }
+
+  // Done.
+  gfx.toBuffer();  // Move pixels[] to matrix
+  matrix.show();   // Copy data to matrix buffers
+}
+
+void updateDisplay(void) {
   // INTERIOR
   if (currentDisplay == CURRENT_DISPLAY_INT_TEMP_HUMID) {
     tempDisplay.update(weatherInterior.temp_f);
@@ -198,25 +214,14 @@ void loop(void) {
       errorDisplay.update(201);
     }
   }
+  // CURRENT TIME
   else if (currentDisplay == CURRENT_DISPLAY_DATE_TIME) {
     timeDisplay.updateScreen();
   }
+  // Oops.
   else {
-    // Undefined display option.
     errorDisplay.update(101);
   }
-
-  // Draw error pixels.
-  if (!interwebs.wifiIsConnected()) {
-    gfx.drawErrorWiFi();
-  }
-  else if (!interwebs.mqttIsConnected()) {
-    gfx.drawErrorMqtt();
-  }
-
-  // Done.
-  gfx.toBuffer();  // Move pixels[] to matrix
-  matrix.show();   // Copy data to matrix buffers
 }
 
 uint16_t frameCounter = 0;  // Counts up every frame based on MAX_FPS.

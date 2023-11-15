@@ -29,4 +29,14 @@ void setup(void);
  */
 void loop(void);
 
+/**
+ * @brief Draw things.
+ */
+void updateDisplay(void);
+
+/**
+ * @brief Do things every n seconds.
+ */
+void everyN(void);
+
 #endif
