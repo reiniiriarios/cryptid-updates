@@ -4,6 +4,7 @@
 #include <WiFiNINA.h>
 #include <MQTT.h>
 
+#include "error_display.h"
 #include "weather.h"
 
 #define MQTT_CLIENT_ID "cryptidUpdates"
@@ -90,8 +91,11 @@ class Interwebs {
 
     /**
      * @brief Construct a new Interwebs object.
+     * 
+     * @param gfx_p A pointer to the graphics object.
+     * @param err_p A pointer to the error display object.
      */
-    Interwebs();
+    Interwebs(Gfx *gfx_p, ErrorDisplay *err_p);
 
     /**
      * @brief Connect to WiFi. Run in setup().
@@ -173,6 +177,16 @@ class Interwebs {
     bool wifiIsConnected(void);
 
   private:
+    /**
+     * @brief A pointer to the graphics object.
+     */
+    Gfx *gfx;
+
+    /**
+     * @brief A pointer to the error display object.
+     */
+    ErrorDisplay *err;
+
     /**
      * @brief Millis counter to wait for connection.
      */

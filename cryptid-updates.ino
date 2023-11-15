@@ -80,7 +80,7 @@ Heart heart(&gfx);
 
 // OTHER CONTROL OBJECTS ---------------------------------------------------------------------------
 
-Interwebs interwebs;
+Interwebs interwebs(&gfx, &errorDisplay);
 
 weather_t weatherInterior;
 weather_t weatherExterior;

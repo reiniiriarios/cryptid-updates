@@ -17,6 +17,11 @@ class ErrorDisplay {
      */
     void update(uint8_t errorCode);
 
+    /**
+     * @brief Update the error image (run each frame).
+     */
+    void update(int errorCode);
+
   private:
     /**
      * @brief A pointer to the graphics object.

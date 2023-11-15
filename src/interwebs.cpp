@@ -5,12 +5,15 @@
 #include <MQTT.h>
 
 #include "types.h"
+#include "error_display.h"
 #include "weather.h"
 #include "utilities.h"
 #include "../wifi-config.h"
 #include "interwebs.h"
 
-Interwebs::Interwebs() {
+Interwebs::Interwebs(Gfx *gfx_p, ErrorDisplay *err_p) {
+  gfx = gfx_p;
+  err = err_p;
   IPAddress mqtt_server(MQTT_SERVER);
   mqttBroker = mqtt_server;
 }
@@ -18,7 +21,7 @@ Interwebs::Interwebs() {
 bool Interwebs::connect(void) {
   if (WiFi.status() == WL_NO_MODULE) {
     Serial.println("Communication with WiFi module failed");
-
+    err->update(301);
     return false;
   }
 
@@ -29,6 +32,7 @@ bool Interwebs::connect(void) {
 
   if (!wifiInit()) {
     Serial.println("Connection failed");
+    err->update(302);
     return false;
   }
 
@@ -70,6 +74,7 @@ bool Interwebs::wifiInit(void) {
 
   if (wifiStatus != WL_CONNECTED) {
     status = INTERWEBS_STATUS_WIFI_ERRORS;
+    err->update(304);
     return false;
   }
 
@@ -145,6 +150,7 @@ bool Interwebs::mqttInit(void) {
   }
   if (!connected) {
     Serial.println("Error connecting to MQTT broker.");
+    err->update(305);
     return false;
   }
   Serial.println();
