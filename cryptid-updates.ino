@@ -107,9 +107,8 @@ void err(int milliseconds, String message = "") {
 
 void setup(void) {
   Serial.begin(9600);
-  // if serial is important, include this so we don't miss messages
-  // if code not commented out, the display will not function until serial port opens
-  while (!Serial) delay(10);
+  // Wait for serial port to open.
+  // while (!Serial) delay(10);
 
   // The display
   ProtomatterStatus status = matrix.begin();
