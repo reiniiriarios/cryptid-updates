@@ -322,6 +322,7 @@ uint8_t WEATHER_MASK_FOG[24 * 13] = {
 };
 pixel_mask_t WEATHER_PMASK_FOG = {WEATHER_MASK_FOG, 24, 13};
 gradient_config_t WEATHER_GCFG_FOG = { 10, 32, 16, 200, 220, false };
+gradient_config_t WEATHER_GCFG_SMOKE = { 10, 32, 16, 30, 60, false };
 
 WeatherSymbol::WeatherSymbol(Gfx *gfx_p) {
   gfx = gfx_p;
@@ -336,6 +337,7 @@ void WeatherSymbol::drawSymbolInterior(void) {
 
 void WeatherSymbol::drawSymbol(weather_code_t code, bool is_day) {
   switch (code) {
+    case WEATHER_CODE_OWM_CLEAR:
     case WEATHER_CODE_CLEAR:
       if (is_day) {
         gfx->drawCircularGradientMask(&WEATHER_PMASK_SUN, x, y, &WEATHER_GCFG_SUN);
@@ -345,6 +347,8 @@ void WeatherSymbol::drawSymbol(weather_code_t code, bool is_day) {
         gfx->drawCircularGradientMask(&WEATHER_PMASK_STARS, x + 13, y + 4, &WEATHER_GCFG_STARS);
       }
       return;
+    case WEATHER_CODE_OWM_FEW_CLOUDS:
+    case WEATHER_CODE_OWM_SCATTERED_CLOUDS:
     case WEATHER_CODE_PARTLY_CLOUDY:
       if (is_day) {
         gfx->drawCircularGradientMask(&WEATHER_PMASK_SUN_S, x + 2, y + 3, &WEATHER_GCFG_SUN_S);
@@ -355,15 +359,38 @@ void WeatherSymbol::drawSymbol(weather_code_t code, bool is_day) {
         gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD_S, x + 7, y + 10, &WEATHER_GCFG_CLOUD_S);
       }
       return;
+    case WEATHER_CODE_OWM_BROKEN_CLOUDS:
+    case WEATHER_CODE_OWM_OVERCAST_CLOUDS:
     case WEATHER_CODE_CLOUDY:
     case WEATHER_CODE_OVERCAST:
       gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD, x, y + 4, &WEATHER_GCFG_CLOUD);
       return;
+    case WEATHER_CODE_OWM_VOLCANIC_ASH:
+    case WEATHER_CODE_OWM_SAND_DUST:
+    case WEATHER_CODE_OWM_SAND:
+    case WEATHER_CODE_OWM_DUST:
+    case WEATHER_CODE_OWM_SMOKE:
+      gfx->drawCircularGradientMask(&WEATHER_PMASK_FOG, x, y + 8, &WEATHER_GCFG_SMOKE);
+      return;
+    case WEATHER_CODE_OWM_MIST:
+    case WEATHER_CODE_OWM_HAZE:
+    case WEATHER_CODE_OWM_FOG:
     case WEATHER_CODE_FOG:
     case WEATHER_CODE_MIST:
     case WEATHER_CODE_FREEZING_FOG:
       gfx->drawCircularGradientMask(&WEATHER_PMASK_FOG, x, y + 8, &WEATHER_GCFG_FOG);
       return;
+    case WEATHER_CODE_OWM_LIGHT_INTENSITY_DRIZZLE:
+    case WEATHER_CODE_OWM_DRIZZLE:
+    case WEATHER_CODE_OWM_LIGHT_INTENSITY_DRIZZLE_RAIN:
+    case WEATHER_CODE_OWM_DRIZZLE_RAIN:
+    case WEATHER_CODE_OWM_HEAVY_INTENSITY_DRIZZLE_RAIN:
+    case WEATHER_CODE_OWM_SHOWER_RAIN_DRIZZLE:
+    case WEATHER_CODE_OWM_SHOWER_DRIZZLE:
+    case WEATHER_CODE_OWM_LIGHT_RAIN:
+    case WEATHER_CODE_OWM_MODERATE_RAIN:
+    case WEATHER_CODE_OWM_FREEZING_RAIN:
+    case WEATHER_CODE_OWM_LIGHT_INTENSITY_SHOWER_RAIN:
     case WEATHER_CODE_LIGHT_RAIN:
     case WEATHER_CODE_PATCHY_RAIN_POSSIBLE:
     case WEATHER_CODE_PATCHY_LIGHT_RAIN:
@@ -373,6 +400,14 @@ void WeatherSymbol::drawSymbol(weather_code_t code, bool is_day) {
       gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD, x, y + 2, &WEATHER_GCFG_CLOUD);
       gfx->drawCircularGradientMask(&WEATHER_PMASK_RAIN_L, x + 4, y + 18, &WEATHER_GCFG_RAIN_L);
       return;
+    case WEATHER_CODE_OWM_HEAVY_INTENSITY_DRIZZLE:
+    case WEATHER_CODE_OWM_HEAVY_SHOWER_RAIN_DRIZZLE:
+    case WEATHER_CODE_OWM_HEAVY_INTENSITY_RAIN:
+    case WEATHER_CODE_OWM_VERY_HEAVY_RAIN:
+    case WEATHER_CODE_OWM_EXTREME_RAIN:
+    case WEATHER_CODE_OWM_HEAVY_INTENSITY_SHOWER_RAIN:
+    case WEATHER_CODE_OWM_RAGGED_SHOWER_RAIN:
+    case WEATHER_CODE_OWM_SHOWER_RAIN:
     case WEATHER_CODE_HEAVY_RAIN:
     case WEATHER_CODE_MODERATE_OR_HEAVY_RAIN_SHOWER:
     case WEATHER_CODE_TORRENTIAL_RAIN_SHOWER:
@@ -380,6 +415,10 @@ void WeatherSymbol::drawSymbol(weather_code_t code, bool is_day) {
       gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD, x, y + 2, &WEATHER_GCFG_CLOUD);
       gfx->drawCircularGradientMask(&WEATHER_PMASK_RAIN_H, x + 2, y + 17, &WEATHER_GCFG_RAIN_H);
       return;
+    case WEATHER_CODE_OWM_LIGHT_SNOW:
+    case WEATHER_CODE_OWM_SNOW:
+    case WEATHER_CODE_OWM_LIGHT_RAIN_SNOW:
+    case WEATHER_CODE_OWM_LIGHT_SHOWER_SNOW:
     case WEATHER_CODE_LIGHT_SNOW:
     case WEATHER_CODE_LIGHT_SNOW_SHOWERS:
     case WEATHER_CODE_PATCHY_SNOW_POSSIBLE:
@@ -388,6 +427,10 @@ void WeatherSymbol::drawSymbol(weather_code_t code, bool is_day) {
       gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD, x, y + 2, &WEATHER_GCFG_CLOUD);
       gfx->drawCircularGradientMask(&WEATHER_PMASK_SNOW_L, x + 3, y + 18, &WEATHER_GCFG_SNOW_L);
       return;
+    case WEATHER_CODE_OWM_RAIN_SNOW:
+    case WEATHER_CODE_OWM_HEAVY_SNOW:
+    case WEATHER_CODE_OWM_SHOWER_SNOW:
+    case WEATHER_CODE_OWM_HEAVY_SHOWER_SNOW:
     case WEATHER_CODE_HEAVY_SNOW:
     case WEATHER_CODE_MODERATE_SNOW:
     case WEATHER_CODE_MODERATE_OR_HEAVY_SNOW_SHOWERS:
@@ -397,6 +440,8 @@ void WeatherSymbol::drawSymbol(weather_code_t code, bool is_day) {
       gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD, x, y + 2, &WEATHER_GCFG_CLOUD);
       gfx->drawCircularGradientMask(&WEATHER_PMASK_SNOW_H, x + 1, y + 17, &WEATHER_GCFG_SNOW_H);
       return;
+    case WEATHER_CODE_OWM_SLEET:
+    case WEATHER_CODE_OWM_LIGHT_SHOWER_SLEET:
     case WEATHER_CODE_LIGHT_SLEET:
     case WEATHER_CODE_LIGHT_SLEET_SHOWERS:
     case WEATHER_CODE_PATCHY_SLEET_POSSIBLE:
@@ -407,6 +452,7 @@ void WeatherSymbol::drawSymbol(weather_code_t code, bool is_day) {
       gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD, x, y + 2, &WEATHER_GCFG_CLOUD);
       gfx->drawCircularGradientMask(&WEATHER_PMASK_SLEET_L, x + 3, y + 18, &WEATHER_GCFG_SLEET_L);
       return;
+    case WEATHER_CODE_OWM_SHOWER_SLEET:
     case WEATHER_CODE_MODERATE_OR_HEAVY_SLEET:
     case WEATHER_CODE_MODERATE_OR_HEAVY_SLEET_SHOWERS:
     case WEATHER_CODE_FREEZING_DRIZZLE:
@@ -416,6 +462,18 @@ void WeatherSymbol::drawSymbol(weather_code_t code, bool is_day) {
       gfx->drawCircularGradientMask(&WEATHER_PMASK_CLOUD, x, y + 2, &WEATHER_GCFG_CLOUD);
       gfx->drawCircularGradientMask(&WEATHER_PMASK_SLEET_H, x + 2, y + 17, &WEATHER_GCFG_SLEET_H);
       return;
+    case WEATHER_CODE_OWM_SQUALLS:
+    case WEATHER_CODE_OWM_TORNADO:
+    case WEATHER_CODE_OWM_THUNDERSTORM_WITH_LIGHT_RAIN:
+    case WEATHER_CODE_OWM_THUNDERSTORM_WITH_RAIN:
+    case WEATHER_CODE_OWM_THUNDERSTORM_WITH_HEAVY_RAIN:
+    case WEATHER_CODE_OWM_LIGHT_THUNDERSTORM:
+    case WEATHER_CODE_OWM_THUNDERSTORM:
+    case WEATHER_CODE_OWM_HEAVY_THUNDERSTORM:
+    case WEATHER_CODE_OWM_RAGGED_THUNDERSTORM:
+    case WEATHER_CODE_OWM_THUNDERSTORM_WITH_LIGHT_DRIZZLE:
+    case WEATHER_CODE_OWM_THUNDERSTORM_WITH_DRIZZLE:
+    case WEATHER_CODE_OWM_THUNDERSTORM_WITH_HEAVY_DRIZZLE:
     case WEATHER_CODE_THUNDERY_OUTBREAKS_POSSIBLE:
     case WEATHER_CODE_PATCHY_LIGHT_RAIN_WITH_THUNDER:
     case WEATHER_CODE_MODERATE_OR_HEAVY_RAIN_WITH_THUNDER:
