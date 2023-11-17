@@ -161,7 +161,7 @@ bool Interwebs::mqttInit(void) {
 }
 
 bool Interwebs::mqttSubscribe(void) {
-  // Serial.print("MQTT subscribing...");
+  Serial.print("MQTT subscribing...");
   bool success = true;
   if (!mqttClient->subscribe("homeassistant/status")) {
     Serial.println("Error subscribing to homeassistant/status");
@@ -193,12 +193,12 @@ bool Interwebs::mqttSubscribe(void) {
   }
   if (!success) {
     status = INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL;
-    // Serial.println("failed to subscribe to all topics.");
+    Serial.println("failed to subscribe to all topics.");
     return false;
   }
 
   status = INTERWEBS_STATUS_MQTT_CONNECTED;
-  // Serial.println("success.");
+  Serial.println("success.");
   return true;
 }
 
