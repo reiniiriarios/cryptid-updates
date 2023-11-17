@@ -260,7 +260,7 @@ void updateDisplay(void) {
 
   // CURRENT TIME
   if (currentDisplay == CURRENT_DISPLAY_DATE_TIME) {
-    if (timeDisplay.getTimestamp() == 0 || timeDisplay.getTimestamp() < 1700000000) {
+    if (timeDisplay.getDay() == 0) {
       errorDisplay.update(401);
       return;
     }

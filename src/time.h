@@ -17,9 +17,16 @@ class TimeDisplay {
     /**
      * @brief Set the current time.
      * 
-     * @param unix_ts
+     * @param yyyymmddw %Y%m%d%w
      */
-    void setTime(time_t unix_ts);
+    void setTime(String yyyymmddw);
+
+    /**
+     * @brief Get the current day.
+     *
+     * @return 1-31, 0 if unset
+     */
+    uint8_t getDay(void);
 
     /**
      * @brief Update the screen.
@@ -46,24 +53,27 @@ class TimeDisplay {
      * @return String Sun-Sat
      */
     String getDayOfWeek(void);
-
-    /**
-     * @brief Get the timestamp.
-     * 
-     * @return time_t
-     */
-    time_t getTimestamp(void);
   
   private:
     /**
-     * @brief The current time. Must be set.
+     * @brief Year.
      */
-    time_t timestamp;
+    uint16_t year;
 
     /**
-     * @brief The current time info.
+     * @brief Month.
      */
-    tm *time;
+    uint8_t month;
+
+    /**
+     * @brief Day.
+     */
+    uint8_t day;
+
+    /**
+     * @brief Day of week.
+     */
+    uint8_t weekday;
 
     /**
      * @brief A pointer to the graphics object.

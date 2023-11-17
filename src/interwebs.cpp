@@ -161,6 +161,7 @@ bool Interwebs::mqttInit(void) {
 }
 
 bool Interwebs::mqttSubscribe(void) {
+  // Serial.print("MQTT subscribing...");
   bool success = true;
   if (!mqttClient->subscribe("homeassistant/status")) {
     Serial.println("Error subscribing to homeassistant/status");
@@ -192,10 +193,12 @@ bool Interwebs::mqttSubscribe(void) {
   }
   if (!success) {
     status = INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL;
+    // Serial.println("failed to subscribe to all topics.");
     return false;
   }
 
   status = INTERWEBS_STATUS_MQTT_CONNECTED;
+  // Serial.println("success.");
   return true;
 }
 
@@ -312,8 +315,7 @@ void Interwebs::mqttMessageReceived(String &topic, String &payload) {
     }
   }
   else if (topic == "current_time") {
-    time_t ts = payload.toInt();
-    time->setTime(ts);
+    time->setTime(payload);
   }
   else if (topic == "weather/temperature") {
     weather->temp_c = payload.toFloat();
