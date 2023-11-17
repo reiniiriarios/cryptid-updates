@@ -187,6 +187,21 @@ class Interwebs {
      */
     bool wifiIsConnected(void);
 
+    /**
+     * @brief Send all discoveries.
+     */
+    bool mqttSendDiscovery(void);
+
+    /**
+     * @brief Send temperature discovery.
+     */
+    bool mqttSendDiscoveryTemp(void);
+
+    /**
+     * @brief Send humidity discovery.
+     */
+    bool mqttSendDiscoveryHumid(void);
+
   private:
     /**
      * @brief A pointer to the graphics object.
@@ -211,7 +226,7 @@ class Interwebs {
     /**
      * @brief The MQTT client.
      */
-    MQTTClient mqttClient;
+    MQTTClient *mqttClient;
 
     /**
      * @brief The IP address to connect to.

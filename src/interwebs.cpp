@@ -13,6 +13,7 @@ Interwebs::Interwebs(Gfx *gfx_p, ErrorDisplay *err_p, TimeDisplay *time_p) {
   time = time_p;
   IPAddress mqtt_server(MQTT_SERVER);
   mqttBroker = mqtt_server;
+  mqttClient = new MQTTClient(1024);
 }
 
 bool Interwebs::connect(void) {
@@ -132,8 +133,8 @@ bool Interwebs::wifiReconnect(void) {
 
 bool Interwebs::mqttInit(void) {
   Serial.print("MQTT connecting...");
-  mqttClient.begin(mqttBroker, wifiClient);
-  mqttClient.onMessage([&](String &topic, String &payload){
+  mqttClient->begin(mqttBroker, wifiClient);
+  mqttClient->onMessage([&](String &topic, String &payload){
     mqttMessageReceived(topic, payload);
   });
 
@@ -143,7 +144,7 @@ bool Interwebs::mqttInit(void) {
   bool connected = false;
   for (int attempts = 5; !connected && attempts >= 0; attempts--) {
     Serial.print(".");
-    connected = mqttClient.connect(MQTT_CLIENT_ID, MQTT_USER, MQTT_PASS);
+    connected = mqttClient->connect(MQTT_CLIENT_ID, MQTT_USER, MQTT_PASS);
   }
   if (!connected) {
     Serial.println("Error connecting to MQTT broker.");
@@ -154,33 +155,38 @@ bool Interwebs::mqttInit(void) {
   status = INTERWEBS_STATUS_MQTT_CONNECTED;
 
   mqttSubscribe();
+  mqttSendDiscovery();
 
   return true;
 }
 
 bool Interwebs::mqttSubscribe(void) {
   bool success = true;
-  if (!mqttClient.subscribe("current_time")) {
+  if (!mqttClient->subscribe("homeassistant/status")) {
+    Serial.println("Error subscribing to homeassistant/status");
+    success = false;
+  }
+  if (!mqttClient->subscribe("current_time")) {
     Serial.println("Error subscribing to current_time");
     success = false;
   }
-  if (!mqttClient.subscribe("weather/code")) {
+  if (!mqttClient->subscribe("weather/code")) {
     Serial.println("Error subscribing to weather/code");
     success = false;
   }
-  if (!mqttClient.subscribe("weather/temperature")) {
+  if (!mqttClient->subscribe("weather/temperature")) {
     Serial.println("Error subscribing to weather/temperature");
     success = false;
   }
-  if (!mqttClient.subscribe("weather/feelslike")) {
+  if (!mqttClient->subscribe("weather/feelslike")) {
     Serial.println("Error subscribing to weather/feelslike");
     success = false;
   }
-  if (!mqttClient.subscribe("weather/humidity")) {
+  if (!mqttClient->subscribe("weather/humidity")) {
     Serial.println("Error subscribing to weather/humidity");
     success = false;
   }
-  if (!mqttClient.subscribe("weather/isday")) {
+  if (!mqttClient->subscribe("weather/isday")) {
     Serial.println("Error subscribing to weather/isday");
     success = false;
   }
@@ -199,7 +205,7 @@ bool Interwebs::mqttReconnect(void) {
   }
 
   if (status == INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL || status == INTERWEBS_STATUS_MQTT_CONNECTION_SUCCESS) {
-    if (!mqttClient.connected()) {
+    if (!mqttClient->connected()) {
       status = INTERWEBS_STATUS_MQTT_OFFLINE;
     }
     else {
@@ -208,8 +214,8 @@ bool Interwebs::mqttReconnect(void) {
     }
   }
 
-  // mqttClient.netClient
-  WiFiClient* mqttNetClient = (WiFiClient*)(mqttClient.*robbed<MQTTClientNetClient>::ptr);
+  // mqttClient->netClient
+  WiFiClient* mqttNetClient = (WiFiClient*)(mqttClient->*robbed<MQTTClientNetClient>::ptr);
 
   // step 1b copied from WiFiClient::stop()
   if (status == INTERWEBS_STATUS_MQTT_CLOSING_SOCKET) {
@@ -228,7 +234,7 @@ bool Interwebs::mqttReconnect(void) {
     Serial.println("Reconnecting MQTT...");
     status = INTERWEBS_STATUS_MQTT_CONNECTING;
 
-    if (!(mqttClient.*robbed<MQTTClientNetClient>::ptr)->connected()) {
+    if (!(mqttClient->*robbed<MQTTClientNetClient>::ptr)->connected()) {
       Serial.println("Connecting via network client...");
 
       // step 1a copied from WiFiClient::stop()
@@ -243,7 +249,7 @@ bool Interwebs::mqttReconnect(void) {
       if (mqttNetClient->*robbed<WiFiClientSock>::ptr == NO_SOCKET_AVAIL) {
         // failure, flag to start over
       	Serial.println("No Socket available");
-        mqttClient.*robbed<MQTTClientLastError>::ptr = LWMQTT_NETWORK_FAILED_CONNECT;
+        mqttClient->*robbed<MQTTClientLastError>::ptr = LWMQTT_NETWORK_FAILED_CONNECT;
         status = INTERWEBS_STATUS_MQTT_OFFLINE;
         return false;
       }
@@ -255,12 +261,12 @@ bool Interwebs::mqttReconnect(void) {
     return false;
   }
 
-  // step 2 copied from MQTTClient::connect()
+  // step 2 copied from mqttClient->:connect()
   if (status = INTERWEBS_STATUS_MQTT_CONNECTING_2) {
     // check step 1 was successful
-  	if (!(mqttClient.*robbed<MQTTClientNetClient>::ptr)->connected()) {
+  	if (!(mqttClient->*robbed<MQTTClientNetClient>::ptr)->connected()) {
       status = INTERWEBS_STATUS_MQTT_OFFLINE;
-      mqttClient.*robbed<MQTTClientLastError>::ptr = LWMQTT_NETWORK_FAILED_CONNECT;
+      mqttClient->*robbed<MQTTClientLastError>::ptr = LWMQTT_NETWORK_FAILED_CONNECT;
       return false;
   	}
 
@@ -274,23 +280,23 @@ bool Interwebs::mqttReconnect(void) {
     options.password = lwmqtt_string(MQTT_PASS);
 
     // connect to broker
-    mqttClient.*robbed<MQTTClientLastError>::ptr = lwmqtt_connect(
-      &(mqttClient.*robbed<MQTTClientClient>::ptr),
+    mqttClient->*robbed<MQTTClientLastError>::ptr = lwmqtt_connect(
+      &(mqttClient->*robbed<MQTTClientClient>::ptr),
       options,
-      mqttClient.*robbed<MQTTClientWill>::ptr,
-      &(mqttClient.*robbed<MQTTClientReturnCode>::ptr),
+      mqttClient->*robbed<MQTTClientWill>::ptr,
+      &(mqttClient->*robbed<MQTTClientReturnCode>::ptr),
       1000
     );
-    if (mqttClient.*robbed<MQTTClientLastError>::ptr != LWMQTT_SUCCESS) {
+    if (mqttClient->*robbed<MQTTClientLastError>::ptr != LWMQTT_SUCCESS) {
       Serial.println("MQTT broker connection failed.");
-      mqttClient.*robbed<MQTTClientConnected>::ptr = false;
-      (mqttClient.*robbed<MQTTClientNetClient>::ptr)->stop();
+      mqttClient->*robbed<MQTTClientConnected>::ptr = false;
+      (mqttClient->*robbed<MQTTClientNetClient>::ptr)->stop();
 
       return false;
     }
     Serial.println("MQTT connected to broker.");
     status = INTERWEBS_STATUS_MQTT_CONNECTION_SUCCESS;
-    mqttClient.*robbed<MQTTClientConnected>::ptr = true;
+    mqttClient->*robbed<MQTTClientConnected>::ptr = true;
     // success, but still need subscriptions
     return false;
   }
@@ -300,7 +306,12 @@ bool Interwebs::mqttReconnect(void) {
 
 void Interwebs::mqttMessageReceived(String &topic, String &payload) {
   Serial.println("MQTT receipt: " + topic + " = " + payload);
-  if (topic == "current_time") {
+  if (topic == "homeassistant/status") {
+    if (payload == "online") {
+      mqttSendDiscovery();
+    }
+  }
+  else if (topic == "current_time") {
     time_t ts = payload.toInt();
     time->setTime(ts);
   }
@@ -335,7 +346,7 @@ void Interwebs::mqttMessageReceived(String &topic, String &payload) {
 void Interwebs::mqttSendMessage(String topic, String payload) {
   if (verifyConnection()) {
     Serial.println("MQTT publishing to " + topic);
-    if (!mqttClient.publish(topic, payload)) {
+    if (!mqttClient->publish("cryptid/" + topic, payload)) {
       Serial.println("Error publishing");
     }
   }
@@ -353,6 +364,7 @@ bool Interwebs::verifyConnection() {
   if (!mqttIsConnected()) {
     Serial.println("MQTT disconnected...");
     if (!mqttReconnect()) {
+      mqttSendDiscovery();
       return false;
     }
   }
@@ -361,11 +373,11 @@ bool Interwebs::verifyConnection() {
 }
 
 void Interwebs::mqttLoop(void) {
-  mqttClient.loop();
+  mqttClient->loop();
 }
 
 bool Interwebs::mqttIsConnected(void) {
-  return mqttClient.connected() && status == INTERWEBS_STATUS_MQTT_CONNECTED;
+  return mqttClient->connected() && status == INTERWEBS_STATUS_MQTT_CONNECTED;
 }
 
 bool Interwebs::wifiIsConnected(void) {
@@ -385,4 +397,55 @@ void Interwebs::printWifiStatus(void) {
   Serial.print("Signal strength (RSSI): ");
   Serial.print(rssi);
   Serial.println(" dBm");
+}
+
+bool Interwebs::mqttSendDiscovery(void) {
+  Serial.println("Sending MQTT discovery");
+  return mqttSendDiscoveryTemp() && mqttSendDiscoveryHumid();
+}
+
+bool Interwebs::mqttSendDiscoveryTemp(void) {
+  // https://www.home-assistant.io/integrations/mqtt#discovery-messages
+  // <discovery_prefix>/<component>/[<node_id>/]<object_id>/config
+  String topic = "homeassistant/sensor/temperature/cryptidDisplay/config";
+  String payload = "{";
+  payload += "\"name\":\"display temperature\",";
+  payload += "\"device_class\":\"temperature\",";
+  payload += "\"state_topic\":\"cryptid/display/temperature\",";
+  payload += "\"unit_of_measurement\":\"°C\",";
+  payload += "\"unique_id\":\"cryptidDisplayTempC\",";
+  payload += "\"device\":{";
+  payload += "\"identifiers\":[\"cryptidDisplay\"],";
+  payload += "\"name\":\"Cryptid Display\"";
+  payload += "}}";
+
+  if (!mqttClient->publish(topic, payload)) {
+    Serial.println("Error publishing discovery for temperature.");
+    Serial.println("Error: " + String(mqttClient->lastError()));
+    return false;
+  }
+  return true;
+}
+
+bool Interwebs::mqttSendDiscoveryHumid(void) {
+  // https://www.home-assistant.io/integrations/mqtt#discovery-messages
+  // <discovery_prefix>/<component>/[<node_id>/]<object_id>/config
+  String topic = "homeassistant/sensor/humidity/cryptidDisplay/config";
+  String payload = "{";
+  payload += "\"name\":\"display humidity\",";
+  payload += "\"device_class\":\"humidity\",";
+  payload += "\"state_topic\":\"cryptid/display/humidity\",";
+  payload += "\"unit_of_measurement\":\"%\",";
+  payload += "\"unique_id\":\"cryptidDisplayHumidity\",";
+  payload += "\"device\":{";
+  payload += "\"identifiers\":[\"cryptidDisplay\"],";
+  payload += "\"name\":\"Cryptid Display\"";
+  payload += "}}";
+
+  if (!mqttClient->publish(topic, payload)) {
+    Serial.println("Error publishing discovery for humidity.");
+    Serial.println("Error: " + String(mqttClient->lastError()));
+    return false;
+  }
+  return true;
 }
