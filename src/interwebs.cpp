@@ -411,7 +411,7 @@ bool Interwebs::mqttSendDiscoveryTemp(void) {
   // <discovery_prefix>/<component>/[<node_id>/]<object_id>/config
   String topic = "homeassistant/sensor/temperature/cryptidDisplay/config";
   String payload = "{";
-  payload += "\"name\":\"display temperature\",";
+  payload += "\"name\":\"temperature\",";
   payload += "\"device_class\":\"temperature\",";
   payload += "\"state_topic\":\"cryptid/display/temperature\",";
   payload += "\"unit_of_measurement\":\"°C\",";
@@ -434,7 +434,7 @@ bool Interwebs::mqttSendDiscoveryHumid(void) {
   // <discovery_prefix>/<component>/[<node_id>/]<object_id>/config
   String topic = "homeassistant/sensor/humidity/cryptidDisplay/config";
   String payload = "{";
-  payload += "\"name\":\"display humidity\",";
+  payload += "\"name\":\"humidity\",";
   payload += "\"device_class\":\"humidity\",";
   payload += "\"state_topic\":\"cryptid/display/humidity\",";
   payload += "\"unit_of_measurement\":\"%\",";
