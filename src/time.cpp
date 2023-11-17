@@ -90,52 +90,52 @@ void TimeDisplay::setGfxDay(void) {
 void TimeDisplay::setGfxDate(void) {
   switch (month) {
     case 1:
-      gcfg_date.setStart(240);
-      gcfg_date.setEnd(270);
+      gcfg_date.setStart(230);
+      gcfg_date.setEnd(280);
       return;
     case 2:
-      gcfg_date.setStart(270);
-      gcfg_date.setEnd(300);
+      gcfg_date.setStart(260);
+      gcfg_date.setEnd(310);
       return;
     case 3:
-      gcfg_date.setStart(300);
-      gcfg_date.setEnd(330);
+      gcfg_date.setStart(290);
+      gcfg_date.setEnd(340);
       return;
     case 4:
-      gcfg_date.setStart(330);
-      gcfg_date.setEnd(360);
+      gcfg_date.setStart(320);
+      gcfg_date.setEnd(370);
       return;
     case 5:
-      gcfg_date.setStart(0);
-      gcfg_date.setEnd(30);
+      gcfg_date.setStart(360); // -10
+      gcfg_date.setEnd(400); // 40
       return;
     case 6:
-      gcfg_date.setStart(30);
-      gcfg_date.setEnd(60);
+      gcfg_date.setStart(20);
+      gcfg_date.setEnd(70);
       return;
     case 7:
-      gcfg_date.setStart(60);
-      gcfg_date.setEnd(90);
+      gcfg_date.setStart(50);
+      gcfg_date.setEnd(100);
       return;
     case 8:
-      gcfg_date.setStart(90);
-      gcfg_date.setEnd(120);
+      gcfg_date.setStart(80);
+      gcfg_date.setEnd(130);
       return;
     case 9:
-      gcfg_date.setStart(120);
-      gcfg_date.setEnd(150);
+      gcfg_date.setStart(110);
+      gcfg_date.setEnd(160);
       return;
     case 10:
-      gcfg_date.setStart(150);
-      gcfg_date.setEnd(180);
+      gcfg_date.setStart(140);
+      gcfg_date.setEnd(190);
       return;
     case 11:
-      gcfg_date.setStart(180);
-      gcfg_date.setEnd(210);
+      gcfg_date.setStart(170);
+      gcfg_date.setEnd(220);
       return;
     case 12:
-      gcfg_date.setStart(210);
-      gcfg_date.setEnd(240);
+      gcfg_date.setStart(200);
+      gcfg_date.setEnd(250);
       return;
   }
   gcfg_date.setStart(0);
