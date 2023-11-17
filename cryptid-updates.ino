@@ -57,9 +57,6 @@ uint8_t oePin = 16;
 
 // LIS3DH Triple-Axis Accelerometer
 Adafruit_LIS3DH accelerometer = Adafruit_LIS3DH();
-double accel_x, accel_y, accel_z;
-bool moving_fast = false;
-long started_moving_fast = 0;
 
 // SHT4X Temperature and Humidity Sensor
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
@@ -143,9 +140,7 @@ void setup(void) {
   }
   accelerometer.setRange(LIS3DH_RANGE_4_G); // 2, 4, 8 or 16 G
   accelerometer.getEvent(&accel);
-  accel_x = accel.acceleration.x * 1000;
-  accel_y = accel.acceleration.y * 1000;
-  accel_z = accel.acceleration.z * 1000;
+  aaahhh.setMovement(accel.acceleration.x, accel.acceleration.y, accel.acceleration.z);
 
   // Temperature & Humidity
   if (!sht4.begin()) {
@@ -194,7 +189,8 @@ void loop(void) {
   }
 
   // Read and log accelerometer data.
-  areWeMovingMe();
+  accelerometer.getEvent(&accel);
+  aaahhh.setMovement(accel.acceleration.x, accel.acceleration.y, accel.acceleration.z);
 
   // Do things every n seconds.
   everyN();
@@ -220,7 +216,7 @@ void loop(void) {
 
 void updateDisplay(void) {
   // AAAHHH
-  if (moving_fast) {
+  if (aaahhh.isMovingFast()) {
     aaahhh.display();
     return;
   }
@@ -316,24 +312,4 @@ void everyN(void) {
     frameCounter = 0;
   }
   frameCounter++;
-}
-
-void areWeMovingMe(void) {
-  accelerometer.getEvent(&accel);
-  double accx = accel.acceleration.x * 1000;
-  double accy = accel.acceleration.y * 1000;
-  double accz = accel.acceleration.z * 1000;
-  double movex = accel_x - accx;
-  double movey = accel_y - accy;
-  double movez = accel_z - accz;
-  if (movex > 1000 || movex < -1000 || movey > 1000 || movey < -1000 || movez > 1000 || movez < -1000) {
-    moving_fast = true;
-    started_moving_fast = millis();
-  }
-  else if (moving_fast && millis() - started_moving_fast > 1000) {
-    moving_fast = false;
-  }
-  accel_x = accx;
-  accel_y = accy;
-  accel_z = accz;
 }

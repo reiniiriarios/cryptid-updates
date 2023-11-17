@@ -16,8 +16,46 @@ class Aaahhh {
      * @brief Update the screen.
      */
     void display(void);
+
+    /**
+     * @brief Set current acceleration.
+     * 
+     * @param x 
+     * @param y 
+     * @param z 
+     */
+    void setMovement(float x, float y, float z);
+
+    /**
+     * @brief Set current acceleration.
+     * 
+     * @param x 
+     * @param y 
+     * @param z 
+     */
+    void setMovement(double x, double y, double z);
+
+    /**
+     * @brief Is the display currently moving quickly.
+     */
+    bool isMovingFast(void);
   
   private:
+    /**
+     * @brief Acceleration.
+     */
+    double accel_x, accel_y, accel_z;
+
+    /**
+     * @brief Is the display moving quickly.
+     */
+    bool moving_fast = false;
+
+    /**
+     * @brief Millis since the display started moving quickly.
+     */
+    long started_moving_fast = 0;
+
     /**
      * @brief Text to display.
      */
