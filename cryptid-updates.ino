@@ -43,6 +43,8 @@
 #include "src/time.h"
 #include "src/aaahhh.h"
 
+bool DISPLAY_ON = true;
+
 // HARDWARE CONFIG ---------------------------------------------------------------------------------
 
 #define BACK_BUTTON 2
@@ -88,7 +90,7 @@ Aaahhh aaahhh(&gfx);
 
 // OTHER CONTROL OBJECTS ---------------------------------------------------------------------------
 
-Interwebs interwebs(&gfx, &errorDisplay, &timeDisplay);
+Interwebs interwebs(&gfx, &errorDisplay, &timeDisplay, &DISPLAY_ON);
 
 weather_t weatherInterior;
 weather_t weatherExterior;
@@ -181,10 +183,12 @@ void loop(void) {
   // Buttons.
   if (digitalRead(BACK_BUTTON) == LOW) {
     Serial.println("BACK");
+    DISPLAY_ON = !DISPLAY_ON;
     while(digitalRead(BACK_BUTTON) == LOW); // wait for release
   }
   if (digitalRead(NEXT_BUTTON) == LOW) {
     Serial.println("NEXT");
+    DISPLAY_ON = !DISPLAY_ON;
     while(digitalRead(NEXT_BUTTON) == LOW); // wait for release
   }
 
@@ -199,7 +203,9 @@ void loop(void) {
   interwebs.mqttLoop();
 
   // Draw things.
-  updateDisplay();
+  if (DISPLAY_ON) {
+    updateDisplay();
+  }
 
   // Draw error pixels.
   if (!interwebs.wifiIsConnected()) {

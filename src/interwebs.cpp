@@ -7,10 +7,11 @@
 #include "../wifi-config.h"
 #include "interwebs.h"
 
-Interwebs::Interwebs(Gfx *gfx_p, ErrorDisplay *err_p, TimeDisplay *time_p) {
+Interwebs::Interwebs(Gfx *gfx_p, ErrorDisplay *err_p, TimeDisplay *time_p, bool *DISPLAY_ON_p) {
   gfx = gfx_p;
   err = err_p;
   time = time_p;
+  DISPLAY_ON = DISPLAY_ON_p;
   IPAddress mqtt_server(MQTT_SERVER);
   mqttBroker = mqtt_server;
   mqttClient = new MQTTClient(1024);
@@ -335,6 +336,12 @@ bool Interwebs::mqttSubscribe(void) {
     success = false;
   }
 
+  // OPERATIONS
+  if (!mqttClient->subscribe("display/set")) {
+    Serial.println("Error subscribing to display/set");
+    success = false;
+  }
+
   // TIME
   if (!mqttClient->subscribe("current_time")) {
     Serial.println("Error subscribing to current_time");
@@ -385,6 +392,16 @@ void Interwebs::mqttMessageReceived(String &topic, String &payload) {
     return;
   }
 
+  // OPERATIONS
+  if (topic == "display/set") {
+    if (payload == "on" || payload.toInt() == 1) {
+      *DISPLAY_ON = true;
+    }
+    else if (payload == "off" || payload.toInt() == 0) {
+      *DISPLAY_ON = false;
+    }
+  }
+
   // TIME
   if (topic == "current_time") {
     time->setTime(payload);
@@ -430,7 +447,27 @@ void Interwebs::mqttMessageReceived(String &topic, String &payload) {
 
 bool Interwebs::mqttSendDiscovery(void) {
   Serial.println("Sending MQTT discovery");
-  return mqttSendDiscoveryTemp() && mqttSendDiscoveryHumid();
+  bool failed = !mqttSendDiscoveryDisplaySet() || !mqttSendDiscoveryTemp() || !mqttSendDiscoveryHumid();
+  return !failed;
+}
+
+bool Interwebs::mqttSendDiscoveryDisplaySet(void) {
+  String topic = "homeassistant/switch/display/cryptidDisplay/config";
+  String payload = "{";
+  payload += "\"name\":\"display\",";
+  payload += "\"command_topic\":\"cryptid/display/set\",";
+  payload += "\"unique_id\":\"cryptidDisplaySet\",";
+  payload += "\"device\":{";
+  payload += "\"identifiers\":[\"cryptidDisplay\"],";
+  payload += "\"name\":\"Cryptid Display\"";
+  payload += "}}";
+
+  if (!mqttClient->publish(topic, payload)) {
+    Serial.println("Error publishing discovery for display toggle.");
+    Serial.println("Error: " + String(mqttClient->lastError()));
+    return false;
+  }
+  return true;
 }
 
 bool Interwebs::mqttSendDiscoveryTemp(void) {

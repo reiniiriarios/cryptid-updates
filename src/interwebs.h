@@ -106,7 +106,7 @@ class Interwebs {
      * @param err_p A pointer to the error display object.
      * @param time_p A pointer to the time display object.
      */
-    Interwebs(Gfx *gfx_p, ErrorDisplay *err_p, TimeDisplay *time_p);
+    Interwebs(Gfx *gfx_p, ErrorDisplay *err_p, TimeDisplay *time_p, bool *DISPLAY_ON_p);
 
     /**
      * @brief Connect to WiFi. Run in setup().
@@ -193,6 +193,11 @@ class Interwebs {
     bool mqttSendDiscovery(void);
 
     /**
+     * @brief Send display toggle discovery.
+     */
+    bool mqttSendDiscoveryDisplaySet(void);
+
+    /**
      * @brief Send temperature discovery.
      */
     bool mqttSendDiscoveryTemp(void);
@@ -203,6 +208,11 @@ class Interwebs {
     bool mqttSendDiscoveryHumid(void);
 
   private:
+    /**
+     * @brief Display status pointer.
+     */
+    bool *DISPLAY_ON;
+
     /**
      * @brief A pointer to the graphics object.
      */
