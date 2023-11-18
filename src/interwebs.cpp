@@ -16,6 +16,8 @@ Interwebs::Interwebs(Gfx *gfx_p, ErrorDisplay *err_p, TimeDisplay *time_p) {
   mqttClient = new MQTTClient(1024);
 }
 
+// ------------ CONNECTION ------------
+
 bool Interwebs::connect(void) {
   if (WiFi.status() == WL_NO_MODULE) {
     Serial.println("Communication with WiFi module failed");
@@ -160,48 +162,6 @@ bool Interwebs::mqttInit(void) {
   return true;
 }
 
-bool Interwebs::mqttSubscribe(void) {
-  Serial.print("MQTT subscribing...");
-  bool success = true;
-  if (!mqttClient->subscribe("homeassistant/status")) {
-    Serial.println("Error subscribing to homeassistant/status");
-    success = false;
-  }
-  if (!mqttClient->subscribe("current_time")) {
-    Serial.println("Error subscribing to current_time");
-    success = false;
-  }
-  if (!mqttClient->subscribe("weather/code")) {
-    Serial.println("Error subscribing to weather/code");
-    success = false;
-  }
-  if (!mqttClient->subscribe("weather/temperature")) {
-    Serial.println("Error subscribing to weather/temperature");
-    success = false;
-  }
-  if (!mqttClient->subscribe("weather/feelslike")) {
-    Serial.println("Error subscribing to weather/feelslike");
-    success = false;
-  }
-  if (!mqttClient->subscribe("weather/humidity")) {
-    Serial.println("Error subscribing to weather/humidity");
-    success = false;
-  }
-  if (!mqttClient->subscribe("weather/isday")) {
-    Serial.println("Error subscribing to weather/isday");
-    success = false;
-  }
-  if (!success) {
-    status = INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL;
-    Serial.println("failed to subscribe to all topics.");
-    return false;
-  }
-
-  status = INTERWEBS_STATUS_MQTT_CONNECTED;
-  Serial.println("success.");
-  return true;
-}
-
 bool Interwebs::mqttReconnect(void) {
   if (status == INTERWEBS_STATUS_MQTT_CONNECTED) {
     status = INTERWEBS_STATUS_MQTT_OFFLINE;
@@ -307,53 +267,6 @@ bool Interwebs::mqttReconnect(void) {
   return status == INTERWEBS_STATUS_MQTT_CONNECTED;
 }
 
-void Interwebs::mqttMessageReceived(String &topic, String &payload) {
-  Serial.println("MQTT receipt: " + topic + " = " + payload);
-  if (topic == "homeassistant/status") {
-    if (payload == "online") {
-      mqttSendDiscovery();
-    }
-  }
-  else if (topic == "current_time") {
-    time->setTime(payload);
-  }
-  else if (topic == "weather/temperature") {
-    weather->temp_c = payload.toFloat();
-    weather->temp_f = celsius2fahrenheit(weather->temp_c);
-    weather->temp_last = millis();
-  }
-  else if (topic == "weather/feelslike") {
-    weather->feelslike_c = payload.toFloat();
-    weather->feelslike_f = celsius2fahrenheit(weather->feelslike_c);
-    weather->feelslike_last = millis();
-  }
-  else if (topic == "weather/humidity") {
-    weather->humidity = payload.toInt();
-    weather->humidity_last = millis();
-  }
-  else if (topic == "weather/code") {
-    weather->code = static_cast<weather_code_t>(payload.toInt());
-    weather->code_last = millis();
-  }
-  else if (topic == "weather/isday") {
-    // 1 = day, 0 = night
-    weather->is_day = payload.toInt() == 1;
-    weather->is_day_last = millis();
-  }
-  else {
-    Serial.println("Unrecognized MQTT topic: " + topic);
-  }
-}
-
-void Interwebs::mqttSendMessage(String topic, String payload) {
-  if (verifyConnection()) {
-    Serial.println("MQTT publishing to " + topic);
-    if (!mqttClient->publish("cryptid/" + topic, payload)) {
-      Serial.println("Error publishing");
-    }
-  }
-}
-
 bool Interwebs::verifyConnection() {
   if (!wifiIsConnected()) {
     status = INTERWEBS_STATUS_WIFI_OFFLINE;
@@ -401,14 +314,126 @@ void Interwebs::printWifiStatus(void) {
   Serial.println(" dBm");
 }
 
+// ------------ MESSAGING ------------
+
+void Interwebs::mqttSendMessage(String topic, String payload) {
+  if (verifyConnection()) {
+    Serial.println("MQTT publishing to " + topic);
+    if (!mqttClient->publish("cryptid/" + topic, payload)) {
+      Serial.println("Error publishing");
+    }
+  }
+}
+
+bool Interwebs::mqttSubscribe(void) {
+  Serial.print("MQTT subscribing...");
+  bool success = true;
+
+  // HASS
+  if (!mqttClient->subscribe("homeassistant/status")) {
+    Serial.println("Error subscribing to homeassistant/status");
+    success = false;
+  }
+
+  // TIME
+  if (!mqttClient->subscribe("current_time")) {
+    Serial.println("Error subscribing to current_time");
+    success = false;
+  }
+
+  // WEATHER
+  if (!mqttClient->subscribe("weather/code")) {
+    Serial.println("Error subscribing to weather/code");
+    success = false;
+  }
+  if (!mqttClient->subscribe("weather/temperature")) {
+    Serial.println("Error subscribing to weather/temperature");
+    success = false;
+  }
+  if (!mqttClient->subscribe("weather/feelslike")) {
+    Serial.println("Error subscribing to weather/feelslike");
+    success = false;
+  }
+  if (!mqttClient->subscribe("weather/humidity")) {
+    Serial.println("Error subscribing to weather/humidity");
+    success = false;
+  }
+  if (!mqttClient->subscribe("weather/isday")) {
+    Serial.println("Error subscribing to weather/isday");
+    success = false;
+  }
+
+  // done
+  if (!success) {
+    status = INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL;
+    Serial.println("failed to subscribe to all topics.");
+    return false;
+  }
+  status = INTERWEBS_STATUS_MQTT_CONNECTED;
+  Serial.println("success.");
+  return true;
+}
+
+void Interwebs::mqttMessageReceived(String &topic, String &payload) {
+  Serial.println("MQTT receipt: " + topic + " = " + payload);
+
+  // HASS
+  if (topic == "homeassistant/status") {
+    if (payload == "online") {
+      mqttSendDiscovery();
+    }
+    return;
+  }
+
+  // TIME
+  if (topic == "current_time") {
+    time->setTime(payload);
+    return;
+  }
+
+  // WEATHER
+  if (topic == "weather/temperature") {
+    weather->temp_c = payload.toFloat();
+    weather->temp_f = celsius2fahrenheit(weather->temp_c);
+    weather->temp_last = millis();
+    return;
+  }
+  if (topic == "weather/feelslike") {
+    weather->feelslike_c = payload.toFloat();
+    weather->feelslike_f = celsius2fahrenheit(weather->feelslike_c);
+    weather->feelslike_last = millis();
+    return;
+  }
+  if (topic == "weather/humidity") {
+    weather->humidity = payload.toInt();
+    weather->humidity_last = millis();
+    return;
+  }
+  if (topic == "weather/code") {
+    weather->code = static_cast<weather_code_t>(payload.toInt());
+    weather->code_last = millis();
+    return;
+  }
+  if (topic == "weather/isday") {
+    // 1 = day, 0 = night
+    weather->is_day = payload.toInt() == 1;
+    weather->is_day_last = millis();
+    return;
+  }
+
+  Serial.println("Unrecognized MQTT topic: " + topic);
+}
+
+// ------------ DISCOVERY ------------
+// https://www.home-assistant.io/integrations/mqtt#discovery-messages
+// <discovery_prefix>/<component>/[<node_id>/]<object_id>/config
+
 bool Interwebs::mqttSendDiscovery(void) {
   Serial.println("Sending MQTT discovery");
   return mqttSendDiscoveryTemp() && mqttSendDiscoveryHumid();
 }
 
 bool Interwebs::mqttSendDiscoveryTemp(void) {
-  // https://www.home-assistant.io/integrations/mqtt#discovery-messages
-  // <discovery_prefix>/<component>/[<node_id>/]<object_id>/config
   String topic = "homeassistant/sensor/temperature/cryptidDisplay/config";
   String payload = "{";
   payload += "\"name\":\"temperature\",";
@@ -430,8 +455,6 @@ bool Interwebs::mqttSendDiscoveryTemp(void) {
 }
 
 bool Interwebs::mqttSendDiscoveryHumid(void) {
-  // https://www.home-assistant.io/integrations/mqtt#discovery-messages
-  // <discovery_prefix>/<component>/[<node_id>/]<object_id>/config
   String topic = "homeassistant/sensor/humidity/cryptidDisplay/config";
   String payload = "{";
   payload += "\"name\":\"humidity\",";
