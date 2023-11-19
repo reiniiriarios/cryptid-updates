@@ -40,6 +40,7 @@
 #include "src/temperature.h"
 #include "src/humidity.h"
 #include "src/weather.h"
+#include "src/aqi.h"
 #include "src/time.h"
 #include "src/aaahhh.h"
 
@@ -83,6 +84,7 @@ Gfx gfx(&matrix);
 TemperatureDisplay tempDisplay(&gfx);
 HumidityDisplay humidityDisplay(&gfx);
 WeatherSymbol weatherSymbol(&gfx);
+AQI aqi(&gfx);
 TimeDisplay timeDisplay(&gfx);
 ErrorDisplay errorDisplay(&gfx);
 Heart heart(&gfx);
@@ -257,6 +259,10 @@ void updateDisplay(void) {
     tempDisplay.update(weatherExterior.temp_f);
     humidityDisplay.update(weatherExterior.humidity);
     weatherSymbol.drawSymbol(weatherExterior.code, is_day);
+    // air quality index separate expiry
+    if (millis() - weatherExterior.aqi_last < 1800000) { // 30min
+      aqi.update(weatherExterior.aqi);
+    }
     return;
   }
 

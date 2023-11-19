@@ -141,11 +141,13 @@ typedef struct weather_t {
   uint8_t humidity = 0;
   weather_code_t code = WEATHER_CODE_UNKNOWN;
   bool is_day = true;
+  uint16_t aqi = 0;
   int temp_last = 0;
   int feelslike_last = 0;
   int humidity_last = 0;
   int code_last = 0;
   int is_day_last = 0;
+  int aqi_last = 0;
 } weather_t;
 
 class WeatherSymbol {
@@ -176,12 +178,12 @@ class WeatherSymbol {
     /**
      * @brief X position.
      */
-    uint8_t x = 38;
+    uint8_t x = 37;
 
     /**
-     * @brief X position.
+     * @brief Y position.
      */
-    uint8_t y = 4;
+    uint8_t y = 1;
 };
 
 #endif

@@ -369,6 +369,10 @@ bool Interwebs::mqttSubscribe(void) {
     Serial.println("Error subscribing to weather/isday");
     success = false;
   }
+  if (!mqttClient->subscribe("weather/aqi")) {
+    Serial.println("Error subscribing to weather/aqi");
+    success = false;
+  }
 
   // done
   if (!success) {
@@ -435,6 +439,11 @@ void Interwebs::mqttMessageReceived(String &topic, String &payload) {
     // 1 = day, 0 = night
     weather->is_day = payload.toInt() == 1;
     weather->is_day_last = millis();
+    return;
+  }
+  if (topic == "weather/aqi") {
+    weather->aqi = payload.toInt();
+    weather->aqi_last = millis();
     return;
   }
 
