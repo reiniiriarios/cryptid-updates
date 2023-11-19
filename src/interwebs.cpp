@@ -337,8 +337,8 @@ bool Interwebs::mqttSubscribe(void) {
   }
 
   // OPERATIONS
-  if (!mqttClient->subscribe("display/set")) {
-    Serial.println("Error subscribing to display/set");
+  if (!mqttClient->subscribe("cryptid/display/set")) {
+    Serial.println("Error subscribing to cryptid/display/set");
     success = false;
   }
 
@@ -393,11 +393,11 @@ void Interwebs::mqttMessageReceived(String &topic, String &payload) {
   }
 
   // OPERATIONS
-  if (topic == "display/set") {
-    if (payload == "on" || payload.toInt() == 1) {
+  if (topic == "cryptid/display/set") {
+    if (payload == "on" || payload == "ON" || payload.toInt() == 1) {
       *DISPLAY_ON = true;
     }
-    else if (payload == "off" || payload.toInt() == 0) {
+    else if (payload == "off" || payload == "OFF" || payload.toInt() == 0) {
       *DISPLAY_ON = false;
     }
   }
@@ -455,6 +455,7 @@ bool Interwebs::mqttSendDiscoveryDisplaySet(void) {
   String topic = "homeassistant/switch/display/cryptidDisplay/config";
   String payload = "{";
   payload += "\"name\":\"display\",";
+  payload += "\"state_topic\":\"cryptid/display/state\",";
   payload += "\"command_topic\":\"cryptid/display/set\",";
   payload += "\"unique_id\":\"cryptidDisplaySet\",";
   payload += "\"device\":{";
