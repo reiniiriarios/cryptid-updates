@@ -1,7 +1,11 @@
 #ifndef H_CRYPTID_INTERWEBS
 #define H_CRYPTID_INTERWEBS
 
+#include <map>
 #include <WiFiNINA.h>
+#include <utility/wifi_drv.h>
+#include <utility/server_drv.h>
+#include <utility/WiFiSocketBuffer.h>
 #include <MQTT.h>
 
 #include "error_display.h"
@@ -40,24 +44,31 @@ struct rob : robbed<Tag> {
 template<typename Tag, typename Tag::type p>
 typename rob<Tag, p>::filler rob<Tag, p>::filler_obj;
 
+// &MQTTClient::_connected
 struct MQTTClientConnected { typedef bool MQTTClient::*type; };
 template class rob<MQTTClientConnected, &MQTTClient::_connected>;
 
+// &MQTTClient::_lastError
 struct MQTTClientLastError { typedef lwmqtt_err_t MQTTClient::*type; };
 template class rob<MQTTClientLastError, &MQTTClient::_lastError>;
 
+// &MQTTClient::netClient
 struct MQTTClientNetClient { typedef Client* MQTTClient::*type; };
 template class rob<MQTTClientNetClient, &MQTTClient::netClient>;
 
+// &MQTTClient::client
 struct MQTTClientClient { typedef lwmqtt_client_t MQTTClient::*type; };
 template class rob<MQTTClientClient, &MQTTClient::client>;
 
+// &MQTTClient::will
 struct MQTTClientWill { typedef lwmqtt_will_t* MQTTClient::*type; };
 template class rob<MQTTClientWill, &MQTTClient::will>;
 
+// &MQTTClient::returnCode
 struct MQTTClientReturnCode { typedef lwmqtt_return_code_t MQTTClient::*type; };
 template class rob<MQTTClientReturnCode, &MQTTClient::_returnCode>;
 
+// &WiFiClient::_sock
 struct WiFiClientSock { typedef uint8_t WiFiClient::*type; };
 template class rob<WiFiClientSock, &WiFiClient::_sock>;
 
@@ -78,6 +89,11 @@ typedef enum {
   INTERWEBS_STATUS_MQTT_SUBSCRIPTION_FAIL = 16,
   INTERWEBS_STATUS_MQTT_ERRORS = 13,
 } interwebs_status_t;
+
+/**
+ * @brief MQTT subscription callback function. Param is payload.
+ */
+typedef std::function<void(String&)> mqttcallback_t;
 
 /**
  * @brief Connect to the interwebs and discover all the interesting webs.
@@ -163,14 +179,14 @@ class Interwebs {
     bool mqttSubscribe(void);
 
     /**
-     * @brief Handle MQTT messages received.
-     */
-    void mqttMessageReceived(String &topic, String &payload);
-
-    /**
      * @brief Main MQTT client loop.
      */
     void mqttLoop(void);
+
+    /**
+     * @brief MQTT hook.
+     */
+    void onMqtt(String topic, mqttcallback_t callback);
 
     /**
      * @brief Send MQTT message.
@@ -242,6 +258,16 @@ class Interwebs {
      * @brief The IP address to connect to.
      */
     IPAddress mqttBroker;
+
+    /**
+     * @brief A map of mqtt subscriptions and their callbacks.
+     */
+    std::map<String, mqttcallback_t> mqttSubs;
+
+    /**
+     * @brief Handle MQTT messages received.
+     */
+    void mqttMessageReceived(String &topic, String &payload);
 };
 
 #endif

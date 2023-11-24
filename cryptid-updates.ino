@@ -166,8 +166,10 @@ void setup(void) {
   Serial.println("°C");
 
   // Interwebs
-  interwebs.connect();
   interwebs.weather = &weatherExterior;
+  if (interwebs.connect()) {
+    // mqttCurrentStatus();
+  }
 }
 
 // LOOP --------------------------------------------------------------------------------------------
@@ -209,12 +211,16 @@ void loop(void) {
     updateDisplay();
   }
 
-  // Draw error pixels.
+  // Check and repair interwebs connections.
   if (!interwebs.wifiIsConnected()) {
     gfx.drawErrorWiFi();
+    interwebs.wifiReconnect();
   }
   else if (!interwebs.mqttIsConnected()) {
     gfx.drawErrorMqtt();
+    if (interwebs.mqttReconnect()) {
+      // mqttCurrentStatus();
+    }
   }
 
   // Done.

@@ -198,7 +198,7 @@ bool Interwebs::mqttReconnect(void) {
     Serial.println("Reconnecting MQTT...");
     status = INTERWEBS_STATUS_MQTT_CONNECTING;
 
-    if (!(mqttClient->*robbed<MQTTClientNetClient>::ptr)->connected()) {
+    if (!mqttNetClient->connected()) {
       Serial.println("Connecting via network client...");
 
       // step 1a copied from WiFiClient::stop()
@@ -212,27 +212,27 @@ bool Interwebs::mqttReconnect(void) {
       mqttNetClient->*robbed<WiFiClientSock>::ptr = ServerDrv::getSocket();
       if (mqttNetClient->*robbed<WiFiClientSock>::ptr == NO_SOCKET_AVAIL) {
         // failure, flag to start over
-      	Serial.println("No Socket available");
+        Serial.println("No Socket available");
         mqttClient->*robbed<MQTTClientLastError>::ptr = LWMQTT_NETWORK_FAILED_CONNECT;
         status = INTERWEBS_STATUS_MQTT_OFFLINE;
         return false;
       }
 
-    	ServerDrv::startClient(uint32_t(mqttBroker), (uint16_t)1883, mqttNetClient->*robbed<WiFiClientSock>::ptr);
+      ServerDrv::startClient(uint32_t(mqttBroker), (uint16_t)1883, mqttNetClient->*robbed<WiFiClientSock>::ptr);
     }
     // step complete, break
     status = INTERWEBS_STATUS_MQTT_CONNECTING_2;
     return false;
   }
 
-  // step 2 copied from mqttClient->:connect()
+  // step 2 copied from mqttClient->connect()
   if (status = INTERWEBS_STATUS_MQTT_CONNECTING_2) {
     // check step 1 was successful
-  	if (!(mqttClient->*robbed<MQTTClientNetClient>::ptr)->connected()) {
+    if (!mqttNetClient->connected()) {
       status = INTERWEBS_STATUS_MQTT_OFFLINE;
       mqttClient->*robbed<MQTTClientLastError>::ptr = LWMQTT_NETWORK_FAILED_CONNECT;
       return false;
-  	}
+    }
 
     Serial.println("MQTT connecting to broker...");
     // prepare options
@@ -249,13 +249,16 @@ bool Interwebs::mqttReconnect(void) {
       options,
       mqttClient->*robbed<MQTTClientWill>::ptr,
       &(mqttClient->*robbed<MQTTClientReturnCode>::ptr),
-      1000
+      800 // default = 1000
     );
     if (mqttClient->*robbed<MQTTClientLastError>::ptr != LWMQTT_SUCCESS) {
       Serial.println("MQTT broker connection failed.");
       mqttClient->*robbed<MQTTClientConnected>::ptr = false;
-      (mqttClient->*robbed<MQTTClientNetClient>::ptr)->stop();
-
+      // modified mqttNetClient->stop(), without delay
+      if (mqttNetClient->*robbed<WiFiClientSock>::ptr != 255) {
+        ServerDrv::stopClient(mqttNetClient->*robbed<WiFiClientSock>::ptr);
+        status = INTERWEBS_STATUS_MQTT_CLOSING_SOCKET;
+      }
       return false;
     }
     Serial.println("MQTT connected to broker.");
@@ -318,7 +321,7 @@ void Interwebs::printWifiStatus(void) {
 // ------------ MESSAGING ------------
 
 void Interwebs::mqttSendMessage(String topic, String payload) {
-  if (verifyConnection()) {
+  if (wifiIsConnected() && mqttIsConnected()) {
     Serial.println("MQTT publishing to " + topic);
     if (!mqttClient->publish("cryptid/" + topic, payload)) {
       Serial.println("Error publishing");
@@ -383,6 +386,10 @@ bool Interwebs::mqttSubscribe(void) {
   status = INTERWEBS_STATUS_MQTT_CONNECTED;
   Serial.println("success.");
   return true;
+}
+
+void Interwebs::onMqtt(String topic, mqttcallback_t callback) {
+  mqttSubs[topic] = callback;
 }
 
 void Interwebs::mqttMessageReceived(String &topic, String &payload) {
