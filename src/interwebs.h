@@ -120,9 +120,8 @@ class Interwebs {
      * 
      * @param gfx_p A pointer to the graphics object.
      * @param err_p A pointer to the error display object.
-     * @param time_p A pointer to the time display object.
      */
-    Interwebs(Gfx *gfx_p, ErrorDisplay *err_p, TimeDisplay *time_p, bool *DISPLAY_ON_p);
+    Interwebs(Gfx *gfx_p, ErrorDisplay *err_p);
 
     /**
      * @brief Connect to WiFi. Run in setup().

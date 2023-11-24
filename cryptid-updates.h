@@ -19,10 +19,14 @@ typedef enum {
 void err(int milliseconds, String message);
 
 /**
-  vector <int> v;
  * @brief Run once on start.
  */
 void setup(void);
+
+/**
+ * @brief Set up MQTT subscriptions.
+ */
+void mqttSubscriptions(void);
 
 /**
  * @brief Main loop.

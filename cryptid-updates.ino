@@ -92,7 +92,7 @@ Aaahhh aaahhh(&gfx);
 
 // OTHER CONTROL OBJECTS ---------------------------------------------------------------------------
 
-Interwebs interwebs(&gfx, &errorDisplay, &timeDisplay, &DISPLAY_ON);
+Interwebs interwebs(&gfx, &errorDisplay);
 
 weather_t weatherInterior;
 weather_t weatherExterior;
@@ -166,10 +166,71 @@ void setup(void) {
   Serial.println("°C");
 
   // Interwebs
-  interwebs.weather = &weatherExterior;
+  mqttSubscriptions();
   if (interwebs.connect()) {
     // mqttCurrentStatus();
   }
+}
+
+void mqttSubscriptions(void) {
+  // Turn display on and off.
+  interwebs.onMqtt("cryptid/display/set", [](String &payload){
+    if (payload == "on" || payload == "ON" || payload.toInt() == 1) {
+      DISPLAY_ON = true;
+      interwebs.mqttSendMessage("cryptid/display/status", "ON");
+    }
+    else if (payload == "off" || payload == "OFF" || payload.toInt() == 0) {
+      DISPLAY_ON = false;
+      interwebs.mqttSendMessage("cryptid/display/status", "OFF");
+    }
+  });
+
+  // Update current time.
+  interwebs.onMqtt("current_time", [](String &payload){
+    timeDisplay.setTime(payload);
+  });
+
+  // Update weather.
+  interwebs.onMqtt("weather/temperature", [](String &payload){
+    weatherExterior.temp_c = payload.toFloat();
+    weatherExterior.temp_f = celsius2fahrenheit(weatherExterior.temp_c);
+    weatherExterior.temp_last = millis();
+  });
+  interwebs.onMqtt("weather/feelslike", [](String &payload){
+    weatherExterior.feelslike_c = payload.toFloat();
+    weatherExterior.feelslike_f = celsius2fahrenheit(weatherExterior.feelslike_c);
+    weatherExterior.feelslike_last = millis();
+    return;
+  });
+  interwebs.onMqtt("weather/humidity", [](String &payload){
+    weatherExterior.humidity = payload.toInt();
+    weatherExterior.humidity_last = millis();
+    return;
+  });
+  interwebs.onMqtt("weather/code", [](String &payload){
+    weatherExterior.code = static_cast<weather_code_t>(payload.toInt());
+    weatherExterior.code_last = millis();
+    return;
+  });
+  interwebs.onMqtt("weather/isday", [](String &payload){
+    // 1 = day, 0 = night
+    weatherExterior.is_day = payload.toInt() == 1;
+    weatherExterior.is_day_last = millis();
+    return;
+  });
+  interwebs.onMqtt("weather/aqi", [](String &payload){
+    weatherExterior.aqi = payload.toInt();
+    weatherExterior.aqi_last = millis();
+    return;
+  });
+
+  // Send discovery when Home Assistant notifies it's online.
+  interwebs.onMqtt("homeassistant/status", [](String &payload){
+    if (payload == "online") {
+      interwebs.mqttSendDiscovery();
+      // mqttCurrentStatus();
+    }
+  });
 }
 
 // LOOP --------------------------------------------------------------------------------------------
