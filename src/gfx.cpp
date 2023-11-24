@@ -222,13 +222,13 @@ uint16_t Gfx::value2hue(int value, int minFrom, int maxFrom, int minTo, int maxT
 }
 
 void Gfx::drawErrorWiFi() {
-  pixels[MATRIX_HEIGHT - 2][MATRIX_WIDTH - 2].on = true;
-  pixels[MATRIX_HEIGHT - 2][MATRIX_WIDTH - 2].hue = getHueBounce(280, 320);
+  pixels[MATRIX_HEIGHT - 1][MATRIX_WIDTH - 2].on = true;
+  pixels[MATRIX_HEIGHT - 1][MATRIX_WIDTH - 2].hue = getHueBounce(260, 300);
 }
 
 void Gfx::drawErrorMqtt() {
-  pixels[MATRIX_HEIGHT - 2][MATRIX_WIDTH - 2].on = true;
-  pixels[MATRIX_HEIGHT - 2][MATRIX_WIDTH - 2].hue = getHueBounce(10, 45);
+  pixels[MATRIX_HEIGHT - 1][MATRIX_WIDTH - 2].on = true;
+  pixels[MATRIX_HEIGHT - 1][MATRIX_WIDTH - 2].hue = getHueBounce(10, 45);
 }
 
 uint16_t Gfx::getHueBounce(int start, int end) {

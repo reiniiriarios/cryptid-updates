@@ -168,7 +168,7 @@ void setup(void) {
   // Interwebs
   mqttSubscriptions();
   if (interwebs.connect()) {
-    // mqttCurrentStatus();
+    mqttCurrentStatus();
   }
 }
 
