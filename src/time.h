@@ -53,6 +53,11 @@ class TimeDisplay {
      * @return String Sun-Sat
      */
     String getDayOfWeek(void);
+
+    /**
+     * @brief Last updated millis().
+     */
+    uint32_t last_updated;
   
   private:
     /**

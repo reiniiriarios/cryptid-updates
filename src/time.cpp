@@ -9,6 +9,7 @@ void TimeDisplay::setTime(String yyyymmddw) {
   month   = yyyymmddw.substring(4, 6).toInt();
   day     = yyyymmddw.substring(6, 8).toInt();
   weekday = yyyymmddw.substring(8, 9).toInt();
+  last_updated = millis();
 }
 
 uint8_t TimeDisplay::getDay(void) {
