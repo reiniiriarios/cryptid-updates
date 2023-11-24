@@ -172,6 +172,14 @@ void setup(void) {
   }
 }
 
+void mqttCurrentStatus(void) {
+  String on = "ON";
+  if (!DISPLAY_ON) on = "OFF";
+  interwebs.mqttSendMessage("cryptid/display/status", on);
+  interwebs.mqttSendMessage("cryptid/display/temperature", String(temp.temperature));
+  interwebs.mqttSendMessage("cryptid/display/humidity", String(humidity.relative_humidity));
+}
+
 void mqttSubscriptions(void) {
   // Turn display on and off.
   interwebs.onMqtt("cryptid/display/set", [](String &payload){
@@ -228,7 +236,7 @@ void mqttSubscriptions(void) {
   interwebs.onMqtt("homeassistant/status", [](String &payload){
     if (payload == "online") {
       interwebs.mqttSendDiscovery();
-      // mqttCurrentStatus();
+      mqttCurrentStatus();
     }
   });
 }
@@ -280,7 +288,7 @@ void loop(void) {
   else if (!interwebs.mqttIsConnected()) {
     gfx.drawErrorMqtt();
     if (interwebs.mqttReconnect()) {
-      // mqttCurrentStatus();
+      mqttCurrentStatus();
     }
   }
 
@@ -384,8 +392,7 @@ void everyN(void) {
 
   // Every 20 seconds.
   if (frameCounter % (MAX_FPS * 20) == 0) {
-    interwebs.mqttSendMessage("display/temperature", String(temp.temperature));
-    interwebs.mqttSendMessage("display/humidity", String(humidity.relative_humidity));
+    mqttCurrentStatus();
 
     // reset at final "every" block:
     frameCounter = 0;
