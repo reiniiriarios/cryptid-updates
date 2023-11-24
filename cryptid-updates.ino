@@ -288,6 +288,7 @@ void loop(void) {
   else if (!interwebs.mqttIsConnected()) {
     gfx.drawErrorMqtt();
     if (interwebs.mqttReconnect()) {
+      interwebs.mqttSendDiscovery();
       mqttCurrentStatus();
     }
   }
