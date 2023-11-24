@@ -329,10 +329,10 @@ WeatherSymbol::WeatherSymbol(Gfx *gfx_p) {
 }
 
 void WeatherSymbol::drawSymbolInterior(void) {
-  gfx->drawCircularGradientMask(&WEATHER_PMASK_HOUSE, x + 4, y + 6, &WEATHER_GCFG_HOUSE);
-  gfx->drawCircularGradientMask(&WEATHER_PMASK_HOUSE_SMOKE, x + 6, y + 1, &WEATHER_GCFG_HOUSE_SMOKE);
-  gfx->drawCircularGradientMask(&WEATHER_PMASK_HOUSE_ROOF, x + 2, y + 6, &WEATHER_GCFG_HOUSE_ROOF);
-  gfx->drawCircularGradientMask(&WEATHER_PMASK_HOUSE_BUSHES, x - 2, y + 18, &WEATHER_GCFG_HOUSE_BUSHES);
+  gfx->drawCircularGradientMask(&WEATHER_PMASK_HOUSE, x + 4, y + 8, &WEATHER_GCFG_HOUSE);
+  gfx->drawCircularGradientMask(&WEATHER_PMASK_HOUSE_SMOKE, x + 6, y + 3, &WEATHER_GCFG_HOUSE_SMOKE);
+  gfx->drawCircularGradientMask(&WEATHER_PMASK_HOUSE_ROOF, x + 2, y + 8, &WEATHER_GCFG_HOUSE_ROOF);
+  gfx->drawCircularGradientMask(&WEATHER_PMASK_HOUSE_BUSHES, x - 2, y + 20, &WEATHER_GCFG_HOUSE_BUSHES);
 }
 
 void WeatherSymbol::drawSymbol(weather_code_t code, bool is_day) {
