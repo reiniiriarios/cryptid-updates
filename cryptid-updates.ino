@@ -348,7 +348,7 @@ void updateDisplay(void) {
       errorDisplay.update(401);
       return;
     }
-    if (timeDisplay.last_updated > 1200000) { // 20min
+    if (millis() - timeDisplay.last_updated > 1200000) { // 20min
       errorDisplay.update(402);
       return;
     }
