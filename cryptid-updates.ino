@@ -329,7 +329,7 @@ void updateDisplay(void) {
       return;
     }
     bool is_day = true;
-    if (weatherExterior.is_day_last < 600000) {
+    if (millis() - weatherExterior.is_day_last < 600000) {
       is_day = weatherExterior.is_day;
     }
     tempDisplay.update(weatherExterior.temp_f);
