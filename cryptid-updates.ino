@@ -128,6 +128,8 @@ void setup(void) {
   interwebsSetup();
 }
 
+// MQTT --------------------------------------------------------------------------------------------
+
 void mqttCurrentStatus(void) {
   String on = "ON";
   if (!DISPLAY_ON) on = "OFF";
@@ -265,16 +267,71 @@ void loop(void) {
   }
 
   // Status LEDs.
-  if (!interwebs.wifiIsConnected()) {
-    gfx.drawErrorWiFi();
-  } else if (!interwebs.mqttIsConnected()) {
-    gfx.drawErrorMqtt();
+  // This chip seems to hiccup when first connecting, so let's be specific with our colors...
+  switch (interwebs.getStatus()) {
+    case MQTT_LOOPED_STATUS_INIT:
+      gfx.drawStatusPixel(120, 125); break;
+    // WiFi
+    case MQTT_LOOPED_STATUS_WIFI_READY:
+      gfx.drawStatusPixel(90, 120); break;
+    case MQTT_LOOPED_STATUS_WIFI_OFFLINE:
+      gfx.drawStatusPixel(10, 40); break;
+    case MQTT_LOOPED_STATUS_WIFI_ERRORS:
+      gfx.drawStatusPixel(0, 30); break;
+    case MQTT_LOOPED_STATUS_WIFI_CLOSING_SOCKET:
+      gfx.drawStatusPixel(240, 270); break;
+    // < WiFi offline
+    case MQTT_LOOPED_STATUS_WIFI_CONNECTED:
+      gfx.drawStatusPixel(130, 150); break;
+    // MQTT
+    case MQTT_LOOPED_STATUS_MQTT_CONNECTING:
+    case MQTT_LOOPED_STATUS_MQTT_CONNECTION_WAIT:
+    case MQTT_LOOPED_STATUS_MQTT_CONNECTION_SUCCESS:
+      gfx.drawStatusPixel(270, 330); break;
+    case MQTT_LOOPED_STATUS_MQTT_MISSING_CONACK:
+    case MQTT_LOOPED_STATUS_MQTT_CONNECTION_CONFIRMED:
+    case MQTT_LOOPED_STATUS_MQTT_CLOSING_SOCKET:
+    case MQTT_LOOPED_STATUS_MQTT_DISCONNECTED:
+    case MQTT_LOOPED_STATUS_MQTT_OFFLINE:
+    case MQTT_LOOPED_STATUS_MQTT_ERRORS:
+      gfx.drawStatusPixel(330, 359); break;
+    // < MQTT offline
+    case MQTT_LOOPED_STATUS_OKAY:
+    case MQTT_LOOPED_STATUS_READING_SUB_PACKET:
+    case MQTT_LOOPED_STATUS_ACTIVE:
+      break; // none
+    // > MQTT is active
+    case MQTT_LOOPED_STATUS_MQTT_SUBSCRIBED:
+    case MQTT_LOOPED_STATUS_MQTT_SUBSCRIBING:
+    case MQTT_LOOPED_STATUS_MQTT_SUBSCRIPTION_FAIL:
+    case MQTT_LOOPED_STATUS_MQTT_ANNOUNCED:
+    case MQTT_LOOPED_STATUS_READING_CONACK_PACKET:
+    case MQTT_LOOPED_STATUS_READING_SUBACK_PACKET:
+    case MQTT_LOOPED_STATUS_READING_PUBACK_PACKET:
+    case MQTT_LOOPED_STATUS_READING_PING_PACKET:
+    case MQTT_LOOPED_STATUS_SENDING_DISCOVERY:
+    case MQTT_LOOPED_STATUS_SUBSCRIPTION_PACKET_READ:
+    case MQTT_LOOPED_STATUS_SUBSCRIPTION_IN_QUEUE:
+    case MQTT_LOOPED_STATUS_VERIFY_CONNECTION:
+    case MQTT_LOOPED_STATUS_CONNECTION_VERIFIED:
+    case MQTT_LOOPED_STATUS_MQTT_PUBLISHING:
+    case MQTT_LOOPED_STATUS_MQTT_PUBLISHED:
+      break; // none
+    default: // wtf
+      gfx.drawStatusPixel(0, 360); break;
   }
+  // if (!interwebs.wifiIsConnected()) {
+  //   gfx.drawStatusPixel(260, 300);
+  // } else if (!interwebs.mqttIsConnected()) {
+  //   gfx.drawStatusPixel(10, 45);
+  // }
 
   // Done.
   gfx.toBuffer();  // Move pixels[] to matrix
   matrix.show();   // Copy data to matrix buffers
 }
+
+// DISPLAY -----------------------------------------------------------------------------------------
 
 void updateDisplay(void) {
   // AAAHHH
@@ -337,6 +394,8 @@ void updateDisplay(void) {
   // Oops.
   errorDisplay.update(101);
 }
+
+// EVERY N SECONDS ---------------------------------------------------------------------------------
 
 uint16_t loopCounter = 0;  // Counts up every frame based on MAX_FPS.
 

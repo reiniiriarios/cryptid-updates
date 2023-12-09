@@ -128,14 +128,12 @@ class Gfx {
     uint16_t value2hue(int value, int minFrom, int maxFrom, int minTo, int maxTo);
 
     /**
-     * @brief Draw error pixel(s) to denote WiFi is down.
+     * @brief Draw a single status pixel on the screen in a pulsing pattern.
+     * 
+     * @param hueStart 
+     * @param hueEnd 
      */
-    void drawErrorWiFi(void);
-
-    /**
-     * @brief Draw error pixel(s) to denote MQTT is down.
-     */
-    void drawErrorMqtt(void);
+    void drawStatusPixel(uint16_t hueStart, uint16_t hueEnd);
 
     /**
      * @brief Get width of string.
