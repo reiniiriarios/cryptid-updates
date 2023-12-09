@@ -17,3 +17,8 @@ Adafruit LIS3DH | Accelerometer
 Adafruit SHT4x | Temperature & humidity sensor
 WiFiNINA | WiFi
 MQTT_Looped | MQTT
+
+## Known Bug
+
+If `MQTT_LOG` or `MQTT_DEBUG` is defined, `Serial` must be active or the `MQTT_Looped` class
+will hang. This is not an issue on other M4 boards. (???)
