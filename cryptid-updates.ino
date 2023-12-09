@@ -79,7 +79,7 @@ void err(int milliseconds, String message = "") {
 void setup(void) {
   Serial.begin(9600);
   // Wait for serial port to open.
-  while (!Serial) delay(10);
+  // while (!Serial) delay(10);
 
   // Button setup.
   pinMode(BACK_BUTTON, INPUT_PULLUP);
@@ -338,11 +338,10 @@ void updateDisplay(void) {
   errorDisplay.update(101);
 }
 
-uint16_t frameCounter = 0;  // Counts up every frame based on MAX_FPS.
+uint16_t loopCounter = 0;  // Counts up every frame based on MAX_FPS.
 
 void everyN(void) {
-  // Once per second.
-  if (frameCounter % MAX_FPS == 0) {
+  every_n_seconds(1, 0) {
     // Read temperature and humidity
     sht4.getEvent(&humidity, &temp);
     weatherInterior.temp_c = temp.temperature;
@@ -350,7 +349,8 @@ void everyN(void) {
     weatherInterior.humidity = humidity.relative_humidity;
     // Set temperature and humidity for air quality sensor.
     // sgp.setHumidity(getAbsoluteHumidity(temp.temperature, humidity.relative_humidity));
-
+  }
+  every_n_seconds(1, 1) {
     // uint16_t TVOC_base, eCO2_base;
     // if (!sgp.getIAQBaseline(&eCO2_base, &TVOC_base)) {
     //   Serial.println("SGP: Failed to get baseline readings");
@@ -359,14 +359,15 @@ void everyN(void) {
     //   Serial.print(" & TVOC: 0x"); Serial.println(TVOC_base, HEX);
     // }
   }
-
-  if (frameCounter % (MAX_FPS * 2) == 0) {
+  every_n_seconds(1, 2) {
     // if (!sgp.IAQmeasure()) {
     //   Serial.println("SGP: Measurement failed");
     // } else {
     //   Serial.print("TVOC "); Serial.print(sgp.TVOC); Serial.print(" ppb\t");
     //   Serial.print("eCO2 "); Serial.print(sgp.eCO2); Serial.println(" ppm");
     // }
+  }
+  every_n_seconds(1, 3) {
     // if (!sgp.IAQmeasureRaw()) {
     //   Serial.println("SGP: Raw Measurement failed");
     // } else {
@@ -374,9 +375,7 @@ void everyN(void) {
     //   Serial.print("Raw Ethanol "); Serial.print(sgp.rawEthanol); Serial.println("");
     // }
   }
-
-  // Every 5 seconds.
-  if (frameCounter % (MAX_FPS * 5) == 0) {
+  every_n_seconds(5, 4) {
     // Loop current display.
     if (currentDisplay == CURRENT_DISPLAY_INT_TEMP_HUMID) {
       currentDisplay = CURRENT_DISPLAY_EXT_TEMP_HUMID;
@@ -386,20 +385,12 @@ void everyN(void) {
       currentDisplay = CURRENT_DISPLAY_INT_TEMP_HUMID;
     }
   }
-
-  // Every 20 seconds.
-  if (frameCounter % (MAX_FPS * 20) == 0) {
+  every_n_seconds(20, 5) {
     mqttCurrentStatus();
   }
-
-  // Every 60 seconds.
-  if (frameCounter % (MAX_FPS * 60) == 0) {
+  every_n_seconds(60, 5) {
     Serial.print("Free Memory: ");
     Serial.println(freeMemory());
-
-    // reset at final "every" block:
-    frameCounter = 0;
   }
-
-  frameCounter++;
+  loopCounter++;
 }

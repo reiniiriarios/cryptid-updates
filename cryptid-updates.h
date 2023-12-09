@@ -46,6 +46,16 @@
 #include "src/time.h"
 #include "src/aaahhh.h"
 
+// Instead of using a timer, these approximations ensure the
+// same delay between actions. This means things don't execute
+// as precicely on schedule, but the animation is, in theory,
+// smoother.
+#define every_n_seconds(n, offset) if (loopCounter % (MAX_FPS * n) == offset)
+#define every_n_loops(n, offset) if (loopCounter % n == offset)
+
+/**
+ * @brief Current display.
+ */
 typedef enum {
   CURRENT_DISPLAY_NONE = 0,
   CURRENT_DISPLAY_TEST = 1,
