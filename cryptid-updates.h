@@ -10,6 +10,9 @@
 // Temperature & Humidity Sensor
 #include <Adafruit_SHT4x.h>
 
+// SGB30 TVOC/eCO2 Gas Sensor
+#include <Adafruit_SGP30.h>
+
 // RGB Matrix
 #include <Adafruit_Protomatter.h>
 

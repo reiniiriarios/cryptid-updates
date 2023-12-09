@@ -21,6 +21,9 @@ Adafruit_LIS3DH accelerometer = Adafruit_LIS3DH();
 // SHT4X Temperature and Humidity Sensor
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 
+// SGB30 TVOC/eCO2 Gas Sensor
+Adafruit_SGP30 sgp = Adafruit_SGP30();
+
 sensors_event_t accel, humidity, temp;  // % rH, °C
 
 // THE SCREEN & GRAPHICS OBJECTS -------------------------------------------------------------------
@@ -60,16 +63,12 @@ weather_t weatherExterior;
 // ERROR HANDLING ----------------------------------------------------------------------------------
 
 void err(int milliseconds, String message = "") {
-  Serial.write("ERROR ");
-  Serial.write(milliseconds);
-  Serial.write("\n");
+  Serial.println("ERROR " + String(milliseconds));
   if (message.length() > 0) {
     Serial.println(message);
   }
-
-  uint8_t i;
   pinMode(LED_BUILTIN, OUTPUT);        // Using onboard LED
-  for (i = 1;; i++) {                  // Loop forever...
+  for (uint8_t i = 1;; i++) {          // Loop forever...
     digitalWrite(LED_BUILTIN, i & 1);  // LED on/off blink to alert user
     delay(milliseconds);
   }
@@ -80,7 +79,7 @@ void err(int milliseconds, String message = "") {
 void setup(void) {
   Serial.begin(9600);
   // Wait for serial port to open.
-  // while (!Serial) delay(10);
+  while (!Serial) delay(10);
 
   // Button setup.
   pinMode(BACK_BUTTON, INPUT_PULLUP);
@@ -88,7 +87,7 @@ void setup(void) {
 
   // The display
   ProtomatterStatus status = matrix.begin();
-  Serial.printf("Protomatter begin() status: %d\n", status);
+  Serial.printf("Protomatter status: %d\n", status);
   if (status != 0) {
     err(200, "protomatter failed to start");
   }
@@ -115,6 +114,15 @@ void setup(void) {
   Serial.println(sht4.readSerial(), HEX);  // 0xF5D9FCC
   sht4.setPrecision(SHT4X_MED_PRECISION);  // SHT4X_HIGH_PRECISION SHT4X_LOW_PRECISION
   sht4.getEvent(&humidity, &temp);
+
+  // if (!sgp.begin()) {
+  //   err(600, "SGB30 failed to start");
+  // }
+  // Serial.print("SGP30 Serial 0x");
+  // Serial.print(sgp.serialnumber[0], HEX);
+  // Serial.print(sgp.serialnumber[1], HEX);
+  // Serial.println(sgp.serialnumber[2], HEX);
+  //sgp.setIAQBaseline(0x8E68, 0x8F41);  // Will vary for each sensor!
 
   // Interwebs
   interwebsSetup();
@@ -335,10 +343,36 @@ uint16_t frameCounter = 0;  // Counts up every frame based on MAX_FPS.
 void everyN(void) {
   // Once per second.
   if (frameCounter % MAX_FPS == 0) {
+    // Read temperature and humidity
     sht4.getEvent(&humidity, &temp);
     weatherInterior.temp_c = temp.temperature;
     weatherInterior.temp_f = celsius2fahrenheit(temp.temperature);
     weatherInterior.humidity = humidity.relative_humidity;
+    // Set temperature and humidity for air quality sensor.
+    // sgp.setHumidity(getAbsoluteHumidity(temp.temperature, humidity.relative_humidity));
+
+    // uint16_t TVOC_base, eCO2_base;
+    // if (!sgp.getIAQBaseline(&eCO2_base, &TVOC_base)) {
+    //   Serial.println("SGP: Failed to get baseline readings");
+    // } else {
+    //   Serial.print("SGP: Baseline values: eCO2: 0x"); Serial.print(eCO2_base, HEX);
+    //   Serial.print(" & TVOC: 0x"); Serial.println(TVOC_base, HEX);
+    // }
+  }
+
+  if (frameCounter % (MAX_FPS * 2) == 0) {
+    // if (!sgp.IAQmeasure()) {
+    //   Serial.println("SGP: Measurement failed");
+    // } else {
+    //   Serial.print("TVOC "); Serial.print(sgp.TVOC); Serial.print(" ppb\t");
+    //   Serial.print("eCO2 "); Serial.print(sgp.eCO2); Serial.println(" ppm");
+    // }
+    // if (!sgp.IAQmeasureRaw()) {
+    //   Serial.println("SGP: Raw Measurement failed");
+    // } else {
+    //   Serial.print("Raw H2 "); Serial.print(sgp.rawH2); Serial.print(" \t");
+    //   Serial.print("Raw Ethanol "); Serial.print(sgp.rawEthanol); Serial.println("");
+    // }
   }
 
   // Every 5 seconds.

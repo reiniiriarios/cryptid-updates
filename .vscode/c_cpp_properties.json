@@ -34,6 +34,7 @@
                 "/home/reinii/Arduino/libraries/Adafruit_BusIO",
                 "/home/reinii/Arduino/libraries/Adafruit_Unified_Sensor",
                 "/home/reinii/Arduino/libraries/Adafruit_SHT4x_Library",
+                "/home/reinii/Arduino/libraries/Adafruit_SGP30_Sensor",
                 "/home/reinii/Arduino/libraries/Adafruit_Protomatter/src",
                 "/home/reinii/Arduino/libraries/Adafruit_GFX_Library",
                 "/home/reinii/Arduino/libraries/WiFiNINA/src",

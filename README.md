@@ -15,6 +15,7 @@ Adafruit Protomatter | RGB LED matrix
 Adafruit NeoPixel | Status LED
 Adafruit LIS3DH | Accelerometer
 Adafruit SHT4x | Temperature & humidity sensor
+Adafruit SGP30 | SGB30 TVOC/eCO2 gas sensor
 WiFiNINA | WiFi
 MQTT_Looped | MQTT
 

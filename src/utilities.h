@@ -10,6 +10,15 @@
  * @return float 
  */
 float celsius2fahrenheit(float celsius);
+
+/**
+ * @brief Get absolute humidity to feed to air quality sensor.
+ *
+ * @param temperature [°C]
+ * @param humidity [%RH]
+ * @return absolute humidity [mg/m^3] with approximation formula
+ */
+uint32_t getAbsoluteHumidity(float temperature, float humidity);
   
 /**
  * @brief Attempt callback function n tries with delays.
