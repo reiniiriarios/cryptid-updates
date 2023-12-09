@@ -1,50 +1,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //~ CRYPTID UPDATES ~ LED Matrix Display ~
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// INCLUDES ----------------------------------------------------------------------------------------
-
-// Status LED
-#include <Adafruit_NeoPixel.h>
-
-// Accelerometer
-#include <Adafruit_LIS3DH.h>
-
-// Temperature & Humidity Sensor
-#include <Adafruit_SHT4x.h>
-
-// RGB Matrix
-#include <Adafruit_Protomatter.h>
-
-// Filesystem
-// #include <Adafruit_FlashCache.h>
-// #include <Adafruit_FlashTransport.h>
-// #include <Adafruit_SPIFlash.h>
-// #include <Adafruit_SPIFlashBase.h>
-// #include <flash_devices.h>
-
-// Read bitmaps from SD
-// #include <Adafruit_ImageReader_EPD.h>
-// #include <Adafruit_ImageReader.h>
-
-// Cryptid Updates
 #include "cryptid-updates.h"
-#include "src/types.h"
-#include "src/config.h"
-#include "src/utilities.h"
-#include "src/error_display.h"
-#include "src/interwebs.h"
-#include "src/gfx.h"
-#include "src/loading.h"
-#include "src/heart.h"
-#include "src/temperature.h"
-#include "src/humidity.h"
-#include "src/weather.h"
-#include "src/aqi.h"
-#include "src/time.h"
-#include "src/aaahhh.h"
-
-bool DISPLAY_ON = true;
 
 // HARDWARE CONFIG ---------------------------------------------------------------------------------
 
@@ -67,6 +24,8 @@ Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 sensors_event_t accel, humidity, temp;  // % rH, °C
 
 // THE SCREEN & GRAPHICS OBJECTS -------------------------------------------------------------------
+
+bool DISPLAY_ON = true;
 
 // The LED Matrix.
 Adafruit_Protomatter matrix(
@@ -92,7 +51,8 @@ Aaahhh aaahhh(&gfx);
 
 // OTHER CONTROL OBJECTS ---------------------------------------------------------------------------
 
-Interwebs interwebs(&gfx, &errorDisplay);
+MQTT_Looped interwebs(new WiFiClient(), WIFI_SSID, WIFI_PASS,
+  new IPAddress(MQTT_SERVER), 1883, MQTT_USER, MQTT_PASS, MQTT_CLIENT_ID);
 
 weather_t weatherInterior;
 weather_t weatherExterior;
@@ -144,6 +104,7 @@ void setup(void) {
   }
   accelerometer.setRange(LIS3DH_RANGE_4_G); // 2, 4, 8 or 16 G
   accelerometer.getEvent(&accel);
+  // set initial values
   aaahhh.setMovement(accel.acceleration.x, accel.acceleration.y, accel.acceleration.z);
 
   // Temperature & Humidity
@@ -152,90 +113,105 @@ void setup(void) {
   }
   Serial.print("SHT4x Serial 0x");
   Serial.println(sht4.readSerial(), HEX);  // 0xF5D9FCC
-
   sht4.setPrecision(SHT4X_MED_PRECISION);  // SHT4X_HIGH_PRECISION SHT4X_LOW_PRECISION
-
   sht4.getEvent(&humidity, &temp);
 
-  Serial.print("Humidity: ");
-  Serial.print(humidity.relative_humidity);
-  Serial.println("% rH");
-
-  Serial.print("Temperature: ");
-  Serial.print(temp.temperature);
-  Serial.println("°C");
-
   // Interwebs
-  mqttSubscriptions();
-  if (interwebs.connect()) {
-    mqttCurrentStatus();
-  }
+  interwebsSetup();
 }
 
 void mqttCurrentStatus(void) {
   String on = "ON";
   if (!DISPLAY_ON) on = "OFF";
   interwebs.mqttSendMessage("cryptid/display/status", on);
-  interwebs.mqttSendMessage("cryptid/display/temperature", String(temp.temperature));
-  interwebs.mqttSendMessage("cryptid/display/humidity", String(humidity.relative_humidity));
+  interwebs.mqttSendMessage("cryptid/display/temperature", temp.temperature);
+  interwebs.mqttSendMessage("cryptid/display/humidity", humidity.relative_humidity);
 }
 
-void mqttSubscriptions(void) {
+void interwebsSetup(void) {
+  interwebs.setBirth("cryptid/display/status", "online");
+  interwebs.setWill("cryptid/display/status", "offline");
+
+  interwebs.addDiscovery("homeassistant/switch/display/cryptidDisplay/config",
+    "{\"name\":\"display\","
+    "\"stat_t\":\"cryptid/display/state\","
+    "\"cmd_t\":\"cryptid/display/set\","
+    "\"uniq_id\":\"cryptidDisplaySet\","
+    "\"dev\":{\"ids\":[\"cryptidDisplay\"],\"name\":\"Cryptid Display\"}}"
+  );
+  interwebs.addDiscovery("homeassistant/sensor/temperature/cryptidDisplay/config",
+    "{\"name\":\"temperature\","
+    "\"dev_cla\":\"temperature\","
+    "\"stat_t\":\"cryptid/display/temperature\","
+    "\"unit_of_measurement\":\"°C\","
+    "\"uniq_id\":\"cryptidDisplayTempC\","
+    "\"dev\":{\"ids\":[\"cryptidDisplay\"],\"name\":\"Cryptid Display\"}}"
+  );
+  interwebs.addDiscovery("homeassistant/sensor/humidity/cryptidDisplay/config",
+    "{\"name\":\"humidity\","
+    "\"dev_cla\":\"humidity\","
+    "\"stat_t\":\"cryptid/display/humidity\","
+    "\"unit_of_measurement\":\"%\","
+    "\"uniq_id\":\"cryptidDisplayHumidity\","
+    "\"dev\":{\"ids\":[\"cryptidDisplay\"],\"name\":\"Cryptid Display\"}}"
+  );
+
   // Turn display on and off.
-  interwebs.onMqtt("cryptid/display/set", [](String &payload){
-    if (payload == "on" || payload == "ON" || payload.toInt() == 1) {
+  interwebs.onMqtt("cryptid/display/set", [](char* payload, uint8_t /*len*/){
+    String pStr = String(payload);
+    if (pStr == "on" || pStr == "ON" || pStr == "1") {
       DISPLAY_ON = true;
       interwebs.mqttSendMessage("cryptid/display/status", "ON");
     }
-    else if (payload == "off" || payload == "OFF" || payload.toInt() == 0) {
+    else if (pStr == "off" || pStr == "OFF" || pStr == "0") {
       DISPLAY_ON = false;
       interwebs.mqttSendMessage("cryptid/display/status", "OFF");
     }
   });
 
   // Update current time.
-  interwebs.onMqtt("current_time", [](String &payload){
+  interwebs.onMqtt("current_time", [](char* payload, uint8_t /*len*/){
     timeDisplay.setTime(payload);
   });
 
   // Update weather.
-  interwebs.onMqtt("weather/temperature", [](String &payload){
-    weatherExterior.temp_c = payload.toFloat();
+  interwebs.onMqtt("weather/temperature", [](char* payload, uint8_t /*len*/){
+    weatherExterior.temp_c = String(payload).toFloat();
     weatherExterior.temp_f = celsius2fahrenheit(weatherExterior.temp_c);
     weatherExterior.temp_last = millis();
   });
-  interwebs.onMqtt("weather/feelslike", [](String &payload){
-    weatherExterior.feelslike_c = payload.toFloat();
+  interwebs.onMqtt("weather/feelslike", [](char* payload, uint8_t /*len*/){
+    weatherExterior.feelslike_c = String(payload).toFloat();
     weatherExterior.feelslike_f = celsius2fahrenheit(weatherExterior.feelslike_c);
     weatherExterior.feelslike_last = millis();
     return;
   });
-  interwebs.onMqtt("weather/humidity", [](String &payload){
-    weatherExterior.humidity = payload.toInt();
+  interwebs.onMqtt("weather/humidity", [](char* payload, uint8_t /*len*/){
+    weatherExterior.humidity = min(max(0, strtol(payload, nullptr, 10)), 100);
     weatherExterior.humidity_last = millis();
     return;
   });
-  interwebs.onMqtt("weather/code", [](String &payload){
-    weatherExterior.code = static_cast<weather_code_t>(payload.toInt());
+  interwebs.onMqtt("weather/code", [](char* payload, uint8_t /*len*/){
+    weatherExterior.code = (weather_code_t) min(max(0, strtol(payload, nullptr, 10)), 2000);
     weatherExterior.code_last = millis();
     return;
   });
-  interwebs.onMqtt("weather/isday", [](String &payload){
+  interwebs.onMqtt("weather/isday", [](char* payload, uint8_t /*len*/){
     // 1 = day, 0 = night
-    weatherExterior.is_day = payload.toInt() == 1;
+    weatherExterior.is_day = min(max(0, strtol(payload, nullptr, 10)), 1);
     weatherExterior.is_day_last = millis();
     return;
   });
-  interwebs.onMqtt("weather/aqi", [](String &payload){
-    weatherExterior.aqi = payload.toInt();
+  interwebs.onMqtt("weather/aqi", [](char* payload, uint8_t /*len*/){
+    weatherExterior.aqi = min(max(0, strtol(payload, nullptr, 10)), 500);
     weatherExterior.aqi_last = millis();
     return;
   });
 
   // Send discovery when Home Assistant notifies it's online.
-  interwebs.onMqtt("homeassistant/status", [](String &payload){
+  interwebs.onMqtt("homeassistant/status", [](char* payload, uint8_t /*len*/){
     if (payload == "online") {
-      interwebs.mqttSendDiscovery();
+      interwebs.sendDiscoveries();
       mqttCurrentStatus();
     }
   });
@@ -273,24 +249,18 @@ void loop(void) {
   everyN();
 
   // Run main MQTT loop every loop.
-  interwebs.mqttLoop();
+  interwebs.loop();
 
   // Draw things.
   if (DISPLAY_ON) {
     updateDisplay();
   }
 
-  // Check and repair interwebs connections.
+  // Status LEDs.
   if (!interwebs.wifiIsConnected()) {
     gfx.drawErrorWiFi();
-    interwebs.wifiReconnect();
-  }
-  else if (!interwebs.mqttIsConnected()) {
+  } else if (!interwebs.mqttIsConnected()) {
     gfx.drawErrorMqtt();
-    if (interwebs.mqttReconnect()) {
-      interwebs.mqttSendDiscovery();
-      mqttCurrentStatus();
-    }
   }
 
   // Done.
@@ -373,12 +343,6 @@ void everyN(void) {
 
   // Every 5 seconds.
   if (frameCounter % (MAX_FPS * 5) == 0) {
-    Serial.print("Temperature: ");
-    Serial.print(weatherInterior.temp_f);
-    Serial.print("°F, Humidity: ");
-    Serial.print(weatherInterior.humidity);
-    Serial.println("% rH");
-
     // Loop current display.
     if (currentDisplay == CURRENT_DISPLAY_INT_TEMP_HUMID) {
       currentDisplay = CURRENT_DISPLAY_EXT_TEMP_HUMID;
@@ -389,18 +353,19 @@ void everyN(void) {
     }
   }
 
-  // Every 10 seconds.
-  if (frameCounter % (MAX_FPS * 10) == 0) {
-    Serial.print("Free Memory: ");
-    Serial.println(freeMemory());
-  }
-
   // Every 20 seconds.
   if (frameCounter % (MAX_FPS * 20) == 0) {
     mqttCurrentStatus();
+  }
+
+  // Every 60 seconds.
+  if (frameCounter % (MAX_FPS * 60) == 0) {
+    Serial.print("Free Memory: ");
+    Serial.println(freeMemory());
 
     // reset at final "every" block:
     frameCounter = 0;
   }
+
   frameCounter++;
 }

@@ -1,8 +1,6 @@
 # cryptid-updates
 
-## Notes
-
-If display doesn't turn on, enable serial in VSCode --- currently required!
+LED Matrix display
 
 ## Dependencies
 
@@ -13,12 +11,9 @@ Arduino SAMD Boards | dependency for Adafruit SAMD Boards
 
 Library | Details
 ---|---
-Adafruit NeoPixel | Status LED
-Adafruit MQTT | dependency for WiFiNINA
-Adafruit GFX | dependency for Protomatter
-Adafruit IO Arduino | dependency for WiFiNINA
-Adafruit LIS3DH | Accelerometer
 Adafruit Protomatter | RGB LED matrix
+Adafruit NeoPixel | Status LED
+Adafruit LIS3DH | Accelerometer
 Adafruit SHT4x | Temperature & humidity sensor
-ArduinoHttpClient | dependency for WiFiNINA
 WiFiNINA | WiFi
+MQTT_Looped | MQTT

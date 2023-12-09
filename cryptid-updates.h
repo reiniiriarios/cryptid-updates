@@ -1,6 +1,48 @@
 #ifndef H_CRYPTID_UPDATES
 #define H_CRYPTID_UPDATES
 
+// Status LED
+#include <Adafruit_NeoPixel.h>
+
+// Accelerometer
+#include <Adafruit_LIS3DH.h>
+
+// Temperature & Humidity Sensor
+#include <Adafruit_SHT4x.h>
+
+// RGB Matrix
+#include <Adafruit_Protomatter.h>
+
+// Interwebs
+#include <WiFiNINA.h>
+#include <MQTT_Looped.h>
+
+// Filesystem
+// #include <Adafruit_FlashCache.h>
+// #include <Adafruit_FlashTransport.h>
+// #include <Adafruit_SPIFlash.h>
+// #include <Adafruit_SPIFlashBase.h>
+// #include <flash_devices.h>
+
+// Read bitmaps from SD
+// #include <Adafruit_ImageReader_EPD.h>
+// #include <Adafruit_ImageReader.h>
+
+#include "wifi-config.h"
+#include "src/types.h"
+#include "src/config.h"
+#include "src/utilities.h"
+#include "src/error_display.h"
+#include "src/gfx.h"
+#include "src/loading.h"
+#include "src/heart.h"
+#include "src/temperature.h"
+#include "src/humidity.h"
+#include "src/weather.h"
+#include "src/aqi.h"
+#include "src/time.h"
+#include "src/aaahhh.h"
+
 typedef enum {
   CURRENT_DISPLAY_NONE = 0,
   CURRENT_DISPLAY_TEST = 1,
@@ -24,9 +66,9 @@ void err(int milliseconds, String message);
 void setup(void);
 
 /**
- * @brief Set up MQTT subscriptions.
+ * @brief Set up interwebs things.
  */
-void mqttSubscriptions(void);
+void interwebsSetup(void);
 
 /**
  * @brief Main loop.

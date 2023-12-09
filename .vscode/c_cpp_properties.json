@@ -37,7 +37,7 @@
                 "/home/reinii/Arduino/libraries/Adafruit_Protomatter/src",
                 "/home/reinii/Arduino/libraries/Adafruit_GFX_Library",
                 "/home/reinii/Arduino/libraries/WiFiNINA/src",
-                "/home/reinii/Arduino/libraries/MQTT/src",
+                "/home/reinii/Arduino/libraries/arduino-mqtt-looped/src",
                 "/home/reinii/.arduino15/packages/adafruit/tools/arm-none-eabi-gcc/9-2019q4/arm-none-eabi/include/c++/9.2.1",
                 "/home/reinii/.arduino15/packages/adafruit/tools/arm-none-eabi-gcc/9-2019q4/arm-none-eabi/include/c++/9.2.1/arm-none-eabi",
                 "/home/reinii/.arduino15/packages/adafruit/tools/arm-none-eabi-gcc/9-2019q4/arm-none-eabi/include/c++/9.2.1/backward",
