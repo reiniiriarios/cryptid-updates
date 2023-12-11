@@ -1,6 +1,9 @@
 #ifndef H_CRYPTID_UPDATES
 #define H_CRYPTID_UPDATES
 
+// Watchdog Timer
+#include <Adafruit_SleepyDog.h>
+
 // Status LED
 #include <Adafruit_NeoPixel.h>
 

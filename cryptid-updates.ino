@@ -126,6 +126,11 @@ void setup(void) {
 
   // Interwebs
   interwebsSetup();
+
+  int countdownMS = Watchdog.enable(1000);
+  Serial.print("Enabling watchdog at ");
+  Serial.print(countdownMS, DEC);
+  Serial.println(" ms countdown.");
 }
 
 // MQTT --------------------------------------------------------------------------------------------
@@ -234,6 +239,8 @@ uint32_t prevTime = 0;      // Used for frames-per-second throttle
 current_display_t currentDisplay = CURRENT_DISPLAY_NONE;
 
 void loop(void) {
+  Watchdog.reset();
+
   // Limit FPS
   uint32_t t;
   while (((t = micros()) - prevTime) < (1000000L / MAX_FPS));
