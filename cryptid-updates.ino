@@ -48,7 +48,6 @@ HumidityDisplay humidityDisplay(&gfx);
 WeatherSymbol weatherSymbol(&gfx);
 AQI aqi(&gfx);
 TimeDisplay timeDisplay(&gfx);
-ErrorDisplay errorDisplay(&gfx);
 Heart heart(&gfx);
 Aaahhh aaahhh(&gfx);
 
@@ -347,29 +346,32 @@ void updateDisplay(void) {
     return;
   }
 
-  // INTERIOR
+  // INTERIOR (default)
   if (currentDisplay == CURRENT_DISPLAY_INT_TEMP_HUMID) {
-    tempDisplay.update(weatherInterior.temp_f);
-    humidityDisplay.update(weatherInterior.humidity);
-    weatherSymbol.drawSymbolInterior();
+    updateDisplayDefault();
     return;
   }
 
   // CURRENT WEATHER
   if (currentDisplay == CURRENT_DISPLAY_EXT_TEMP_HUMID) {
+    // No data.
     if (weatherExterior.code == WEATHER_CODE_UNKNOWN) {
-      errorDisplay.update(201);
+      gfx.drawStatusPixel(200, 240, 2);
+      updateDisplayDefault();
       return;
     }
+    // Expired data.
     if (
       millis() - weatherExterior.temp_last > 600000 ||
       millis() - weatherExterior.humidity_last > 600000 ||
       millis() - weatherExterior.code_last > 600000
     ) { // 1 min = 60000 ms
       // Weather more than 10 minutes out of date.
-      errorDisplay.update(202);
+      gfx.drawStatusPixel(40, 80, 2);
+      updateDisplayDefault();
       return;
     }
+    // Okay.
     bool is_day = true;
     if (millis() - weatherExterior.is_day_last < 600000) {
       is_day = weatherExterior.is_day;
@@ -378,7 +380,9 @@ void updateDisplay(void) {
     humidityDisplay.update(weatherExterior.humidity);
     weatherSymbol.drawSymbol(weatherExterior.code, is_day);
     // air quality index separate expiry
-    if (millis() - weatherExterior.aqi_last < 1800000) { // 30min
+    if (millis() - weatherExterior.aqi_last > 1800000) { // 30min
+      gfx.drawStatusPixel(120, 180, 3);
+    } else {
       aqi.update(weatherExterior.aqi);
     }
     return;
@@ -386,20 +390,33 @@ void updateDisplay(void) {
 
   // CURRENT TIME
   if (currentDisplay == CURRENT_DISPLAY_DATE_TIME) {
+    // No data.
     if (timeDisplay.getDay() == 0) {
-      errorDisplay.update(401);
+      gfx.drawStatusPixel(170, 220, 3);
+      updateDisplayDefault();
       return;
     }
+    // Data expired.
     if (millis() - timeDisplay.last_updated > 1200000) { // 20min
-      errorDisplay.update(402);
+      gfx.drawStatusPixel(10, 50, 3);
+      updateDisplayDefault();
       return;
     }
+    // Okay.
     timeDisplay.updateScreen();
     return;
   }
 
   // Oops.
-  errorDisplay.update(101);
+  gfx.drawStatusPixel(5, 20, 7);
+  gfx.drawStatusPixel(15, 30, 8);
+  gfx.drawStatusPixel(25, 40, 9);
+}
+
+void updateDisplayDefault(void) {
+  tempDisplay.update(weatherInterior.temp_f);
+  humidityDisplay.update(weatherInterior.humidity);
+  weatherSymbol.drawSymbolInterior();
 }
 
 // EVERY N SECONDS ---------------------------------------------------------------------------------

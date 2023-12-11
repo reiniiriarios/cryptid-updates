@@ -38,7 +38,6 @@
 #include "src/types.h"
 #include "src/config.h"
 #include "src/utilities.h"
-#include "src/error_display.h"
 #include "src/gfx.h"
 #include "src/loading.h"
 #include "src/heart.h"
@@ -95,6 +94,11 @@ void loop(void);
  * @brief Draw things.
  */
 void updateDisplay(void);
+
+/**
+ * @brief Draw default screen.
+ */
+void updateDisplayDefault(void);
 
 /**
  * @brief Do things every n seconds.

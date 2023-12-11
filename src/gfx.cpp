@@ -221,9 +221,9 @@ uint16_t Gfx::value2hue(int value, int minFrom, int maxFrom, int minTo, int maxT
   return (uint16_t)hue;
 }
 
-void Gfx::drawStatusPixel(uint16_t hueStart, uint16_t hueEnd) {
-  pixels[MATRIX_HEIGHT - 1][MATRIX_WIDTH - 2].on = true;
-  pixels[MATRIX_HEIGHT - 1][MATRIX_WIDTH - 2].hue = getHueBounce(hueStart, hueEnd);
+void Gfx::drawStatusPixel(uint16_t hueStart, uint16_t hueEnd, uint8_t index) {
+  pixels[MATRIX_HEIGHT - 1][MATRIX_WIDTH - 2 - index].on = true;
+  pixels[MATRIX_HEIGHT - 1][MATRIX_WIDTH - 2 - index].hue = getHueBounce(hueStart, hueEnd);
 }
 
 uint16_t Gfx::getHueBounce(int start, int end) {

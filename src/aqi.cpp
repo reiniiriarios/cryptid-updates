@@ -1,4 +1,3 @@
-#include "error_display.h"
 #include "aqi.h"
 
 AQI::AQI(Gfx *gfx_p) {

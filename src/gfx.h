@@ -130,10 +130,11 @@ class Gfx {
     /**
      * @brief Draw a single status pixel on the screen in a pulsing pattern.
      * 
-     * @param hueStart 
-     * @param hueEnd 
+     * @param hueStart
+     * @param hueEnd
+     * @param index which status pixel to set (n pixels from right of screen)
      */
-    void drawStatusPixel(uint16_t hueStart, uint16_t hueEnd);
+    void drawStatusPixel(uint16_t hueStart, uint16_t hueEnd, uint8_t index = 0);
 
     /**
      * @brief Get width of string.
