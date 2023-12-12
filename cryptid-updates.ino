@@ -175,11 +175,11 @@ void interwebsSetup(void) {
     String pStr = String(payload);
     if (pStr == "on" || pStr == "ON" || pStr == "1") {
       DISPLAY_ON = true;
-      interwebs.mqttSendMessage("cryptid/display/status", "ON");
+      interwebs.mqttSendMessage("cryptid/display/state", "ON");
     }
     else if (pStr == "off" || pStr == "OFF" || pStr == "0") {
       DISPLAY_ON = false;
-      interwebs.mqttSendMessage("cryptid/display/status", "OFF");
+      interwebs.mqttSendMessage("cryptid/display/state", "OFF");
     }
   });
 
